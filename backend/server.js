@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { getMongoURI } = require('./utils/env_variables');
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 mongoose
-.connect('mongodb://localhost:27017/accompanying_friend', { useNewUrlParser: true, useUnifiedTopology: true })
+.connect(getMongoURI())
 .then(() => console.log('MongoDB connected successfully'))
 .catch((err) => console.log('MongoDB connection error:' , err));
 
