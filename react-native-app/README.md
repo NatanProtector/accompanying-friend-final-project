@@ -1,6 +1,6 @@
 # **Accompanying Friend React App**
 
-_A React Native mobile application for a college final project._
+_A React Native mobile application for college final project._
 
 ---
 
@@ -47,7 +47,7 @@ _A React Native mobile application for a college final project._
 
 2. Choose your preferred method to run the app:
    - **Virtual Mobile Device**:  
-     If you have an emulator (like Android Studio or Xcode Simulator) open, the app will load automatically on the device.
+     If you have an emulator (like Android Studio or Xcode Simulator) open, press `a` to load the app automatically on the device.
    - **Physical Device**:  
      Scan the QR code using the Expo Go app (available on iOS and Android) to open the app.
    - **Web Browser**:  
@@ -67,5 +67,11 @@ Future updates will focus on adding dynamic content and enhancing features.
 ## **Scripts**
 - `npm start`: Starts the Expo development server.
 - `npx expo start`: An alternative way to start the Expo development server.
+
+---
+
+## **Deployment**
+
+- `npx expo export --platform web`: Export production website to a folder named dist.
 
 ---
