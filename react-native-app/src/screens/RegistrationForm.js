@@ -4,6 +4,7 @@ import { Card, Button } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import { RegistrationFormText } from '../constants/text';
 import MyLanguageContext from '../utils/MyLanguageContext';
+import axios from 'axios';
 
 export default function RegistrationForm({ route }) {
 
@@ -119,7 +120,7 @@ export default function RegistrationForm({ route }) {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const formData = {
       firstName,
       lastName,
@@ -139,8 +140,22 @@ export default function RegistrationForm({ route }) {
 
     console.log('Validated form data:', formData);
 
-    // TODO: Add functionality to send data to the backend
-  };
+    try {
+      const response = await axios.post('http://localhost:3001/api/auth/register', formData);
+  
+      if (response.status === 201) {
+        Alert.alert(
+          language === 'en' ? 'Registration Successful' : 'הרשמה הצליחה',
+          language === 'en' ? 'Your details have been submitted!' : 'הפרטים נשלחו בהצלחה!'
+        );
+      } else {
+        Alert.alert(language === 'en' ? 'Error' : 'שגיאה', 'Something went wrong!');
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert(language === 'en' ? 'Error' : 'שגיאה', 'Failed to submit the form.');
+    }
+    };
 
   useEffect(() => {
     I18nManager.forceRTL(language === 'he');
