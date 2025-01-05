@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { getMongoURI } = require('./utils/env_variables');
+const routes = require('./routes/index');
 
 dotenv.config();
 
@@ -17,9 +18,7 @@ mongoose
 .then(() => console.log('MongoDB connected successfully'))
 .catch((err) => console.log('MongoDB connection error:' , err));
 
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'Server is up and running!' });
-});
+app.use('/api', routes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
