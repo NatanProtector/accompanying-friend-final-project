@@ -1,7 +1,8 @@
 const express = require('express');
 const { registrationSchema } = require('./authValidation');
-const User = require('../users/userModel');
 const router = express.Router();
+const User = require('../Users/userModel');
+
 
 router.post('/register', async (req, res) => {
   console.log('Incoming Request Body:', req.body); // Add this

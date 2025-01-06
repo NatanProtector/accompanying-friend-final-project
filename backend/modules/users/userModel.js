@@ -11,4 +11,5 @@ const userSchema = new mongoose.Schema({
   registrationStatus: { type: String, default: 'pending' }, // Default status
 });
 
-module.exports = mongoose.model('Users', userSchema);
+const Users = mongoose.model('Users', userSchema, 'Users');
+module.exports = Users;
