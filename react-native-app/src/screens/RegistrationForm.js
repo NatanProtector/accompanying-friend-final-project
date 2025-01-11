@@ -156,7 +156,7 @@ export default function RegistrationForm({ route }) {
 
 
         try {
-            const response = await axios.post('http://192.168.144.28:3001/api/auth/register', formData);
+            const response = await axios.post('http://localhost:3001/api/auth/register', formData);
             if (response.status === 201) {
                 Alert.alert(
                     language === 'en' ? 'Registration Successful' : 'הרשמה הצליחה',
