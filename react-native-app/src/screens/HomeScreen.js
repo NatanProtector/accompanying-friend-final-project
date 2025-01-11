@@ -28,3 +28,5 @@ export default function HomeScreen({ navigation }) {
 const style = StyleSheet.create({
     container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });
+
+
