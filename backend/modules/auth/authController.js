@@ -7,7 +7,7 @@ const authValidation = require('./authValidation');
 
 router.post('/register', async (req, res) => {
   console.log('Incoming Request Body:', req.body); 
-  const { firstName, lastName, phone, idNumber, email, idPhoto, multiRole, securityCertificatePhoto } = req.body;
+  const { firstName, lastName, phone, password, idNumber, email, idPhoto, multiRole, securityCertificatePhoto } = req.body;
 
   const { error } = registrationSchema.validate(req.body);
   if (error) {
@@ -24,6 +24,7 @@ router.post('/register', async (req, res) => {
       phone,
       idNumber,
       email,
+      password,
       idPhoto,
       multiRole,
       securityCertificatePhoto,

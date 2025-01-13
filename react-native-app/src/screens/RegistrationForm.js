@@ -17,6 +17,7 @@ export default function RegistrationForm({ route }) {
     const [idPhoto, setIdPhoto] = useState(null);
     const [securityCertificatePhoto, setSecurityCertificatePhoto] = useState(null);
     const [idNumber, setIdNumber] = useState('');
+    const [password, setPassword] = useState('');
 
     const validateForm = (language) => {
         const messages = {
@@ -138,6 +139,7 @@ export default function RegistrationForm({ route }) {
         email,
         phone,
         idNumber,
+        password,
         idPhoto,
         multiRole: registerAs === 'security' ? ['security'] : ['citizen'], // Add role dynamically
     };
@@ -156,7 +158,8 @@ export default function RegistrationForm({ route }) {
 
 
         try {
-            const response = await axios.post('http://localhost:3001/api/auth/register', formData);
+            const response = await axios.post('http://localhost:3001/api/auth/register', formData);//TODO: change the IP address to localhost
+            console.log('Response:', response.data);
             if (response.status === 201) {
                 Alert.alert(
                     language === 'en' ? 'Registration Successful' : 'הרשמה הצליחה',
@@ -166,6 +169,7 @@ export default function RegistrationForm({ route }) {
                 Alert.alert(language === 'en' ? 'Error' : 'שגיאה', 'Something went wrong!');
             }
         } catch (err) {
+            console.error('Error during registration:', error.response?.data || error.message);
             console.error(err);
             Alert.alert(language === 'en' ? 'Error' : 'שגיאה', 'Failed to submit the form.');
         }
@@ -211,6 +215,13 @@ export default function RegistrationForm({ route }) {
                     keyboardType="email-address"
                     value={email}
                     onChangeText={setEmail}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder={RegistrationFormText[language].password}
+                    secureTextEntry={true}
+                    value={password}
+                    onChangeText={setPassword}
                 />
 
                 <TouchableOpacity

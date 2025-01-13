@@ -6,11 +6,11 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   fullName: { type: String, required: true },
   phone: { type: String, required: true, unique: true },
+  password: { type: String, required: true }, // New field for hashed password - for now not required.
   idNumber: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   idPhoto: { type: String, required: false }, // Temporarily stored
   securityCertificatePhoto: { type: String, required: false }, // Optional, only for security
-  password: { type: String, required: false }, // New field for hashed password - for now not required.TODO: Add validation
   multiRole: { type: [String], required: true }, // New field for roles
   registrationStatus: { type: String, default: 'pending' }, // Default status
   lastLogin: { type: Date },
