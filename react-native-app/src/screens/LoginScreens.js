@@ -5,30 +5,62 @@ import { Card, Button } from 'react-native-elements';
 import { LoginText } from '../constants/text';
 import MyLanguageContext from '../utils/MyLanguageContext';
 
+import { CommonActions } from '@react-navigation/native';
+
+/**
+ * Resets the navigation stack and navigates to the specified dashboard screen.
+ * @param {object} navigation - The navigation object to dispatch the action.
+ * @param {string} screenName - The name of the screen to navigate to (Dashboard).
+ * @param {object} [params={}] - Optional parameters to pass to the screen.
+ */
+
+const moveToDashboard = (navigation, screenName, params = {}) => {
+    navigation.dispatch(
+        CommonActions.reset({
+            index: 1, // Index of the active screen in the stack
+            routes: [
+                { name: 'Home' }, // Reset to Home page
+                { name: screenName, params }, // Add dashboard screen on top
+            ],
+        })
+    );
+};
+
+
+
+/**
+ * LoginScreen component allowing users to log in with email, password, and role selection.
+ * @param {object} props - The props object passed to the component, including navigation.
+ */
 export default function LoginScreen({ navigation }) {
 
-    const { language } = useContext(MyLanguageContext);
+    const { language } = useContext(MyLanguageContext);  // Language context
+
+    const textAlign = language === 'en' ? 'left' : 'right';  // Adjust text alignment based on language
+
+    const input_style = [  
+        style.input,
+        {textAlign}  // Apply dynamic text alignment
+    ];
 
     // State hooks for managing input values and role selection
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [selectedRole, setSelectedRole] = useState(0); // 0 for Citizen, 1 for Security
+    const [email, setEmail] = useState('');  // Email state
+    const [password, setPassword] = useState('');  // Password state
+    const [selectedRole, setSelectedRole] = useState(0);  // Role selection (0 = Citizen, 1 = Security)
 
-    const roleOptions = ["citizen", "security"];
+    const roleOptions = ["citizen", "security"];  // Role options available
 
+    /**
+     * Handles the login logic when the user submits the form.
+     * For now, it redirects to a dashboard based on the selected role.
+     */
     const handleLogin = () => {
-        // Handle login logic here
         console.log('Logging in with:', email, password, roleOptions[selectedRole]);
 
-        // For Testing purposes ========================== Testing ===================================================
+        // Test behavior: If no email/password entered, automatically log in as Citizen
         if (email.length == 0 && password.length == 0) {
-            if (selectedRole == 0)
-                navigation.navigate('Dashboard/Citizen');
-            else
-                navigation.navigate('Dashboard/Security');
+            moveToDashboard(navigation, 'Dashboard/Citizen');
         }
-        // ======================================================================================================
-
     }
 
     return (
@@ -38,7 +70,7 @@ export default function LoginScreen({ navigation }) {
 
                 {/* Username Input */}
                 <TextInput 
-                    style={style.input}
+                    style={input_style}
                     value={email} 
                     onChangeText={setEmail} 
                     placeholder={LoginText[language].email}
@@ -46,7 +78,7 @@ export default function LoginScreen({ navigation }) {
 
                 {/* Password Input */}
                 <TextInput 
-                    style={style.input}
+                    style={input_style}
                     value={password} 
                     onChangeText={setPassword} 
                     placeholder={LoginText[language].password} 
@@ -56,13 +88,11 @@ export default function LoginScreen({ navigation }) {
                 <View style={style.roleContainer}>
                     <Text>Select your role:</Text>
                     <View style={style.roleButtons}>
+                        {/* Role selection buttons */}
                         {roleOptions.map((role, index) => (
                             <TouchableOpacity 
                                 key={index} 
-                                style={[
-                                    style.roleButton, 
-                                    selectedRole === index && style.selectedRoleButton
-                                ]}
+                                style={[style.roleButton, selectedRole === index && style.selectedRoleButton]}
                                 onPress={() => setSelectedRole(index)}
                             >
                                 <Text style={style.roleButtonText}>{LoginText[language][role]}</Text>
@@ -71,6 +101,7 @@ export default function LoginScreen({ navigation }) {
                     </View>
                 </View>
 
+                {/* Login button */}
                 <Button
                     title="Log In"
                     onPress={handleLogin}
@@ -80,6 +111,7 @@ export default function LoginScreen({ navigation }) {
     );
 }
 
+// Styles for the login screen
 const style = StyleSheet.create({
     container: { 
         flex: 1, 
@@ -93,7 +125,7 @@ const style = StyleSheet.create({
         borderRadius: 5,
         marginVertical: 10,
         paddingHorizontal: 10,
-        width: 300, // Adjust the width as needed
+        width: 300,
     },
     roleContainer: {
         marginVertical: 20,
@@ -101,7 +133,7 @@ const style = StyleSheet.create({
     roleButtons: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: 300,  // You can adjust the width to suit your design
+        width: 300,
     },
     roleButton: {
         padding: 10,
@@ -119,6 +151,6 @@ const style = StyleSheet.create({
         color: '#333',
     },
     buttonGroup: {
-        width: 300,  // You can adjust the width to suit your design
+        width: 300,
     },
 });
