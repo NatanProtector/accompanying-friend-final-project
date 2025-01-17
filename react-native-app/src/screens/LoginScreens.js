@@ -7,6 +7,8 @@ import MyLanguageContext from '../utils/MyLanguageContext';
 
 import { CommonActions } from '@react-navigation/native';
 
+import defineTextAlignStyle from '../utils/defineTextAlignStyle';
+
 /**
  * Resets the navigation stack and navigates to the specified dashboard screen.
  * @param {object} navigation - The navigation object to dispatch the action.
@@ -26,8 +28,6 @@ const moveToDashboard = (navigation, screenName, params = {}) => {
     );
 };
 
-
-
 /**
  * LoginScreen component allowing users to log in with email, password, and role selection.
  * @param {object} props - The props object passed to the component, including navigation.
@@ -36,12 +36,7 @@ export default function LoginScreen({ navigation }) {
 
     const { language } = useContext(MyLanguageContext);  // Language context
 
-    const textAlign = language === 'en' ? 'left' : 'right';  // Adjust text alignment based on language
-
-    const input_style = [  
-        style.input,
-        {textAlign}  // Apply dynamic text alignment
-    ];
+    const input_style = defineTextAlignStyle(language, style.input);
 
     // State hooks for managing input values and role selection
     const [email, setEmail] = useState('');  // Email state

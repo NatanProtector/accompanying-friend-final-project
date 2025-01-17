@@ -8,6 +8,8 @@ import { RegisterText } from '../constants/text';
 
 import MyLanguageContext from '../utils/MyLanguageContext';
 
+
+
 export default function Register({ navigation }) {
 
   const { language } = useContext(MyLanguageContext);

@@ -6,10 +6,14 @@ import { RegistrationFormText } from '../constants/text';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import axios from 'axios';
 
+import defineTextAlignStyle from '../utils/defineTextAlignStyle';
+
 export default function RegistrationForm({ route }) {
 
   const { language } = useContext(MyLanguageContext);
   const { registerAs } = route.params || {}; // Get the register type (citizen/security)
+
+  const input_style = defineTextAlignStyle(language, styles.input);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -166,33 +170,33 @@ export default function RegistrationForm({ route }) {
       <Card>
         <Text style={styles.title}>{RegistrationFormText[language].title}</Text>
         <TextInput
-          style={styles.input}
+          style={input_style}
           placeholder={RegistrationFormText[language].firstName}
           value={firstName}
           onChangeText={setFirstName}
         />
         <TextInput
-          style={styles.input}
+          style={input_style}
           placeholder={RegistrationFormText[language].lastName}
           value={lastName}
           onChangeText={setLastName}
         />
         <TextInput
-          style={styles.input}
+          style={input_style}
           placeholder={RegistrationFormText[language].phone}
           keyboardType="phone-pad"
           value={phone}
           onChangeText={setPhone}
         />
         <TextInput
-          style={styles.input}
+          style={input_style}
           placeholder={RegistrationFormText[language].idNumber}
           keyboardType="numeric"
           value={idNumber}
           onChangeText={setIdNumber}
         />
         <TextInput
-          style={styles.input}
+          style={input_style}
           placeholder={RegistrationFormText[language].email}
           keyboardType="email-address"
           value={email}
