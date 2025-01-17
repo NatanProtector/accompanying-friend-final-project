@@ -4,8 +4,6 @@ import { Card, Button } from 'react-native-elements';
 
 import { useContext } from 'react';
 
-import { RegisterText } from '../constants/text';
-
 import MyLanguageContext from '../utils/MyLanguageContext';
 
 
@@ -41,3 +39,18 @@ const CardStyle = StyleSheet.create({
 const TextStyle = StyleSheet.create({
   container: { fontSize: 18, marginBottom: 10 },
 });
+
+const RegisterText = {
+  en: {
+      title: 'you are registering as a..',
+      citizen: 'Register as Citizen',
+      security: 'Register as Security',
+      submit: 'Submit',
+  },
+  he: {
+      title: 'אתה נרשם בתור..',
+      citizen: 'רישום אזרח',
+      security: 'רישום אבטחה',
+      submit: 'שלח',
+  },
+}

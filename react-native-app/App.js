@@ -15,7 +15,6 @@ import { useState } from 'react';
 import ButtonWrapper from './src/utils/ButtonWrapper';
 
 import MyLanguageContext from './src/utils/MyLanguageContext';
-import { NavigationText } from './src/constants/text';
 
 const Stack = createStackNavigator();
 
@@ -51,4 +50,21 @@ export default function App() {
   );
 }
 
-
+const NavigationText = {
+  en: {
+      home: 'Welcome!',
+      login: 'Login',
+      register: 'Register',
+      registerForm: 'Register Form',
+      dashboardSecurity: 'Security Dashboard',
+      dashboardCitizen: 'Citizen Dashboard',
+  },
+  he: {
+      home: '!ברוכים הבאים',
+      login: 'כניסה',
+      register: 'רישום',
+      registerForm: 'טופס הרשמה',
+      dashboardSecurity: 'אבטחה',
+      dashboardCitizen: 'אזרח',
+  }
+}

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
-import { RegistrationFormText } from '../constants/text';
+
 import MyLanguageContext from '../utils/MyLanguageContext';
 import axios from 'axios';
 
@@ -264,3 +264,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+const RegistrationFormText = {
+  en: {
+      title: 'Registration Form Citizens',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      email: 'Email',
+      phone: 'Phone Number',
+      idNumber: 'ID Number',
+      idPhoto: 'Upload ID Photo',
+      idPhotoConfirmation: 'ID photo uploaded successfully!',
+      isPhotoInvalid: 'ID photo is required.',
+      securityCertificateConfirmation: 'Security certificate uploaded successfully!',
+      isSecurityCertificateInvalid: 'Security Certificate is required.',
+      submit: 'Submit',
+  },
+  he: {
+      title: 'טופס הרשמה אזרחים',
+      firstName: 'שם פרטי',
+      lastName: 'שם משפחה',
+      email: 'אימייל',
+      phone: 'מספר טלפון',
+      idNumber: 'מספר תעודת זהות',
+      idPhoto: 'העלה תמונת תעודת זהות',
+      idPhotoConfirmation: 'התמונה הועלתה בהצלחה עבור תעודת זהות!',
+      isPhotoInvalid: 'תמונת תעודת זהות חובה.',
+      securityCertificateConfirmation: 'התמונה הועלתה בהצלחה עבור תעודת אבטחה!',
+      isSecurityCertificateInvalid: 'תעודת אבטחה חובה.',
+      submit: 'שלח',
+  },
+};

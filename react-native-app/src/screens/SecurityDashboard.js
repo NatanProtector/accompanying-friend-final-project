@@ -1,7 +1,6 @@
 import { View, Text } from 'react-native';
 import { useContext } from 'react';
 
-import { DashboardTextSecurity } from '../constants/text';
 import MyLanguageContext from '../utils/MyLanguageContext';
 
 export default function SecurityDashboard({ navigation }) {
@@ -13,4 +12,13 @@ export default function SecurityDashboard({ navigation }) {
             <Text>{DashboardTextSecurity[language].title}</Text>
         </View>
     );
+}
+
+const DashboardTextSecurity = {
+    en: {
+        title: 'Security Dashboard',
+    },
+    he: {
+        title: 'דשבורד אבטחה',
+    },
 }

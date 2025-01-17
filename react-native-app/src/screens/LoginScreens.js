@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 
-import { LoginText } from '../constants/text';
 import MyLanguageContext from '../utils/MyLanguageContext';
 
 import { CommonActions } from '@react-navigation/native';
@@ -149,3 +148,25 @@ const style = StyleSheet.create({
         width: 300,
     },
 });
+
+
+const LoginText = {
+    en: {
+        title: 'Login',
+        password: 'Enter your Password',
+        email: 'Enter your Email',
+        rememberMe: 'Remember me',
+        security: 'Security',
+        citizen: 'Citizen',
+        submit: 'Submit',
+    },
+    he: {
+        title: 'כניסה',
+        email: 'אימייל',
+        password: 'סיסמה',
+        rememberMe: 'זכור אותי',
+        security: 'אבטחה',
+        citizen: 'אזרח',
+        submit: 'שלח',
+    },
+};
