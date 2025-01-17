@@ -53,7 +53,11 @@ export default function LoginScreen({ navigation }) {
 
         // Test behavior: If no email/password entered, automatically log in as Citizen
         if (email.length == 0 && password.length == 0) {
-            moveToDashboard(navigation, 'Dashboard/Citizen');
+
+            var dashboard_type = selectedRole == 0? "Citizen": "Security";
+
+
+            moveToDashboard(navigation, `Dashboard/${dashboard_type}`);
         }
     }
 
