@@ -95,7 +95,6 @@ export default function RegistrationForm({ route }) {
     });
 
     if (result && !result.canceled && result.assets.length > 0) {
-      setIdPhoto(result.uri);
       Alert.alert(RegistrationFormText[language].idPhotoConfirmation);
     } else {
       console.log('No image selected');

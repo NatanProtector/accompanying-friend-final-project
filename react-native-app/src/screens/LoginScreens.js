@@ -4,33 +4,14 @@ import { Card, Button } from 'react-native-elements';
 
 import MyLanguageContext from '../utils/MyLanguageContext';
 
-import { CommonActions } from '@react-navigation/native';
-
 import defineTextAlignStyle from '../utils/defineTextAlignStyle';
 
-/**
- * Resets the navigation stack and navigates to the specified dashboard screen.
- * @param {object} navigation - The navigation object to dispatch the action.
- * @param {string} screenName - The name of the screen to navigate to (Dashboard).
- * @param {object} [params={}] - Optional parameters to pass to the screen.
- */
-
+// Navigate to a specific screen
 const moveToDashboard = (navigation, screenName, params = {}) => {
-    navigation.dispatch(
-        CommonActions.reset({
-            index: 1, // Index of the active screen in the stack
-            routes: [
-                { name: 'Home' }, // Reset to Home page
-                { name: screenName, params }, // Add dashboard screen on top
-            ],
-        })
-    );
+    navigation.navigate(screenName, params);
 };
 
-/**
- * LoginScreen component allowing users to log in with email, password, and role selection.
- * @param {object} props - The props object passed to the component, including navigation.
- */
+
 export default function LoginScreen({ navigation }) {
 
     const { language } = useContext(MyLanguageContext);  // Language context
@@ -49,15 +30,19 @@ export default function LoginScreen({ navigation }) {
      * For now, it redirects to a dashboard based on the selected role.
      */
     const handleLogin = () => {
-        console.log('Logging in with:', email, password, roleOptions[selectedRole]);
 
         // Test behavior: If no email/password entered, automatically log in as Citizen
         if (email.length == 0 && password.length == 0) {
 
-            var dashboard_type = selectedRole == 0? "Citizen": "Security";
+            var dashboard_type = selectedRole == 0;
 
+            var role_name = 'Security';
 
-            moveToDashboard(navigation, `Dashboard/${dashboard_type}`);
+            if (dashboard_type) {
+                role_name = 'Citizen';
+            }
+
+            moveToDashboard(navigation, `Dashboard/${role_name}`);
         }
     }
 
