@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import defineTextAlignStyle from '../../utils/defineTextAlignStyle';
-export default function CategoryTemplate({ title, children }) {
+
+function CategoryTemplate({ title, children }) {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleCategory = () => setIsOpen(!isOpen);
+  const toggleCategory = () => {
+
+    setIsOpen(!isOpen);
+
+  };
+
 
   return (
     <View style={styles.categoryContainer}>
@@ -15,7 +20,9 @@ export default function CategoryTemplate({ title, children }) {
       </TouchableOpacity>
 
       {/* Category Content */}
-      {isOpen && <View style={styles.categoryContent}>{children}</View>}
+      {isOpen && (
+        <View style={styles.categoryContent}>{children}</View>
+      )}
     </View>
   );
 }
@@ -41,3 +48,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+export default React.memo(CategoryTemplate); // Prevent unnecessary re-renders

@@ -27,7 +27,7 @@ export default function App() {
     setLanguage((lang) => (lang === 'en' ? 'he' : 'en'));
   }
 
-  const wrapScreen = (Component) => {
+  const langueButtonWraper = (Component) => {
     return (props) => (
       <ButtonWrapper title={language === 'en' ? 'עברית' : 'English'} onClick={switchLanguage}>
         <Component {...props} />
@@ -35,17 +35,23 @@ export default function App() {
     );
   }
 
+  const switchLangueWraper = (Component) => {
+    return (props) => (
+      <Component {...props} switchLanguage={switchLanguage}/>
+    )
+  }
+
   return (
     <MyLanguageContext.Provider value={{ language }}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Home" component={wrapScreen(HomeScreen)} options={{title: NavigationText[language].home}}/>
-          <Stack.Screen name="Login" component={wrapScreen(LoginScreen)} options={{title: NavigationText[language].login}}/>
-          <Stack.Screen name="Register" component={wrapScreen(Register)} options={{title: NavigationText[language].register}}/>
-          <Stack.Screen name ="RegisterForm" component={wrapScreen(RegistrationForm)} options={{title: NavigationText[language].registerForm}}/>
+          <Stack.Screen name="Home" component={langueButtonWraper(HomeScreen)} options={{title: NavigationText[language].home}}/>
+          <Stack.Screen name="Login" component={langueButtonWraper(LoginScreen)} options={{title: NavigationText[language].login}}/>
+          <Stack.Screen name="Register" component={langueButtonWraper(Register)} options={{title: NavigationText[language].register}}/>
+          <Stack.Screen name ="RegisterForm" component={langueButtonWraper(RegistrationForm)} options={{title: NavigationText[language].registerForm}}/>
           <Stack.Screen name="Dashboard/Security" component={SecurityDashboard} options={{ headerShown: false }}/>
           <Stack.Screen name="Dashboard/Citizen" component={CitizenDashboard} options={{ headerShown: false }}/>
-          <Stack.Screen name="Settings" component={SettingsDisplay} options={{title: NavigationText[language].settings}}/>
+          <Stack.Screen name="Settings" component={switchLangueWraper(SettingsDisplay)} options={{title: NavigationText[language].settings}}/>
         </Stack.Navigator>
       </NavigationContainer>
     </MyLanguageContext.Provider>
