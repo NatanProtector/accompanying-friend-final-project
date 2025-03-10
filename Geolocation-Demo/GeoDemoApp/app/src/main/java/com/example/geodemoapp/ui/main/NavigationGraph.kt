@@ -23,7 +23,6 @@ fun AddBackButtonToScreen(navController: NavHostController, content: @Composable
             "Back"
         )
     }
-
 }
 
 @Composable
