@@ -1,0 +1,11 @@
+Useful Components to know:
+
+Scaffold - Scaffold is a layout component in Jetpack Compose that provides a standard Material Design structure for your app.
+           It helps you easily organize common UI elements like:
+
+           Top Bar (Toolbar)
+           Bottom Bar (Navigation)
+           Floating Action Button (FAB)
+           Drawer (Side Menu)
+           Content
+
