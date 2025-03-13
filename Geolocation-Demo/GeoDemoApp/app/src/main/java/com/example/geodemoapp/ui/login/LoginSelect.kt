@@ -43,12 +43,12 @@ fun LoginSelect(navController: NavHostController) {
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Button(
-                        onClick = {  navController.navigate("login_citizen") }
+                        onClick = {  navController.navigate("citizen") }
                     ) {
                         Text(text = "Citizen")
                     }
                     Button(
-                        onClick = { navController.navigate("login_security") }
+                        onClick = { navController.navigate("security") }
                     ) {
                         Text(text = "Security")
                     }

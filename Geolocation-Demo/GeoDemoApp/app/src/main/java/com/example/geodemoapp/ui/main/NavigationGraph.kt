@@ -11,6 +11,7 @@ import com.example.geodemoapp.ui.login.LoginScreen
 import com.example.geodemoapp.ui.home.HomeScreen
 import com.example.geodemoapp.ui.login.LoginSelect
 import com.example.geodemoapp.ui.profile.CitizenScreen
+import com.example.geodemoapp.ui.profile.SecurityScreen
 import com.example.geodemoapp.ui.register.RegisterScreen
 
 
@@ -26,12 +27,30 @@ fun AddBackButtonToScreen(navController: NavHostController, content: @Composable
 }
 
 @Composable
+fun AddBackLogoutToScreen(navController: NavHostController, content: @Composable (navController: NavHostController) -> Unit) {
+    Box {
+        content(navController)
+        TopRightButton(
+            onClick={
+                navController.navigate("home") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            },
+            "Logout"
+        )
+    }
+}
+
+@Composable
 fun NavigationGraph() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            HomeScreen(navController) // No back button needed
+            HomeScreen(navController)
         }
         composable("login") {
             AddBackButtonToScreen(navController) {
@@ -64,7 +83,14 @@ fun NavigationGraph() {
             }
         }
         composable("citizen") {
-            CitizenScreen() // No back button needed
+            AddBackLogoutToScreen(navController) {
+                CitizenScreen()
+            }
+        }
+        composable("security") {
+            AddBackLogoutToScreen(navController) {
+                SecurityScreen()
+            }
         }
     }
 }

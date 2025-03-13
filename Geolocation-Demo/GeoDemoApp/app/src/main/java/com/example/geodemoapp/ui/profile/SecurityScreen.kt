@@ -3,6 +3,6 @@ package com.example.geodemoapp.ui.profile
 import androidx.compose.runtime.Composable
 
 @Composable
-fun CitizenScreen() {
+fun SecurityScreen() {
     ProfileScreen("Citizen")
 }
