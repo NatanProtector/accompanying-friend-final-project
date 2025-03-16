@@ -6,7 +6,7 @@ import Register from './src/screens/Register';
 import RegistrationForm from './src/screens/RegistrationForm';
 import CitizenDashboard from './src/screens/CitizenDashboard';
 import SecurityDashboard from './src/screens/SecurityDashboard';
-
+import MapScreen from "./src/screens/MapScreen";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -45,6 +45,7 @@ export default function App() {
           <Stack.Screen name ="RegisterForm" component={wrapScreen(RegistrationForm)} options={{title: NavigationText[language].registerForm}}/>
           <Stack.Screen name="Dashboard/Security" component={wrapScreen(SecurityDashboard)} options={{title: NavigationText[language].dashboardSecurity}}/>
           <Stack.Screen name="Dashboard/Citizen" component={wrapScreen(CitizenDashboard)} options={{title: NavigationText[language].dashboardCitizen}}/>
+          <Stack.Screen name="Map" component={wrapScreen(MapScreen)} options={{title: NavigationText[language].map}}/>
         </Stack.Navigator>
       </NavigationContainer>
     </MyLanguageContext.Provider>

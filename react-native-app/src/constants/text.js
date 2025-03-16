@@ -56,11 +56,13 @@ export const HomeText = {
         title: 'Welcome!',
         login: 'Login',
         register: 'Register',
+        map: 'Map',
     },
     he: {
         title: 'ברוך הבא!',
         login: 'כניסה',
         register: 'רישום',
+        map: 'מפה',
     },
 }
 
