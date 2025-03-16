@@ -1,41 +1,45 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Card,Button } from 'react-native-elements';
 import {useContext} from 'react';
+// import {HomeText} from '../constants/text';  
 import MyLanguageContext from '../utils/MyLanguageContext';
+import BasicScreen from '../components/screenComponents/BasicScreen';
 
 export default function HomeScreen({ navigation }) {    
 
     const {language} = useContext(MyLanguageContext);
 
     return (
-        <View style={style.container}>
+        <BasicScreen style={style.container} title={HomeText[language].title} subtitle={HomeText[language].subtitle}>
             <Card title={HomeText[language].title}>
                 <Button
-                title={HomeText[language].login}
-                onPress={() => navigation.navigate('Login')}
+                    title={HomeText[language].login}
+                    onPress={() => console.log('Navigating to Login')}
                 />
                 <Button
-                title={HomeText[language].register}
-                onPress={() => navigation.navigate('Register')}
+                    title={HomeText[language].register}
+                    onPress={() => console.log('Navigating to Register')}
                 />
             </Card>
-        </View>
+        </BasicScreen>
     );
 }
 
 const style = StyleSheet.create({
-    container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    container: { flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' },
 });
 
 const HomeText = {
     en: {
-        title: 'Welcome!',
+        title: 'Login',
+        subtitle: 'Always with you - anywhere, anytime',
         login: 'Login',
         register: 'Register',
     },
     he: {
-        title: 'ברוך הבא!',
-        login: 'כניסה',
-        register: 'רישום',
-    },
+        title: 'כניסה',
+        subtitle: 'תמיד איתך - בכל מקום, בכל שעה',
+        login: 'התחבר',
+        register: 'הרשם',
+    }
 }

@@ -1,12 +1,11 @@
-// import { StatusBar } from 'expo-status-bar';
-// import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreens';
 import Register from './src/screens/Register';
 import RegistrationForm from './src/screens/RegistrationForm';
 import CitizenDashboard from './src/screens/CitizenDashboard';
 import SecurityDashboard from './src/screens/SecurityDashboard';
-import SettingsDisplay from './src/screens/SettingsDisplay';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,8 +15,26 @@ import { useState } from 'react';
 import ButtonWrapper from './src/utils/ButtonWrapper';
 
 import MyLanguageContext from './src/utils/MyLanguageContext';
+// import { NavigationText } from './src/constants/text';
 
 const Stack = createStackNavigator();
+
+//   return (
+//     <MyLanguageContext.Provider value={{ language }}>
+//       <NavigationContainer>
+//         <Stack.Navigator initialRouteName="Home">
+//           <Stack.Screen name="Home" component={wrapScreen(HomeScreen)} options={{title: NavigationText[language].home}}/>
+//           <Stack.Screen name="Login" component={wrapScreen(LoginScreen)} options={{title: NavigationText[language].login}}/>
+//           <Stack.Screen name="Register" component={wrapScreen(Register)} options={{title: NavigationText[language].register}}/>
+//           <Stack.Screen name ="RegisterForm" component={wrapScreen(RegistrationForm)} options={{title: NavigationText[language].registerForm}}/>
+//           <Stack.Screen name="Dashboard/Security" component={wrapScreen(SecurityDashboard)} options={{title: NavigationText[language].dashboardSecurity}}/>
+//           <Stack.Screen name="Dashboard/Citizen" component={wrapScreen(CitizenDashboard)} options={{title: NavigationText[language].dashboardCitizen}}/>
+//         </Stack.Navigator>
+//       </NavigationContainer>
+//     </MyLanguageContext.Provider>
+//   );
+// }
+
 
 export default function App() {
 
@@ -27,7 +44,7 @@ export default function App() {
     setLanguage((lang) => (lang === 'en' ? 'he' : 'en'));
   }
 
-  const langueButtonWraper = (Component) => {
+  const wrapScreen = (Component) => {
     return (props) => (
       <ButtonWrapper title={language === 'en' ? 'עברית' : 'English'} onClick={switchLanguage}>
         <Component {...props} />
@@ -35,46 +52,13 @@ export default function App() {
     );
   }
 
-  const switchLangueWraper = (Component) => {
-    return (props) => (
-      <Component {...props} switchLanguage={switchLanguage}/>
-    )
-  }
-
   return (
-    <MyLanguageContext.Provider value={{ language }}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Home" component={langueButtonWraper(HomeScreen)} options={{title: NavigationText[language].home}}/>
-          <Stack.Screen name="Login" component={langueButtonWraper(LoginScreen)} options={{title: NavigationText[language].login}}/>
-          <Stack.Screen name="Register" component={langueButtonWraper(Register)} options={{title: NavigationText[language].register}}/>
-          <Stack.Screen name ="RegisterForm" component={langueButtonWraper(RegistrationForm)} options={{title: NavigationText[language].registerForm}}/>
-          <Stack.Screen name="Dashboard/Security" component={SecurityDashboard} options={{ headerShown: false }}/>
-          <Stack.Screen name="Dashboard/Citizen" component={CitizenDashboard} options={{ headerShown: false }}/>
-          <Stack.Screen name="Settings" component={switchLangueWraper(SettingsDisplay)} options={{title: NavigationText[language].settings}}/>
-        </Stack.Navigator>
-      </NavigationContainer>
-    </MyLanguageContext.Provider>
-  );
-}
-
-const NavigationText = {
-  en: {
-      home: 'Welcome!',
-      login: 'Login',
-      register: 'Register',
-      registerForm: 'Register Form',
-      dashboardSecurity: 'Security Dashboard',
-      dashboardCitizen: 'Citizen Dashboard',
-      settings: 'Settings',
-  },
-  he: {
-      home: '!ברוכים הבאים',
-      login: 'כניסה',
-      register: 'רישום',
-      registerForm: 'טופס הרשמה',
-      dashboardSecurity: 'אבטחה',
-      dashboardCitizen: 'אזרח',
-      settings: 'הגדרות',
-  }
+        <MyLanguageContext.Provider value={{ language }}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Home">
+              <Stack.Screen name="Home" component={wrapScreen(HomeScreen)} options={{headerShown: false} }/>
+            </Stack.Navigator>
+          </NavigationContainer>
+        </MyLanguageContext.Provider>
+      );
 }
