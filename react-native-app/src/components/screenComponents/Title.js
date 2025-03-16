@@ -28,11 +28,18 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     color: '#FEFEFE',
+    margin: 5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)', // Subtle shadow color
+    textShadowOffset: { width: 2, height: 2 }, // Slight offset for depth
+    textShadowRadius: 5, // Smooth shadow effect
   },
   subtitle: {
     fontSize: 18,
     fontWeight: '400',
     color: '#FEFEFE',
-    marginTop: 4,
+    margin: 5,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)', // Subtle shadow for subtitle
+    textShadowOffset: { width: 1, height: 1 }, 
+    textShadowRadius: 3,
   },
 });

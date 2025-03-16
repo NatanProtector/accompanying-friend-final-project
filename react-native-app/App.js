@@ -17,6 +17,10 @@ import ButtonWrapper from './src/utils/ButtonWrapper';
 import MyLanguageContext from './src/utils/MyLanguageContext';
 // import { NavigationText } from './src/constants/text';
 
+// import { I18nManager } from "react-native";
+// I18nManager.forceRTL(true); // Forces the layout to Right-to-Left
+// I18nManager.allowRTL(true); // Allows RTL languages like Hebrew
+
 const Stack = createStackNavigator();
 
 //   return (
