@@ -3,37 +3,41 @@ import { useContext } from 'react';
 
 import MyLanguageContext from '../utils/MyLanguageContext';
 import { Button } from 'react-native-elements';
+import BasicScreen from '../components/screenComponents/BasicScreen';
 
 const logout = (navigation) => {
     return () => {
-        navigation.goBack()
-    }
-}
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }], // Change 'Home' to your actual first screen name
+        });
+    };
+};
+
 
 const navigateToSettings = (navigation) => {
     return () => {
-        navigation.navigate('Settings', { role: 'citizen' })
-    }
-}
+        navigation.navigate('Settings', { role: 'citizen' });
+    };
+};
 
 export default function CitizenDashboard({ navigation }) {
-
     const { language } = useContext(MyLanguageContext);
 
     return (
-        <View>
+        <BasicScreen title={DashboardTextCitizen[language].title}>
             <Button title="Logout" onPress={logout(navigation)} />
             <Button title="Settings" onPress={navigateToSettings(navigation)} />
-            <Text>{DashboardTextCitizen[language].title}</Text>
-        </View>
+            {/* <Text>{DashboardTextCitizen[language].title}</Text> */}
+        </BasicScreen>
     );
 }
 
 const DashboardTextCitizen = {
     en: {
-        title: 'Citizen Dashboard',
+        title: 'Citizen',
     },
     he: {
-        title: 'דשבורד אזרח',
+        title: 'אזרח',
     },
-}
+};

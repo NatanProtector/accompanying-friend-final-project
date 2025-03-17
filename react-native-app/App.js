@@ -1,5 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// import { StatusBar } from 'expo-status-bar';
+// import { View } from 'react-native';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreens';
 import Register from './src/screens/Register';
@@ -12,7 +12,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { useState } from 'react';
 
-import ButtonWrapper from './src/utils/ButtonWrapper';
+import LanguageButtonWrapper from './src/utils/LanguageButtonWrapper';
+import BackButtonWrapper from './src/utils/BackButtonWrapper';
 
 import MyLanguageContext from './src/utils/MyLanguageContext';
 // import { NavigationText } from './src/constants/text';
@@ -48,19 +49,46 @@ export default function App() {
     setLanguage((lang) => (lang === 'en' ? 'he' : 'en'));
   }
 
-  const wrapScreen = (Component) => {
+  const wrapScreenLanguageButton = (Component) => {
     return (props) => (
-      <ButtonWrapper title={language === 'en' ? 'עברית' : 'English'} onClick={switchLanguage}>
+      <LanguageButtonWrapper title={language === 'en' ? 'עברית' : 'English'} onClick={switchLanguage}>
         <Component {...props} />
-      </ButtonWrapper>
+      </LanguageButtonWrapper>
     );
   }
+
+  // const wrapScreenBackButton = (Component) => {
+  //   return (props) => (
+  //     <BackButtonWrapper>
+  //       <Component {...props} />
+  //     </BackButtonWrapper>
+  //   );
+  // };
+
+
+  const wrapScreenWithBoth = (Component) => {
+    return (props) => (
+      <BackButtonWrapper>
+        <LanguageButtonWrapper title={language === 'en' ? 'עברית' : 'English'} onClick={switchLanguage}>
+          <Component {...props} />
+        </LanguageButtonWrapper>
+      </BackButtonWrapper>  
+    );
+  };
+  
+
+  options={headerShown: false}
 
   return (
         <MyLanguageContext.Provider value={{ language }}>
           <NavigationContainer>
             <Stack.Navigator initialRouteName="Home">
-              <Stack.Screen name="Home" component={wrapScreen(HomeScreen)} options={{headerShown: false} }/>
+              <Stack.Screen name="Home" component={wrapScreenLanguageButton(HomeScreen)} options={options}/>
+              <Stack.Screen name="Login" component={wrapScreenWithBoth(LoginScreen)} options={options}/>
+              <Stack.Screen name="Register" component={wrapScreenWithBoth(Register)} options={options}/>
+              <Stack.Screen name ="RegisterForm" component={wrapScreenWithBoth(RegistrationForm)} options={options}/>
+              <Stack.Screen name="Dashboard/Security" component={SecurityDashboard} options={options}/>
+              <Stack.Screen name="Dashboard/Citizen" component={CitizenDashboard} options={options} />
             </Stack.Navigator>
           </NavigationContainer>
         </MyLanguageContext.Provider>

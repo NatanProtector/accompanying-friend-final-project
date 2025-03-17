@@ -1,5 +1,5 @@
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { useContext } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { useContext, useState } from 'react';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screenComponents/BasicScreen';
 import NavButton from '../components/components/NavButton';
@@ -8,39 +8,50 @@ import TextFieldUsername from '../components/components/TextFieldUsername';
 
 export default function HomeScreen({ navigation }) {    
     const { language } = useContext(MyLanguageContext);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     // Set icon alignment based on language
     const iconPosition = language === 'en' ? 'left' : 'right';
+
+    const handleLogin = () => {
+        if (username == '' && password == '') {
+            navigation.navigate('Login');
+        }
+    };
 
     return (
         <BasicScreen title={HomeText[language].title} subtitle={HomeText[language].subtitle}>
             <View style={style.container}>
                 <View style={style.inputContainer}>
-                    <TextFieldPassword
-                        placeholder={HomeText[language].passwordPlaceholder}
-                        iconPosition={iconPosition}
-                        language={language}
-                    />
                     <TextFieldUsername
                         placeholder={HomeText[language].usernamePlaceholder}
                         iconPosition={iconPosition}
                         language={language}
+                        value={username}
+                        onChangeText={setUsername}
+                    />
+                    <TextFieldPassword
+                        placeholder={HomeText[language].passwordPlaceholder}
+                        iconPosition={iconPosition}
+                        language={language}
+                        value={password}
+                        onChangeText={setPassword}
                     />
 
                     <TouchableOpacity onPress={() => console.log('Forgot password clicked')}>
                         <Text style={style.forgotPassword}>{HomeText[language].forgotPassword}</Text>
                     </TouchableOpacity>
-
                 </View>
                 
                 <NavButton
                     title={HomeText[language].login}
-                    onPress={() => console.log('Logging in')}
+                    onPress={handleLogin}
                 />
                 
                 <View style={[style.bottomContainer, { flexDirection: language === 'he' ? 'row-reverse' : 'row' }]}>
                     <Text style={style.registerText}>{HomeText[language].notRegistered} </Text>
-                    <TouchableOpacity onPress={() => console.log('Register here clicked')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                         <Text style={style.registerLink}>{HomeText[language].registerHere}</Text>
                     </TouchableOpacity>
                 </View>
@@ -53,11 +64,11 @@ const style = StyleSheet.create({
     container: { 
         flex: 1, 
         alignItems: 'center', 
-        justifyContent: 'flex-start', // Moves content to the top
+        justifyContent: 'flex-start',
         width: '100%', 
         height: '100%', 
         backgroundColor: 'white',
-        paddingTop: 20, // Adjust this value as needed
+        paddingTop: 20,
     },    
     inputContainer: {
         width: '100%',
@@ -67,14 +78,14 @@ const style = StyleSheet.create({
         backgroundColor: 'white',
     },
     forgotPassword: {
-        marginTop: 1, // Small margin from username input
+        marginTop: 1,
         color: 'blue',
         textDecorationLine: 'underline',
     },
     bottomContainer: {
         position: 'absolute',
         bottom: 20,
-        flexDirection: 'row', // Ensures text and link are in the same line
+        flexDirection: 'row',
         alignItems: 'center',
     },
     registerText: {

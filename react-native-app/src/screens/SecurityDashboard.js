@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { useContext } from 'react';
-
+import { Button } from 'react-native-elements';
 import MyLanguageContext from '../utils/MyLanguageContext';
 
 const logout = (navigation) => {
