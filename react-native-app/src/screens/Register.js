@@ -1,41 +1,67 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Card, Button } from 'react-native-elements';
-
-import { useContext } from 'react';
-
-import { RegisterText } from '../constants/text';
+import React, { useContext } from 'react';
+import { StyleSheet, Text } from 'react-native';
 
 import MyLanguageContext from '../utils/MyLanguageContext';
+import BasicScreen from '../components/screenComponents/BasicScreen';
+
+import NavButton from '../components/components/NavButton';
+
 
 export default function Register({ navigation }) {
+    const { language } = useContext(MyLanguageContext);
 
-  const { language } = useContext(MyLanguageContext);
-
-  return (
-    <View style={CardStyle.container}>
-      <Card>
-        <Text style={TextStyle.container}>{RegisterText[language].title}</Text>
-        <Card.Divider />
-        {/* Citizen Registration Button */}
-        <Button
-          title={RegisterText[language].citizen}
-          onPress={() => navigation.navigate('RegisterForm', { registerAs: 'citizen' })}
-        />
-        {/* Security Registration Button */}
-        <Button
-          title={RegisterText[language].security}
-          onPress={() => navigation.navigate('RegisterForm', { registerAs: 'security' })}
-        />
-      </Card>
-    </View>
-  );
+    return (
+        <BasicScreen title={RegisterText[language].title} language={language}>
+            <Text style={styles.text}>
+                {RegisterText[language].prompt}
+            </Text>
+            
+            
+            <NavButton
+                title={RegisterText[language].citizen}
+                onPress={() => navigation.navigate('RegisterForm', { registerAs: 'citizen' })}
+                // buttonStyle={styles.button}
+            />
+            
+            <NavButton
+                title={RegisterText[language].security}
+                onPress={() => navigation.navigate('RegisterForm', { registerAs: 'security' })}
+                // buttonStyle={styles.button}
+            />
+        </BasicScreen>
+    );
 }
 
-const CardStyle = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+const styles = StyleSheet.create({
+    card: {
+        alignItems: 'center',
+        padding: 20,
+    },
+    text: {
+        fontSize: 18,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    button: {
+        backgroundColor: '#007bff',
+        borderRadius: 5,
+        marginVertical: 5,
+        width: 200,
+    },
+    
 });
 
-const TextStyle = StyleSheet.create({
-  container: { fontSize: 18, marginBottom: 10 },
-});
+const RegisterText = {
+    en: {
+        title: 'Register',
+        prompt: 'You are registering as a..',
+        citizen: 'Register as Citizen',
+        security: 'Register as Security',
+    },
+    he: {
+        title: 'הרשמה',
+        prompt: 'אתם נרשמים בתור..',
+        citizen: 'רישום אזרח',
+        security: 'רישום אבטחה',
+    },
+};

@@ -1,16 +1,46 @@
-import { View, Text } from 'react-native';
 import { useContext } from 'react';
 
-import { DashboardTextCitizen } from '../constants/text';
 import MyLanguageContext from '../utils/MyLanguageContext';
 
-export default function CitizenDashboard({ navigation }) {
+import DashboardScreen from '../components/screenComponents/DashboardScreen'
+import { StyleSheet } from 'react-native';
+import NavButton from '../components/components/NavButton';
 
+// const logout = (navigation) => {
+//     return () => {
+//         navigation.reset({
+//             index: 0,
+//             routes: [{ name: 'Home' }], // Change 'Home' to your actual first screen name
+//         });
+//     };
+// };
+
+
+export default function CitizenDashboard({ navigation }) {
     const { language } = useContext(MyLanguageContext);
 
     return (
-        <View>
-            <Text>{DashboardTextCitizen[language].title}</Text>
-        </View>
+        <DashboardScreen
+            navigation = {navigation}
+        >
+            <NavButton
+                title={text[language].startRide}
+            />
+            <NavButton
+                title={text[language].safeLocations}
+            />
+
+        </DashboardScreen>
     );
+}
+
+const text = {
+    en: {
+        safeLocations: 'Show Safe Locations Near Me',
+        startRide: 'Start Ride'
+    },
+    he: {
+        safeLocations: 'הצגת מקומות בטוחים בקרבתי',
+        startRide: 'התחלת נסיעה'
+    }
 }

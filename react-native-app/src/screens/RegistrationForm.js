@@ -1,86 +1,43 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } from 'react-native';
-import { Card, Button } from 'react-native-elements';
+import { View, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } from 'react-native';
+
 import * as ImagePicker from 'expo-image-picker';
-import { RegistrationFormText } from '../constants/text';
+
+import BasicScreen from '../components/screenComponents/BasicScreen';
 import MyLanguageContext from '../utils/MyLanguageContext';
-import axios from 'axios';
 
-export default function RegistrationForm({ route }) {
+import TextField from '../components/components/TextField';
+import TextFieldPassword from '../components/components/TextFieldPassword';
 
+import NavButton from '../components/components/NavButton';
+
+import { CommonActions } from "@react-navigation/native";
+
+
+export default function RegistrationForm({ route, navigation }) {
   const { language } = useContext(MyLanguageContext);
-  const { registerAs } = route.params || {}; // Get the register type (citizen/security)
+  const { registerAs } = route.params || {};
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+    // Set icon alignment based on language
+    const iconPosition = language === 'en' ? 'left' : 'right';
+
+
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [idPhoto, setIdPhoto] = useState(null);
   const [securityCertificatePhoto, setSecurityCertificatePhoto] = useState(null);
   const [idNumber, setIdNumber] = useState('');
 
-  const validateForm = (language) => {
-    const messages = {
-      firstName: {
-        en: 'First name must be at least 2 characters.',
-        he: 'שם פרטי חייב להיות לפחות 2 תווים.',
-      },
-      lastName: {
-        en: 'Last name must be at least 2 characters.',
-        he: 'שם משפחה חייב להיות לפחות 2 תווים.',
-      },
-      phone: {
-        en: 'Phone number must be exactly 10 digits.',
-        he: 'מספר הטלפון חייב להיות בדיוק 10 ספרות.',
-      },
-      idNumber: {
-        en: 'ID number must be exactly 9 digits.',
-        he: 'מספר תעודת הזהות חייב להיות בדיוק 9 ספרות.',
-      },
-      email: {
-        en: 'Invalid email address.',
-        he: 'כתובת האימייל אינה תקינה.',
-      },
-      idPhoto: {
-        en: 'ID photo is required.',
-        he: 'תמונת תעודת זהות נדרשת.',
-      },
-      securityCertificate: {
-        en: 'Security certificate photo is required.',
-        he: 'תמונת תעודת ביטחון נדרשת.',
-      },
-    };
-  
-    if (!firstName || firstName.length < 2 || firstName.length > 15) {
-      return messages.firstName[language === 'en' ? 'en' : 'he'];
-    }
-    if (!lastName || lastName.length < 2 || lastName.length > 15) {
-      return messages.lastName[language === 'en' ? 'en' : 'he'];
-    }
-    if (!phone || phone.length !== 10 || !(/^\d+$/.test(phone))) {
-      return messages.phone[language === 'en' ? 'en' : 'he'];
-    }
-    if (!idNumber || idNumber.length !== 9 || !(/^\d+$/.test(idNumber))) {
-      return messages.idNumber[language === 'en' ? 'en' : 'he'];
-    }
-    if (!email || !email.includes('@')) {
-      return messages.email[language === 'en' ? 'en' : 'he'];
-    }
-    if (!idPhoto) {
-      return messages.idPhoto[language === 'en' ? 'en' : 'he'];
-    }
-    if (registerAs === 'security' && !securityCertificatePhoto) {
-      return messages.securityCertificate[language === 'en' ? 'en' : 'he'];
-    }
-    return null;
-  };
-  
+  useEffect(() => {
+    I18nManager.forceRTL(language === 'he');
+  }, [language]);
 
   const handleUploadPhoto = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert('Permission required', 'Permission to access media library is required!');
-      return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -91,8 +48,7 @@ export default function RegistrationForm({ route }) {
     });
 
     if (result && !result.canceled && result.assets.length > 0) {
-      setIdPhoto(result.uri);
-      Alert.alert(RegistrationFormText[language].idPhotoConfirmation);
+      setIdPhoto(result.assets[0].uri);
     } else {
       console.log('No image selected');
     }
@@ -113,150 +69,168 @@ export default function RegistrationForm({ route }) {
     });
 
     if (result && !result.canceled && result.assets.length > 0) {
-      setSecurityCertificatePhoto(result.uri);
-      Alert.alert(RegistrationFormText[language].securityCertificateConfirmation);
+      setSecurityCertificatePhoto(result.assets[0].uri);
     } else {
       console.log('No image selected');
     }
   };
 
-  const handleSubmit = async () => {
-    const formData = {
-      firstName,
-      lastName,
-      email,
-      phone,
-      idNumber,
-      idPhoto,
-      securityCertificatePhoto, // Add this field
-    };
-
-    const error = validateForm(language);
-
-    if (error) {
-      Alert.alert(language === 'en' ? 'Validation Error' : 'שגיאת אימות', error);
-      return;
-    }
-
-    console.log('Validated form data:', formData);
-
-    try {
-      const response = await axios.post('http://localhost:3001/api/auth/register', formData);
+  const handleFormSubmit = () => {
+    Alert.alert(
+      RegistrationText[language].successTitle,
+      RegistrationText[language].successMessage,
+      [
+        {
+          text: RegistrationText[language].okButton,
+          onPress: () => {
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+              })
+            );
+          },
+        },
+      ]
+    );
+  };
   
-      if (response.status === 201) {
-        Alert.alert(
-          language === 'en' ? 'Registration Successful' : 'הרשמה הצליחה',
-          language === 'en' ? 'Your details have been submitted!' : 'הפרטים נשלחו בהצלחה!'
-        );
-      } else {
-        Alert.alert(language === 'en' ? 'Error' : 'שגיאה', 'Something went wrong!');
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert(language === 'en' ? 'Error' : 'שגיאה', 'Failed to submit the form.');
-    }
-    };
-
-  useEffect(() => {
-    I18nManager.forceRTL(language === 'he');
-  }, [language]);
 
   return (
-    <View style={styles.container}>
-      <Card>
-        <Text style={styles.title}>{RegistrationFormText[language].title}</Text>
-        <TextInput
-          style={styles.input}
-          placeholder={RegistrationFormText[language].firstName}
-          value={firstName}
-          onChangeText={setFirstName}
+    <BasicScreen title={RegistrationText[language].title} language={language}>
+      <View style={styles.container}>
+        <TextField
+          icon="user"    
+          placeholder={RegistrationText[language].fullName}
+          value={fullName}
+          onChangeText={setFullName}
+          language={language}
+          iconPosition={iconPosition}
         />
-        <TextInput
-          style={styles.input}
-          placeholder={RegistrationFormText[language].lastName}
-          value={lastName}
-          onChangeText={setLastName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder={RegistrationFormText[language].phone}
-          keyboardType="phone-pad"
-          value={phone}
-          onChangeText={setPhone}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder={RegistrationFormText[language].idNumber}
-          keyboardType="numeric"
+        <TextField
+          icon="user"
+          placeholder={RegistrationText[language].idNumber}
           value={idNumber}
           onChangeText={setIdNumber}
+          keyboardType="numeric"
+          language={language}
+          iconPosition={iconPosition}
         />
-        <TextInput
-          style={styles.input}
-          placeholder={RegistrationFormText[language].email}
-          keyboardType="email-address"
+        <TextField
+          icon="phone"
+          placeholder={RegistrationText[language].phone}
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          language={language}
+          iconPosition={iconPosition}
+        />
+        <TextField
+          icon="letter"
+          placeholder={RegistrationText[language].email}
           value={email}
           onChangeText={setEmail}
+          keyboardType="email-address"
+          language={language}
+          iconPosition={iconPosition}
         />
 
+        <TextFieldPassword
+          placeholder={RegistrationText[language].password}
+          value={password}
+          onChangeText={setPassword}
+          iconPosition={iconPosition}
+          language={language}
+        />
+        
         <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
           <Text style={styles.uploadButtonText}>
-            {idPhoto ? RegistrationFormText[language].idPhotoConfirmation : RegistrationFormText[language].isPhotoInvalid}
+            {idPhoto ? RegistrationText[language].uploadedID : RegistrationText[language].uploadID}
           </Text>
         </TouchableOpacity>
 
-        {idPhoto && (
-          <Image source={{ uri: idPhoto }} style={{ width: 100, height: 100, marginBottom: 16 }} />
-        )}
+
+        {idPhoto && <Image source={{ uri: idPhoto }} style={styles.image} />}
 
         {registerAs === 'security' && (
           <>
             <TouchableOpacity style={styles.uploadButton} onPress={handleUploadSecurityCertificate}>
               <Text style={styles.uploadButtonText}>
-                {securityCertificatePhoto ? RegistrationFormText[language].securityCertificateConfirmation : RegistrationFormText[language].isSecurityCertificateInvalid}
+                {securityCertificatePhoto ? RegistrationText[language].uploadedCertificate : RegistrationText[language].uploadCertificate}
               </Text>
             </TouchableOpacity>
-
-            {securityCertificatePhoto && (
-              <Image source={{ uri: securityCertificatePhoto }} style={{ width: 100, height: 100, marginBottom: 16 }} />
-            )}
+            {securityCertificatePhoto && <Image source={{ uri: securityCertificatePhoto }} style={styles.image} />}
           </>
         )}
 
-        <Button title={RegistrationFormText[language].submit} onPress={handleSubmit} />
-      </Card>
-    </View>
+        <NavButton title={RegistrationText[language].submit} onPress={handleFormSubmit} />
+
+      </View>
+    </BasicScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   uploadButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
+    backgroundColor: '#4958FF',
+    width: 200,
+    height: 40,
+    fontSize: 16,
+    margin: 5,
     borderRadius: 5,
-    marginBottom: 16,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   uploadButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },
+  image: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
+    alignSelf: 'center',
+  },
 });
+
+const RegistrationText = {
+  en: {
+    title: 'Registration',
+    fullName: 'Full name',
+    idNumber: 'ID Number',
+    phone: 'Phone',
+    email: 'Email',
+    uploadID: 'Upload ID Photo',
+    uploadedID: 'ID Photo Uploaded',
+    uploadCertificate: 'Upload Security Certificate',
+    uploadedCertificate: 'Certificate Uploaded',
+    submit: 'Submit',
+    password: 'Password',
+    successTitle: 'Success',
+    successMessage: 'Registration successful',
+    okButton: 'OK',
+  },
+  he: {
+    title: 'הרשמה',
+    fullName: 'שם מלא',
+    idNumber: 'תעודת זהות',
+    phone: 'טלפון',
+    email: 'אימייל',
+    uploadID: 'העלה תעודת זהות',
+    uploadedID: 'תעודת זהות הועלתה',
+    uploadCertificate: 'העלה אישור אבטחה',
+    uploadedCertificate: 'אישור הועלה',
+    submit: 'שלח',
+    password: 'סיסמה',
+    successTitle: 'הצלחה',
+    successMessage: 'הרשמה בוצעה בהצלחה',
+    okButton: 'אישור',
+  },
+};
