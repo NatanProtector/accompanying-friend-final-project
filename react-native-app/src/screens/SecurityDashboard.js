@@ -1,34 +1,39 @@
-import { View, Text } from 'react-native';
 import { useContext } from 'react';
-import { Button } from 'react-native-elements';
+
 import MyLanguageContext from '../utils/MyLanguageContext';
 
-const logout = (navigation) => {
-    return () => {navigation.goBack()}
-}
+import DashboardScreen from '../components/screenComponents/DashboardScreen'
 
-const navigateToSettings = (navigation, role) => {
-    return () => {navigation.navigate('Settings', { role: role })}
-}
+import {Text} from 'react-native'
 
-export default function SecurityDashboard({ navigation }) {
+// const logout = (navigation) => {
+//     return () => {
+//         navigation.reset({
+//             index: 0,
+//             routes: [{ name: 'Home' }], // Change 'Home' to your actual first screen name
+//         });
+//     };
+// };
 
+
+// const navigateToSettings = (navigation) => {
+//     return () => {
+//         navigation.navigate('Settings', { role: 'citizen' });
+//     };
+// };
+
+export default function CitizenDashboard({ navigation }) {
     const { language } = useContext(MyLanguageContext);
 
     return (
-        <View>
-            <Button title="Logout" onPress={logout(navigation, 'security')} />
-            <Button title="Settings" onPress={navigateToSettings} />
-            <Text>{DashboardTextSecurity[language].title}</Text>
-        </View>
+        <DashboardScreen
+            navigation = {navigation}
+        >
+            <Text>
+                Security
+            </Text>
+
+        </DashboardScreen>
     );
 }
 
-const DashboardTextSecurity = {
-    en: {
-        title: 'Security Dashboard',
-    },
-    he: {
-        title: 'דשבורד אבטחה',
-    },
-}

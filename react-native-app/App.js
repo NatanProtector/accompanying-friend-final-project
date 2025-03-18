@@ -21,7 +21,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
 
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState('he');
 
   const switchLanguage = () => {
     setLanguage((lang) => (lang === 'en' ? 'he' : 'en'));
