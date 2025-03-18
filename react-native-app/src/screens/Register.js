@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { Card, Button } from 'react-native-elements';
 
 import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screenComponents/BasicScreen';
+
+import NavButton from '../components/components/NavButton';
+
 
 export default function Register({ navigation }) {
     const { language } = useContext(MyLanguageContext);
@@ -15,16 +17,16 @@ export default function Register({ navigation }) {
             </Text>
             
             
-            <Button
+            <NavButton
                 title={RegisterText[language].citizen}
                 onPress={() => navigation.navigate('RegisterForm', { registerAs: 'citizen' })}
-                buttonStyle={styles.button}
+                // buttonStyle={styles.button}
             />
             
-            <Button
+            <NavButton
                 title={RegisterText[language].security}
                 onPress={() => navigation.navigate('RegisterForm', { registerAs: 'security' })}
-                buttonStyle={styles.button}
+                // buttonStyle={styles.button}
             />
         </BasicScreen>
     );

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } from 'react-native';
-import { Button } from 'react-native-elements';
+
 import * as ImagePicker from 'expo-image-picker';
 
 import BasicScreen from '../components/screenComponents/BasicScreen';
@@ -9,8 +9,12 @@ import MyLanguageContext from '../utils/MyLanguageContext';
 import TextField from '../components/components/TextField';
 import TextFieldPassword from '../components/components/TextFieldPassword';
 
+import NavButton from '../components/components/NavButton';
 
-export default function RegistrationForm({ route }) {
+import { CommonActions } from "@react-navigation/native";
+
+
+export default function RegistrationForm({ route, navigation }) {
   const { language } = useContext(MyLanguageContext);
   const { registerAs } = route.params || {};
 
@@ -34,7 +38,6 @@ export default function RegistrationForm({ route }) {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert('Permission required', 'Permission to access media library is required!');
-      return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -71,6 +74,27 @@ export default function RegistrationForm({ route }) {
       console.log('No image selected');
     }
   };
+
+  const handleFormSubmit = () => {
+    Alert.alert(
+      RegistrationText[language].successTitle,
+      RegistrationText[language].successMessage,
+      [
+        {
+          text: RegistrationText[language].okButton,
+          onPress: () => {
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+              })
+            );
+          },
+        },
+      ]
+    );
+  };
+  
 
   return (
     <BasicScreen title={RegistrationText[language].title} language={language}>
@@ -139,7 +163,7 @@ export default function RegistrationForm({ route }) {
           </>
         )}
 
-        <Button title={RegistrationText[language].submit} onPress={() => Alert.alert('Form submitted!')} />
+        <NavButton title={RegistrationText[language].submit} onPress={handleFormSubmit} />
 
       </View>
     </BasicScreen>
@@ -151,13 +175,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   uploadButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
+    backgroundColor: '#4958FF',
+    width: 200,
+    height: 40,
+    fontSize: 16,
+    margin: 5,
     borderRadius: 5,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
   },
   uploadButtonText: {
     color: 'white',
@@ -170,7 +199,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-
 
 const RegistrationText = {
   en: {
@@ -185,6 +213,9 @@ const RegistrationText = {
     uploadedCertificate: 'Certificate Uploaded',
     submit: 'Submit',
     password: 'Password',
+    successTitle: 'Success',
+    successMessage: 'Registration successful',
+    okButton: 'OK',
   },
   he: {
     title: 'הרשמה',
@@ -198,5 +229,8 @@ const RegistrationText = {
     uploadedCertificate: 'אישור הועלה',
     submit: 'שלח',
     password: 'סיסמה',
+    successTitle: 'הצלחה',
+    successMessage: 'הרשמה בוצעה בהצלחה',
+    okButton: 'אישור',
   },
 };

@@ -1,8 +1,11 @@
 import React, { useContext, useState } from "react";
-import { View, Button, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import BasicScreen from "../components/screenComponents/BasicScreen";
 import TextField from "../components/components/TextField";
 import MyLanguageContext from "../utils/MyLanguageContext";
+import NavButton from "../components/components/NavButton";
+import { Alert } from "react-native";
+import { CommonActions } from "@react-navigation/native";
 
 export default function AccountRecoveryScreen({ navigation }) {
   const { language } = useContext(MyLanguageContext);
@@ -12,8 +15,27 @@ export default function AccountRecoveryScreen({ navigation }) {
 
   const handleRecover = () => {
     console.log("Recovering account with:", { id, phone, email });
+  
+    Alert.alert(
+      language === 'en' ? 'Success' : 'הצלחה',
+      text[language].recoveryMessage,
+      [
+        {
+          text: language === 'en' ? 'OK' : 'אישור',
+          onPress: () => {
+            // Reset navigation stack and navigate to Home
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+              })
+            );
+          },
+        },
+      ]
+    );
   };
-
+  
   const iconPosition = language === 'en' ? 'left' : 'right';
 
   return (
@@ -44,7 +66,7 @@ export default function AccountRecoveryScreen({ navigation }) {
           language={language}
         />
         <View style={styles.buttonContainer}>
-          <Button title={text[language].buttonText} onPress={handleRecover} color="#4A90E2" />
+          <NavButton title={text[language].buttonText} onPress={handleRecover} />
         </View>
       </View>
     </BasicScreen>
@@ -60,6 +82,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 8,
     overflow: "hidden",
+    alignItems: "center",
   },
 });
 
@@ -70,6 +93,7 @@ const text = {
       phonePlaceholder: "Enter your phone number",
       emailPlaceholder: "Enter your email",
       buttonText: "Recover Password",
+      recoveryMessage: "Password has been sent to your email",
     },
     he: {
       title: "שחזור חשבון",
@@ -77,5 +101,6 @@ const text = {
       phonePlaceholder: "מספר טלפון",
       emailPlaceholder: "אימייל",
       buttonText: "שחזר סיסמא",
+      recoveryMessage: "הסיסמה נשלחה לאימייל שלך",
     },
   };

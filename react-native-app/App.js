@@ -4,6 +4,7 @@ import Register from './src/screens/Register';
 import RegistrationForm from './src/screens/RegistrationForm';
 import CitizenDashboard from './src/screens/CitizenDashboard';
 import SecurityDashboard from './src/screens/SecurityDashboard';
+import SettingsDisplay from './src/screens/SettingsDisplay';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';

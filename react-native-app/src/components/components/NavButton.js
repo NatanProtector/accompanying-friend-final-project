@@ -6,9 +6,10 @@ const NavButton = ({ title, onPress }) => {
         <Button 
             title={title} 
             onPress={onPress} 
-            buttonStyle={styles.button} // Apply fixed width
-            containerStyle={styles.container} // Ensures layout constraints
+            buttonStyle={styles.button}
+            containerStyle={styles.container}
         />
+
     );
 };
 
@@ -17,9 +18,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#4958FF',
         width: 200,
         height: 40,
+        fontSize: 18,
+        margin: 5,
+        borderRadius: 5,
     },
     container: {
-        width: 200,
+        width: 210,
     }
 });
 

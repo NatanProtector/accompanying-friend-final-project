@@ -5,6 +5,8 @@ import { Button } from 'react-native-elements';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screenComponents/BasicScreen';
 
+import NavButton from '../components/components/NavButton';
+
 // Navigate to a specific screen
 const moveToDashboard = (navigation, screenName) => {
     navigation.navigate(screenName);
@@ -19,15 +21,15 @@ export default function LoginScreen({ navigation }) {
                 <Text style={styles.text} >
                     {LoginText[language].prompt}
                 </Text>
-                <Button
+                <NavButton
                     title={LoginText[language].citizen}
                     onPress={() => moveToDashboard(navigation, 'Dashboard/Citizen')}
-                    buttonStyle={styles.roleButton}
+                    // buttonStyle={styles.roleButton}
                 />
-                <Button
+                <NavButton
                     title={LoginText[language].security}
                     onPress={() => moveToDashboard(navigation, 'Dashboard/Security')}
-                    buttonStyle={styles.roleButton}
+                    // buttonStyle={styles.roleButton}
                 />
             </View>
         </BasicScreen>

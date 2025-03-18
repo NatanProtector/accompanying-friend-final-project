@@ -29,9 +29,6 @@ export default function CitizenDashboard({ navigation }) {
         <DashboardScreen
             navigation = {navigation}
         >
-            <Text>
-                Security
-            </Text>
 
         </DashboardScreen>
     );

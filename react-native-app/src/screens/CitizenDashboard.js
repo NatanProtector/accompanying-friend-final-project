@@ -3,8 +3,8 @@ import { useContext } from 'react';
 import MyLanguageContext from '../utils/MyLanguageContext';
 
 import DashboardScreen from '../components/screenComponents/DashboardScreen'
-
-import {Text} from 'react-native'
+import { StyleSheet } from 'react-native';
+import NavButton from '../components/components/NavButton';
 
 // const logout = (navigation) => {
 //     return () => {
@@ -16,12 +16,6 @@ import {Text} from 'react-native'
 // };
 
 
-// const navigateToSettings = (navigation) => {
-//     return () => {
-//         navigation.navigate('Settings', { role: 'citizen' });
-//     };
-// };
-
 export default function CitizenDashboard({ navigation }) {
     const { language } = useContext(MyLanguageContext);
 
@@ -29,11 +23,24 @@ export default function CitizenDashboard({ navigation }) {
         <DashboardScreen
             navigation = {navigation}
         >
-            <Text>
-                Citizen
-            </Text>
+            <NavButton
+                title={text[language].startRide}
+            />
+            <NavButton
+                title={text[language].safeLocations}
+            />
 
         </DashboardScreen>
     );
 }
 
+const text = {
+    en: {
+        safeLocations: 'Show Safe Locations Near Me',
+        startRide: 'Start Ride'
+    },
+    he: {
+        safeLocations: 'הצגת מקומות בטוחים בקרבתי',
+        startRide: 'התחלת נסיעה'
+    }
+}
