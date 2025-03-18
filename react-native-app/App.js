@@ -1,5 +1,3 @@
-// import { StatusBar } from 'expo-status-bar';
-// import { View } from 'react-native';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreens';
 import Register from './src/screens/Register';
@@ -16,30 +14,10 @@ import LanguageButtonWrapper from './src/utils/LanguageButtonWrapper';
 import BackButtonWrapper from './src/utils/BackButtonWrapper';
 
 import MyLanguageContext from './src/utils/MyLanguageContext';
-// import { NavigationText } from './src/constants/text';
 
-// import { I18nManager } from "react-native";
-// I18nManager.forceRTL(true); // Forces the layout to Right-to-Left
-// I18nManager.allowRTL(true); // Allows RTL languages like Hebrew
+import AccountRecoveryScreen from './src/screens/AccountRecoveryScreen';
 
 const Stack = createStackNavigator();
-
-//   return (
-//     <MyLanguageContext.Provider value={{ language }}>
-//       <NavigationContainer>
-//         <Stack.Navigator initialRouteName="Home">
-//           <Stack.Screen name="Home" component={wrapScreen(HomeScreen)} options={{title: NavigationText[language].home}}/>
-//           <Stack.Screen name="Login" component={wrapScreen(LoginScreen)} options={{title: NavigationText[language].login}}/>
-//           <Stack.Screen name="Register" component={wrapScreen(Register)} options={{title: NavigationText[language].register}}/>
-//           <Stack.Screen name ="RegisterForm" component={wrapScreen(RegistrationForm)} options={{title: NavigationText[language].registerForm}}/>
-//           <Stack.Screen name="Dashboard/Security" component={wrapScreen(SecurityDashboard)} options={{title: NavigationText[language].dashboardSecurity}}/>
-//           <Stack.Screen name="Dashboard/Citizen" component={wrapScreen(CitizenDashboard)} options={{title: NavigationText[language].dashboardCitizen}}/>
-//         </Stack.Navigator>
-//       </NavigationContainer>
-//     </MyLanguageContext.Provider>
-//   );
-// }
-
 
 export default function App() {
 
@@ -56,15 +34,6 @@ export default function App() {
       </LanguageButtonWrapper>
     );
   }
-
-  // const wrapScreenBackButton = (Component) => {
-  //   return (props) => (
-  //     <BackButtonWrapper>
-  //       <Component {...props} />
-  //     </BackButtonWrapper>
-  //   );
-  // };
-
 
   const wrapScreenWithBoth = (Component) => {
     return (props) => (
@@ -84,9 +53,10 @@ export default function App() {
           <NavigationContainer>
             <Stack.Navigator initialRouteName="Home">
               <Stack.Screen name="Home" component={wrapScreenLanguageButton(HomeScreen)} options={options}/>
+              <Stack.Screen name="Recovery" component={wrapScreenWithBoth(AccountRecoveryScreen)} options={options}/>
               <Stack.Screen name="Login" component={wrapScreenWithBoth(LoginScreen)} options={options}/>
               <Stack.Screen name="Register" component={wrapScreenWithBoth(Register)} options={options}/>
-              <Stack.Screen name ="RegisterForm" component={wrapScreenWithBoth(RegistrationForm)} options={options}/>
+              <Stack.Screen name="RegisterForm" component={wrapScreenWithBoth(RegistrationForm)} options={options}/>
               <Stack.Screen name="Dashboard/Security" component={SecurityDashboard} options={options}/>
               <Stack.Screen name="Dashboard/Citizen" component={CitizenDashboard} options={options} />
             </Stack.Navigator>

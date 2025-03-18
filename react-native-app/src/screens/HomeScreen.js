@@ -7,6 +7,20 @@ import TextFieldPassword from '../components/components/TextFieldPassword';
 import TextFieldUsername from '../components/components/TextFieldUsername';
 import { BlurView } from 'expo-blur';
 
+const navigateToRecovery = (navigation, setShowError) => {
+    return () => {
+        setShowError(false)
+        navigation.navigate('Recovery')
+    }
+}
+
+const navigateToRegister = (navigation) => {
+    return () => {
+        navigation.navigate('Register')
+    }
+}
+
+
 export default function HomeScreen({ navigation }) {    
     const { language } = useContext(MyLanguageContext);
     const [username, setUsername] = useState('');
@@ -42,7 +56,7 @@ export default function HomeScreen({ navigation }) {
                         onChangeText={setPassword}
                     />
 
-                    <TouchableOpacity onPress={() => console.log('Forgot password clicked')}>
+                    <TouchableOpacity onPress={navigateToRecovery(navigation, setShowError)}>
                         <Text style={style.forgotPassword}>{HomeText[language].forgotPassword}</Text>
                     </TouchableOpacity>
                 </View>
@@ -54,7 +68,7 @@ export default function HomeScreen({ navigation }) {
                 
                 <View style={[style.bottomContainer, { flexDirection: language === 'he' ? 'row-reverse' : 'row' }]}>
                     <Text style={style.registerText}>{HomeText[language].notRegistered} </Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                    <TouchableOpacity onPress={navigateToRegister(navigation)}>
                         <Text style={style.registerLink}>{HomeText[language].registerHere}</Text>
                     </TouchableOpacity>
                 </View>
@@ -72,10 +86,10 @@ export default function HomeScreen({ navigation }) {
                         <View style={style.errorBox}>
                             <Text style={style.modalText}>{HomeText[language].wrongCredentials}</Text>
                             <TouchableOpacity style={style.closeButton} onPress={() => setShowError(false)}>
-                            <Text style={style.closeButtonText}>{HomeText[language].close}</Text>
+                                <Text style={style.closeButtonText}>{HomeText[language].close}</Text>
                             </TouchableOpacity>
                             <View>
-                                <TouchableOpacity onPress={() => console.log('Forgot password clicked')} style={{marginTop: 30}}>
+                                <TouchableOpacity onPress={navigateToRecovery(navigation, setShowError)} style={{marginTop: 30}}>
                                     <Text style={style.forgotPassword}>{HomeText[language].forgotPassword}</Text>
                                 </TouchableOpacity>
                             </View>
