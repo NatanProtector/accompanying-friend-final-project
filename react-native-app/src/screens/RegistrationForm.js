@@ -1,21 +1,25 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } from 'react-native';
-import { Card, Button } from 'react-native-elements';
+import { View, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } from 'react-native';
+import { Button } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
-// import axios from 'axios';
 
 import BasicScreen from '../components/screenComponents/BasicScreen';
 import MyLanguageContext from '../utils/MyLanguageContext';
-import defineTextAlignStyle from '../utils/defineTextAlignStyle';
+
+import TextField from '../components/components/TextField';
+import TextFieldPassword from '../components/components/TextFieldPassword';
+
 
 export default function RegistrationForm({ route }) {
   const { language } = useContext(MyLanguageContext);
   const { registerAs } = route.params || {};
 
-  const input_style = defineTextAlignStyle(language, styles.input);
+    // Set icon alignment based on language
+    const iconPosition = language === 'en' ? 'left' : 'right';
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [idPhoto, setIdPhoto] = useState(null);
@@ -41,7 +45,7 @@ export default function RegistrationForm({ route }) {
     });
 
     if (result && !result.canceled && result.assets.length > 0) {
-      setIdPhoto(result.uri);
+      setIdPhoto(result.assets[0].uri);
     } else {
       console.log('No image selected');
     }
@@ -62,40 +66,81 @@ export default function RegistrationForm({ route }) {
     });
 
     if (result && !result.canceled && result.assets.length > 0) {
-      setSecurityCertificatePhoto(result.uri);
+      setSecurityCertificatePhoto(result.assets[0].uri);
     } else {
       console.log('No image selected');
     }
   };
 
   return (
-    <BasicScreen title="Registration" language={language}>
+    <BasicScreen title={RegistrationText[language].title} language={language}>
       <View style={styles.container}>
-        <Card>
-          <Text style={styles.title}>Register</Text>
-          <TextInput style={input_style} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
-          <TextInput style={input_style} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
-          <TextInput style={input_style} placeholder="Phone" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
-          <TextInput style={input_style} placeholder="ID Number" keyboardType="numeric" value={idNumber} onChangeText={setIdNumber} />
-          <TextInput style={input_style} placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
+        <TextField
+          icon="user"    
+          placeholder={RegistrationText[language].fullName}
+          value={fullName}
+          onChangeText={setFullName}
+          language={language}
+          iconPosition={iconPosition}
+        />
+        <TextField
+          icon="user"
+          placeholder={RegistrationText[language].idNumber}
+          value={idNumber}
+          onChangeText={setIdNumber}
+          keyboardType="numeric"
+          language={language}
+          iconPosition={iconPosition}
+        />
+        <TextField
+          icon="phone"
+          placeholder={RegistrationText[language].phone}
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          language={language}
+          iconPosition={iconPosition}
+        />
+        <TextField
+          icon="letter"
+          placeholder={RegistrationText[language].email}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          language={language}
+          iconPosition={iconPosition}
+        />
 
-          <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
-            <Text style={styles.uploadButtonText}>{idPhoto ? "ID Photo Uploaded" : "Upload ID Photo"}</Text>
-          </TouchableOpacity>
+        <TextFieldPassword
+          placeholder={RegistrationText[language].password}
+          value={password}
+          onChangeText={setPassword}
+          iconPosition={iconPosition}
+          language={language}
+        />
+        
+        <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
+          <Text style={styles.uploadButtonText}>
+            {idPhoto ? RegistrationText[language].uploadedID : RegistrationText[language].uploadID}
+          </Text>
+        </TouchableOpacity>
 
-          {idPhoto && <Image source={{ uri: idPhoto }} style={styles.image} />}
 
-          {registerAs === 'security' && (
-            <>
-              <TouchableOpacity style={styles.uploadButton} onPress={handleUploadSecurityCertificate}>
-                <Text style={styles.uploadButtonText}>{securityCertificatePhoto ? "Certificate Uploaded" : "Upload Security Certificate"}</Text>
-              </TouchableOpacity>
-              {securityCertificatePhoto && <Image source={{ uri: securityCertificatePhoto }} style={styles.image} />}
-            </>
-          )}
+        {idPhoto && <Image source={{ uri: idPhoto }} style={styles.image} />}
 
-          <Button title="Submit" onPress={() => Alert.alert('Form submitted!')} />
-        </Card>
+        {registerAs === 'security' && (
+          <>
+            <TouchableOpacity style={styles.uploadButton} onPress={handleUploadSecurityCertificate}>
+              <Text style={styles.uploadButtonText}>
+                {securityCertificatePhoto ? RegistrationText[language].uploadedCertificate : RegistrationText[language].uploadCertificate}
+              </Text>
+            </TouchableOpacity>
+            {securityCertificatePhoto && <Image source={{ uri: securityCertificatePhoto }} style={styles.image} />}
+          </>
+        )}
+
+        <Button title={RegistrationText[language].submit} onPress={() => Alert.alert('Form submitted!')} />
+
       </View>
     </BasicScreen>
   );
@@ -104,21 +149,8 @@ export default function RegistrationForm({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
+    width: '100%',
   },
   uploadButton: {
     backgroundColor: '#007BFF',
@@ -138,3 +170,33 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
+
+const RegistrationText = {
+  en: {
+    title: 'Registration',
+    fullName: 'Full name',
+    idNumber: 'ID Number',
+    phone: 'Phone',
+    email: 'Email',
+    uploadID: 'Upload ID Photo',
+    uploadedID: 'ID Photo Uploaded',
+    uploadCertificate: 'Upload Security Certificate',
+    uploadedCertificate: 'Certificate Uploaded',
+    submit: 'Submit',
+    password: 'Password',
+  },
+  he: {
+    title: 'הרשמה',
+    fullName: 'שם מלא',
+    idNumber: 'תעודת זהות',
+    phone: 'טלפון',
+    email: 'אימייל',
+    uploadID: 'העלה תעודת זהות',
+    uploadedID: 'תעודת זהות הועלתה',
+    uploadCertificate: 'העלה אישור אבטחה',
+    uploadedCertificate: 'אישור הועלה',
+    submit: 'שלח',
+    password: 'סיסמה',
+  },
+};

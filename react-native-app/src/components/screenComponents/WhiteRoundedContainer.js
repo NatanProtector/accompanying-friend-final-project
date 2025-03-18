@@ -5,9 +5,11 @@ export default function WhiteRoundedContainer({ children }) {
   return (
     <View style={styles.container}>
       <View style={styles.whiteBox}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {children}
-        </ScrollView>
+        <View style={styles.scrollContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            {children}
+          </ScrollView>
+        </View>
       </View>
     </View>
   );
@@ -28,9 +30,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 45,
     width: '100%',
   },
+  scrollContainer: {
+    width: '100%',
+    height: '90%',
+  },
   scrollContent: {
-    flexGrow: 1,  // Allows the ScrollView to expand if needed
-    alignItems: 'center',
-    justifyContent: 'center',  // Center content if it doesn't fill the screen
+    alignItems: 'center',      // Centers horizontally
+    justifyContent: 'flex-start',  // Sticks content to the top
+    width: '100%',
   },
 });

@@ -1,22 +1,25 @@
-import { StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native';
 import { useContext, useState } from 'react';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screenComponents/BasicScreen';
 import NavButton from '../components/components/NavButton';
 import TextFieldPassword from '../components/components/TextFieldPassword';
 import TextFieldUsername from '../components/components/TextFieldUsername';
+import { BlurView } from 'expo-blur';
 
 export default function HomeScreen({ navigation }) {    
     const { language } = useContext(MyLanguageContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showError, setShowError] = useState(false); // Error state
 
-    // Set icon alignment based on language
     const iconPosition = language === 'en' ? 'left' : 'right';
 
     const handleLogin = () => {
-        if (username == '' && password == '') {
+        if (username === '' && password === '') {
             navigation.navigate('Login');
+        } else {
+            setShowError(true);  // Show the error message with blur
         }
     };
 
@@ -56,6 +59,31 @@ export default function HomeScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            {/* Error Modal with Blur */}
+            <Modal
+                visible={showError}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setShowError(false)}
+                >
+                <BlurView intensity={50} tint="light" style={StyleSheet.absoluteFill}>
+                    <View style={style.modalContainer}>
+                        <View style={style.errorBox}>
+                            <Text style={style.modalText}>{HomeText[language].wrongCredentials}</Text>
+                            <TouchableOpacity style={style.closeButton} onPress={() => setShowError(false)}>
+                            <Text style={style.closeButtonText}>{HomeText[language].close}</Text>
+                            </TouchableOpacity>
+                            <View>
+                                <TouchableOpacity onPress={() => console.log('Forgot password clicked')} style={{marginTop: 30}}>
+                                    <Text style={style.forgotPassword}>{HomeText[language].forgotPassword}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </BlurView>
+            </Modal>
+
         </BasicScreen>
     );
 }
@@ -67,7 +95,6 @@ const style = StyleSheet.create({
         justifyContent: 'flex-start',
         width: '100%', 
         height: '100%', 
-        backgroundColor: 'white',
         paddingTop: 20,
     },    
     inputContainer: {
@@ -75,18 +102,16 @@ const style = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
         marginTop: 20,
-        backgroundColor: 'white',
     },
     forgotPassword: {
-        marginTop: 1,
+        marginTop: -10,
         color: 'blue',
         textDecorationLine: 'underline',
     },
     bottomContainer: {
-        position: 'absolute',
-        bottom: 20,
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop: 20,
     },
     registerText: {
         fontSize: 16,
@@ -95,9 +120,37 @@ const style = StyleSheet.create({
         fontSize: 16,
         color: 'blue',
         textDecorationLine: 'underline',
-    }
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 30,
+    },
+    errorBox: {
+        width: '85%',
+        backgroundColor: 'white',
+        borderRadius: 15,
+        padding: 30,
+        alignItems: 'center',
+        elevation: 10,
+    },
+    modalText: {
+        fontSize: 22,
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    closeButton: {
+        backgroundColor: '#2196F3',
+        paddingVertical: 12,
+        paddingHorizontal: 25,
+        borderRadius: 8,
+    },
+    closeButtonText: {
+        color: 'white',
+        fontSize: 18,
+    },    
 });
-
 const HomeText = {
     en: {
         title: 'Login',
@@ -109,6 +162,8 @@ const HomeText = {
         forgotPassword: 'Forgot password?',
         notRegistered: 'Not registered?',
         registerHere: 'Register here',
+        wrongCredentials: 'Wrong username or password, please try again',
+        close: 'Close',
     },
     he: {
         title: 'כניסה',
@@ -120,5 +175,7 @@ const HomeText = {
         forgotPassword: 'שכחתם סיסמה?',
         notRegistered: 'לא רשום?',
         registerHere: 'הרשם כאן',
+        wrongCredentials: 'שם משתמש או סיסמא לא נכונים, נא לנסות שנית',
+        close: 'סגור',
     }
 };

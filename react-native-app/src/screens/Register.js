@@ -10,20 +10,22 @@ export default function Register({ navigation }) {
 
     return (
         <BasicScreen title={RegisterText[language].title} language={language}>
-            <Card containerStyle={styles.card}>
-                <Text style={styles.text}>{RegisterText[language].prompt}</Text>
-                <Card.Divider />
-                <Button
-                    title={RegisterText[language].citizen}
-                    onPress={() => navigation.navigate('RegisterForm', { registerAs: 'citizen' })}
-                    buttonStyle={styles.button}
-                />
-                <Button
-                    title={RegisterText[language].security}
-                    onPress={() => navigation.navigate('RegisterForm', { registerAs: 'security' })}
-                    buttonStyle={styles.button}
-                />
-            </Card>
+            <Text style={styles.text}>
+                {RegisterText[language].prompt}
+            </Text>
+            
+            
+            <Button
+                title={RegisterText[language].citizen}
+                onPress={() => navigation.navigate('RegisterForm', { registerAs: 'citizen' })}
+                buttonStyle={styles.button}
+            />
+            
+            <Button
+                title={RegisterText[language].security}
+                onPress={() => navigation.navigate('RegisterForm', { registerAs: 'security' })}
+                buttonStyle={styles.button}
+            />
         </BasicScreen>
     );
 }
@@ -39,8 +41,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     button: {
-        marginVertical: 10,
+        backgroundColor: '#007bff',
+        borderRadius: 5,
+        marginVertical: 5,
+        width: 200,
     },
+    
 });
 
 const RegisterText = {
@@ -52,7 +58,7 @@ const RegisterText = {
     },
     he: {
         title: 'הרשמה',
-        prompt: 'אתה נרשם בתור..',
+        prompt: 'אתם נרשמים בתור..',
         citizen: 'רישום אזרח',
         security: 'רישום אבטחה',
     },

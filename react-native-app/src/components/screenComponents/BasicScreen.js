@@ -3,11 +3,12 @@ import BasicBlueScreen from "./BasicBlueScreen";
 import { Text, View } from "react-native";
 import TitleContainer from "./TitleContainer";
 import Title from "./Title";
+import { BackgroundImage } from "react-native-elements/dist/config";
 
 export default function BasicScreen({ children, title,subtitle, language }) {
     return (
         <BasicBlueScreen>
-            <View style={{ flex: 1, width: "100%" }}>
+            <View style={{ flex: 1, width: "100%", }}>
                 <TitleContainer>
                     <Title
                         title={title}
@@ -17,6 +18,7 @@ export default function BasicScreen({ children, title,subtitle, language }) {
                 <WhiteRoundedContainer>
                     {children}
                 </WhiteRoundedContainer>
+
             </View>
         </BasicBlueScreen>
     );

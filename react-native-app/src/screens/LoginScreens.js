@@ -16,6 +16,9 @@ export default function LoginScreen({ navigation }) {
     return (
         <BasicScreen title={LoginText[language].title} language={language}>
             <View style={styles.buttonGroup}>
+                <Text style={styles.text} >
+                    {LoginText[language].prompt}
+                </Text>
                 <Button
                     title={LoginText[language].citizen}
                     onPress={() => moveToDashboard(navigation, 'Dashboard/Citizen')}
@@ -34,13 +37,18 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
     buttonGroup: {
         flexDirection: 'column',
+        alignItems: 'center',
         gap: 10,
     },
     roleButton: {
         backgroundColor: '#007bff',
         borderRadius: 5,
         marginVertical: 5,
+        width: 200,
     },
+    text: {
+        fontSize: 18,
+    }
 });
 
 const LoginText = {
