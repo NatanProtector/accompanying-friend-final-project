@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import axios from "axios";
 
 const MapScreen = () => {
   const [region, setRegion] = useState(null);
+  const idNumber = "111111111"; // Replace with actual user's idNumber
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -17,16 +19,33 @@ const MapScreen = () => {
       const location = await Location.getCurrentPositionAsync({});
       console.log("User Location:", location.coords);
 
-      setRegion({
-        latitude: location.coords.latitude || 32.0853, // Default to Tel Aviv
-        longitude: location.coords.longitude || 34.7818,
+      const newRegion = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
-      });
+      };
+      setRegion(newRegion);
+
+      // Send location to the backend using idNumber
+      await updateUserLocation(location.coords.latitude, location.coords.longitude);
     };
 
     getLocationPermission();
   }, []);
+
+  // Function to update user location in the database
+  const updateUserLocation = async (latitude, longitude) => {
+    try {
+      const response = await axios.put(
+        `http://192.168.144.21:3001/api/auth/update-location/${idNumber}`,
+        { latitude, longitude }
+      );
+      console.log("Location updated:", response.data);
+    } catch (error) {
+      console.error("Error updating location:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -47,32 +66,3 @@ const styles = StyleSheet.create({
 });
 
 export default MapScreen;
-
-
-// import React from "react";
-// import { View, StyleSheet } from "react-native";
-// import MapView, { Marker } from "react-native-maps";
-
-// const MapScreen = () => {
-//   const defaultRegion = {
-//     latitude: 32.0853,
-//     longitude: 34.7818,
-//     latitudeDelta: 0.01,
-//     longitudeDelta: 0.01,
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <MapView style={styles.map} region={defaultRegion}>
-//         <Marker coordinate={defaultRegion} title="Test Location" />
-//       </MapView>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, width: "100%", height: 500 },
-//   map: { flex: 1, width: "100%", height: "100%" }, 
-// });
-
-// export default MapScreen;

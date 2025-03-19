@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   idPhoto: { type: String, required: false }, // Temporarily stored
   registrationStatus: { type: String, default: 'pending' }, // Default status
+  location: {
+    type: { type: String, enum: ["Point"], default: "Point" }, // Required for GeoJSON
+    coordinates: { type: [Number], default: [0, 0] }, // [longitude, latitude]
+  },
 });
 
 const Users = mongoose.model('Users', userSchema, 'Users');

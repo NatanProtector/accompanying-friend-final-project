@@ -35,4 +35,78 @@ router.post('/register', async (req, res) => {
   }
 });
 
+
+// Fetch user by email to get idNumber and _id
+router.get("/get-user/:email", async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ idNumber: user.idNumber, _id: user._id });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+});
+
+// Fetch user by _id (MongoDB ObjectId)
+router.get("/get-user-by-id/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ idNumber: user.idNumber, _id: user._id });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+});
+
+// Fetch user by idNumber
+router.get("/get-user-by-idNumber/:idNumber", async (req, res) => {
+  const { idNumber } = req.params;
+
+  try {
+    const user = await User.findOne({ idNumber });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ idNumber: user.idNumber, _id: user._id });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+});
+
+// Update user location using idNumber
+router.put("/update-location/:idNumber", async (req, res) => {
+  const { idNumber } = req.params;
+  const { latitude, longitude } = req.body;
+
+  if (!latitude || !longitude) {
+    return res.status(400).json({ message: "Latitude and longitude are required." });
+  }
+
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { idNumber }, // Find user by idNumber
+      { $set: { "location.coordinates": [longitude, latitude] } }, // Store as [longitude, latitude]
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.json({ message: "Location updated successfully", user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating location", error });
+  }
+});
 module.exports = router;
