@@ -23,7 +23,7 @@ export default function TextFieldPassword({ value, onChangeText, placeholder, on
         ]}
         inputStyle={[styles.input, { textAlign: align }]}
         placeholderTextColor="gray"
-        onFocus={() => { onFocus(); setIsFocused(true)}}
+        onFocus={() => { onFocus && onFocus(); setIsFocused(true)}}
         onBlur={() => setIsFocused(false)}
         errorStyle={[styles.error, { textAlign: align}]}
         errorMessage={errorMessage}
