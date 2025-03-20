@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Input } from "react-native-elements";
 import { FontAwesome } from "@expo/vector-icons";
 
-export default function TextFieldPassword({ value, onChangeText, placeholder, iconPosition, language }) {
+export default function TextFieldPassword({ value, onChangeText, placeholder, onFocus, iconPosition, errorMessage, language }) {
   const [isFocused, setIsFocused] = useState(false);
   const align = language === "he" ? "right" : "left";
 
@@ -23,8 +23,10 @@ export default function TextFieldPassword({ value, onChangeText, placeholder, ic
         ]}
         inputStyle={[styles.input, { textAlign: align }]}
         placeholderTextColor="gray"
-        onFocus={() => setIsFocused(true)}
+        onFocus={() => { onFocus(); setIsFocused(true)}}
         onBlur={() => setIsFocused(false)}
+        errorStyle={[styles.error, { textAlign: align}]}
+        errorMessage={errorMessage}
       />
     </View>
   );
@@ -58,4 +60,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
   },
+  error: { color: "red", fontSize: 14 },
 });

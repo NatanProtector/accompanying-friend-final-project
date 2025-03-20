@@ -47,7 +47,7 @@ export default function App() {
   };
   
 
-  options={headerShown: false}
+  options={headerShown: false, cardStyle: { backgroundColor: '#FEFEFE' }}
 
   return (
         <MyLanguageContext.Provider value={{ language }}>

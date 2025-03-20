@@ -8,7 +8,7 @@ import { BackgroundImage } from "react-native-elements/dist/config";
 export default function BasicScreen({ children, title,subtitle, language }) {
     return (
         <BasicBlueScreen>
-            <View style={{ flex: 1, width: "100%", }}>
+            <View style={{ flex: 1, width: "100%", borderTopLeftRadius: 45, borderTopRightRadius: 45, overflow: 'hidden'}}>
                 <TitleContainer>
                     <Title
                         title={title}
