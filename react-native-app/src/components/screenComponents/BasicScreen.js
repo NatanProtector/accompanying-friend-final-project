@@ -1,9 +1,8 @@
 import WhiteRoundedContainer from "./WhiteRoundedContainer";
 import BasicBlueScreen from "./BasicBlueScreen";
-import { Text, View } from "react-native";
+import {View } from "react-native";
 import TitleContainer from "./TitleContainer";
 import Title from "./Title";
-import { BackgroundImage } from "react-native-elements/dist/config";
 
 export default function BasicScreen({ children, title,subtitle, language }) {
     return (

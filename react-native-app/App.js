@@ -4,6 +4,7 @@ import Register from './src/screens/Register';
 import RegistrationForm from './src/screens/RegistrationForm';
 import CitizenDashboard from './src/screens/CitizenDashboard';
 import SecurityDashboard from './src/screens/SecurityDashboard';
+import MapScreen from './src/screens/MapScreen';
 import SettingsDisplay from './src/screens/SettingsDisplay';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -27,6 +28,18 @@ export default function App() {
   const switchLanguage = () => {
     setLanguage((lang) => (lang === 'en' ? 'he' : 'en'));
   }
+
+  /**Note:
+   * Incosistent use of wrapScreenWithBackButton and wrapScreenLanguageButton,
+   */
+
+  const wrapScreenWithBackButton = (Component) => {
+    return (props) => (
+      <BackButtonWrapper>
+        <Component {...props} />
+      </BackButtonWrapper>
+    );
+  };
 
   const wrapScreenLanguageButton = (Component) => {
     return (props) => (
@@ -60,6 +73,9 @@ export default function App() {
               <Stack.Screen name="RegisterForm" component={wrapScreenWithBoth(RegistrationForm)} options={options}/>
               <Stack.Screen name="Dashboard/Security" component={SecurityDashboard} options={options}/>
               <Stack.Screen name="Dashboard/Citizen" component={CitizenDashboard} options={options} />
+              <Stack.Screen name="Settings" component={wrapScreenWithBackButton(SettingsDisplay)} options={options} />
+              <Stack.Screen name="StartRide" component={wrapScreenWithBackButton(MapScreen)} options={options}/>
+              <Stack.Screen name="SafeLocations" component={wrapScreenWithBackButton(MapScreen)} options={options}/>
             </Stack.Navigator>
           </NavigationContainer>
         </MyLanguageContext.Provider>

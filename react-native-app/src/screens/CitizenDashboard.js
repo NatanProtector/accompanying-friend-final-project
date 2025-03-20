@@ -25,9 +25,11 @@ export default function CitizenDashboard({ navigation }) {
         >
             <NavButton
                 title={text[language].startRide}
+                onPress={() => navigation.navigate('StartRide')}
             />
             <NavButton
                 title={text[language].safeLocations}
+                onPress={() => navigation.navigate('SafeLocations')}
             />
 
         </DashboardScreen>
