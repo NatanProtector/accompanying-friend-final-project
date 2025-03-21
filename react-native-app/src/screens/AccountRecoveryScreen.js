@@ -2,7 +2,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import React, { useContext } from "react";
 import { View, StyleSheet, Alert } from "react-native";
-import BasicScreen from "../components/screenComponents/BasicScreen";
+import BasicScreen from '../components/screen_components/BasicScreen';
 import TextField from "../components/components/TextField";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import NavButton from "../components/components/NavButton";

@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native';
 import { useContext, useState } from 'react';
 import MyLanguageContext from '../utils/MyLanguageContext';
-import BasicScreen from '../components/screenComponents/BasicScreen';
+import BasicScreen from '../components/screen_components/BasicScreen';
 import NavButton from '../components/components/NavButton';
 import TextFieldPassword from '../components/components/TextFieldPassword';
 import TextFieldUsername from '../components/components/TextFieldUsername';

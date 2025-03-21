@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import MapScreen from './MapScreen';
-import BasicScreen from '../components/screenComponents/BasicScreen';
+import BasicScreen from '../components/screen_components/BasicScreen';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import { useContext } from 'react';
 

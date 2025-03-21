@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import BasicScreen from '../components/screenComponents/BasicScreen';
+import BasicScreen from '../components/screen_components/BasicScreen';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import TextField from '../components/components/TextField';
 import TextFieldPassword from '../components/components/TextFieldPassword';

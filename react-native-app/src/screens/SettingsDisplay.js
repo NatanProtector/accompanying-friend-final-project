@@ -2,11 +2,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import CategoryTemplate from './SettingsCategories/CategoryTemplate';
 import { useContext } from 'react';
 import MyLanguageContext from '../utils/MyLanguageContext';
-import { Button } from 'react-native-elements';
 
 export default function SettingsDisplay({ route }) {
   const { language } = useContext(MyLanguageContext);
-  const { role } = route.params || {}; // Get the Settings Display type (citizen/security)
 
   return (
     <View style={styles.container}>

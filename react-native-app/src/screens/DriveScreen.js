@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import BasicScreenTemplate from '../components/screenComponents/BasicScreenTemplate';
+import BasicScreenTemplate from '../components/screen_components/BasicScreenTemplate';
+import NavigationHeader from '../components/screen_components/NavigationHeader';
 import MapScreen from './MapScreen';
 
 export default function DriveScreen() {
@@ -7,7 +8,10 @@ export default function DriveScreen() {
     return (
         <BasicScreenTemplate 
         
-        HeaderComponent={<Text>Test</Text>}
+        HeaderComponent={
+            /* Navigation Header */
+            <NavigationHeader/>
+        }
         
         FooterComponent={
 
