@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
 
 export default MapScreen;
 
-
 // import React from "react";
 // import { View, StyleSheet } from "react-native";
 // import MapView, { Marker } from "react-native-maps";

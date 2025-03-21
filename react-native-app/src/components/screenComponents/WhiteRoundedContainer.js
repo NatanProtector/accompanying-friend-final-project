@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   whiteBox: {
     flex: 1,  // Fills the available space
     backgroundColor: '#FEFEFE',
-    padding: 20,
+    // padding: 20,
     borderTopLeftRadius: 45,
     borderTopRightRadius: 45,
     width: '100%',
@@ -33,10 +33,13 @@ const styles = StyleSheet.create({
   scrollContainer: {
     width: '100%',
     height: '90%',
+    // backgroundColor:'purple'
+
   },
   scrollContent: {
     alignItems: 'center',      // Centers horizontally
     justifyContent: 'flex-start',  // Sticks content to the top
     width: '100%',
+    height: '100%',
   },
 });

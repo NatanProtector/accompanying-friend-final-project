@@ -4,8 +4,9 @@ import Register from './src/screens/Register';
 import RegistrationForm from './src/screens/RegistrationForm';
 import CitizenDashboard from './src/screens/CitizenDashboard';
 import SecurityDashboard from './src/screens/SecurityDashboard';
-import MapScreen from './src/screens/MapScreen';
 import SettingsDisplay from './src/screens/SettingsDisplay';
+import DriveScreen from './src/screens/DriveScreen';
+import SafeLocationScreen from './src/screens/SafeLocationScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -73,9 +74,9 @@ export default function App() {
               <Stack.Screen name="RegisterForm" component={wrapScreenWithBoth(RegistrationForm)} options={options}/>
               <Stack.Screen name="Dashboard/Security" component={SecurityDashboard} options={options}/>
               <Stack.Screen name="Dashboard/Citizen" component={CitizenDashboard} options={options} />
-              <Stack.Screen name="Settings" component={wrapScreenWithBackButton(SettingsDisplay)} options={options} />
-              <Stack.Screen name="StartRide" component={wrapScreenWithBackButton(MapScreen)} options={options}/>
-              <Stack.Screen name="SafeLocations" component={wrapScreenWithBackButton(MapScreen)} options={options}/>
+              <Stack.Screen name="Settings" component={wrapScreenWithBoth(SettingsDisplay)} options={options} />
+              <Stack.Screen name="StartRide" component={wrapScreenWithBackButton(DriveScreen)} options={options}/>
+              <Stack.Screen name="SafeLocations" component={wrapScreenWithBackButton(SafeLocationScreen)} options={options}/>
             </Stack.Navigator>
           </NavigationContainer>
         </MyLanguageContext.Provider>
