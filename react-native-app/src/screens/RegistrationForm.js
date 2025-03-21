@@ -85,7 +85,6 @@ export default function RegistrationForm({ route, navigation }) {
     try {
       await SubmitRegisterForm(values);
   
-      // Only alert if submit succeeds
       Alert.alert(
         RegistrationText[language].successTitle,
         RegistrationText[language].successMessage,

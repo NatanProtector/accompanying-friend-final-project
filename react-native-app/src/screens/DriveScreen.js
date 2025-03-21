@@ -1,12 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import BasicScreenTemplate from '../components/screenComponents/BasicScreenTemplate';
 import MapScreen from './MapScreen';
-// import BasicNavigationScreen from '../components/screenComponents/BasicNavigationScreen';
-// import MyLanguageContext from '../utils/MyLanguageContext';
-// import { useContext } from 'react';
 
 export default function DriveScreen() {
-    // const { language } = useContext(MyLanguageContext);
 
     return (
         <BasicScreenTemplate 

@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     elevation: 3, // Android shadow
   },
   inputFocused: {
-    borderColor: "#4A90E2", // Blue border on focus
+    borderColor: "#4A90E2",
   },
   input: {
     fontSize: 16,

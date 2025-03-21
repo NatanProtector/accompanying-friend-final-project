@@ -1,5 +1,5 @@
 import HomeScreen from './src/screens/HomeScreen';
-import LoginScreen from './src/screens/LoginScreens';
+import LoginScreen from './src/screens/LoginScreen';
 import Register from './src/screens/Register';
 import RegistrationForm from './src/screens/RegistrationForm';
 import CitizenDashboard from './src/screens/CitizenDashboard';

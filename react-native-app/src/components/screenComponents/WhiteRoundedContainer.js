@@ -17,28 +17,26 @@ export default function WhiteRoundedContainer({ children }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 8,  // Takes the remaining space
+    flex: 7.8,  
     justifyContent: 'flex-end',
     alignItems: 'center',
     width: '100%',
   },
   whiteBox: {
-    flex: 1,  // Fills the available space
+    flex: 1, 
     backgroundColor: '#FEFEFE',
-    // padding: 20,
-    borderTopLeftRadius: 45,
-    borderTopRightRadius: 45,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
     width: '100%',
+    overflow: 'hidden',
   },
   scrollContainer: {
     width: '100%',
     height: '90%',
-    // backgroundColor:'purple'
-
   },
   scrollContent: {
-    alignItems: 'center',      // Centers horizontally
-    justifyContent: 'flex-start',  // Sticks content to the top
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     width: '100%',
     height: '100%',
   },

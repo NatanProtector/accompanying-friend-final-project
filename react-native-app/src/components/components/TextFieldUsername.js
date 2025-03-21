@@ -1,5 +1,5 @@
 import React from "react";
-import TextField from "./TextField"; // Adjust the path based on your project structure
+import TextField from "./TextField";
 
 export default function TextFieldUsername({ value, onChangeText, placeholder, iconPosition, language }) {
   return (
@@ -7,7 +7,7 @@ export default function TextFieldUsername({ value, onChangeText, placeholder, ic
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}
-      icon="user"                 // Using the 'user' icon
+      icon="user"
       iconPosition={iconPosition}
       language={language}
     />

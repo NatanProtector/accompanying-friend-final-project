@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import MyLanguageContext from "./MyLanguageContext"; // Import context
+import MyLanguageContext from "./MyLanguageContext";
 
 export default function BackButtonWrapper({ children }) {
   const navigation = useNavigation();
-  const { language } = useContext(MyLanguageContext); // Get language from context
+  const { language } = useContext(MyLanguageContext);
 
   return (
     <View style={styles.container}>

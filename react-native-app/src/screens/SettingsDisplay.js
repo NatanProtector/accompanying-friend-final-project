@@ -11,6 +11,10 @@ export default function SettingsDisplay({ route }) {
   return (
     <View style={styles.container}>
       
+      <Text style={{fontSize: 30, margin: 15}}>
+        {settings_text[language].title}
+      </Text>
+
       <CategoryTemplate title={settings_text[language].update}>
 
         <Text>
@@ -25,6 +29,7 @@ export default function SettingsDisplay({ route }) {
 
 const settings_text = {
   en: {
+    title: "Settings",
     language_title: "Language",
     change: "Change Language: ",
     languageButton: "עברית",
@@ -32,6 +37,7 @@ const settings_text = {
     update: 'Update personal details'
   },
   he: {
+    title: "הגדרות",
     language_title: "שפה",
     change: "שנה שפה: ",
     languageButton: "english",

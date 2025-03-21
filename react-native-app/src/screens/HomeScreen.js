@@ -38,7 +38,7 @@ export default function HomeScreen({ navigation }) {
     };
 
     return (
-        <BasicScreen title={HomeText[language].title} subtitle={HomeText[language].subtitle}>
+        <BasicScreen title={HomeText[language].title} language={language}>
             <View style={style.container}>
                 <View style={style.inputContainer}>
                     <TextFieldUsername
@@ -168,7 +168,6 @@ const style = StyleSheet.create({
 const HomeText = {
     en: {
         title: 'Login',
-        subtitle: 'Always with you - anywhere, anytime',
         login: 'Login',
         register: 'Register',
         passwordPlaceholder: 'Password',
@@ -181,7 +180,6 @@ const HomeText = {
     },
     he: {
         title: 'כניסה',
-        subtitle: 'תמיד איתך - בכל מקום, בכל שעה',
         login: 'כניסה',
         register: 'הרשם',
         passwordPlaceholder: 'סיסמה',

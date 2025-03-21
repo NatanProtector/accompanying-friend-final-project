@@ -6,9 +6,9 @@ import TitleContainer from "./TitleContainer";
 export default function BasicScreenTemplate({ children, HeaderComponent, FooterComponent }) {
     return (
         <BasicBlueScreen>
-            <View style={{ flex: 1, width: "100%", borderTopLeftRadius: 45, borderTopRightRadius: 45, overflow: 'hidden' }}>
-                <TitleContainer>
-                    {/* Custom Navigation Component (optional) */}
+            <View style={{ flex: 1, width: "100%",}}>
+                <TitleContainer >
+        
                     {HeaderComponent}
 
                 </TitleContainer>
@@ -26,8 +26,3 @@ export default function BasicScreenTemplate({ children, HeaderComponent, FooterC
         </BasicBlueScreen>
     );
 }
-
-const defaultSubtitle = {
-    en: 'Always with you - anywhere, anytime',
-    he: 'תמיד איתך - בכל מקום, בכל שעה',
-};

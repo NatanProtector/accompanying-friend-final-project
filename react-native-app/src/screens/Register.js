@@ -1,11 +1,8 @@
 import React, { useContext } from 'react';
 import { StyleSheet, Text } from 'react-native';
-
 import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screenComponents/BasicScreen';
-
 import NavButton from '../components/components/NavButton';
-
 
 export default function Register({ navigation }) {
     const { language } = useContext(MyLanguageContext);

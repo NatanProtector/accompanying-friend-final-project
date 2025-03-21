@@ -6,10 +6,10 @@ import Title from "./Title";
 
 import BasicScreenTemplate from "./BasicScreenTemplate";
 
-export default function BasicScreen({ children, title, language }) {
+export default function BasicScreen({ children, title, language, subtitle }) {
     return (
         <BasicScreenTemplate
-            HeaderComponent={<Title title={title} subtitle={defaultSubtitle[language]} />}
+            HeaderComponent={<Title title={title} subtitle={subtitle || defaultSubtitle[language]} />}
         >
             {children}
         </BasicScreenTemplate>

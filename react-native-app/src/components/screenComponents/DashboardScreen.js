@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import getDayPeriod from '../../utils/getDayPeriod'
 
 import MyLanguageContext from '../../utils/MyLanguageContext';
-import { Button } from 'react-native-elements';
+// import { Button } from 'react-native-elements';
 import BasicScreen from './BasicScreen';
 import NavButton from '../components/NavButton';
 
@@ -42,7 +42,7 @@ export default function DashboardScreen({ children, navigation }) {
 
 
     return (
-        <BasicScreen title={DashboardText[language][title_time]} subtitle={DashboardText[language].subtitle}>
+        <BasicScreen title={DashboardText[language][title_time]} subtitle={DashboardText[language].subtitle} language={language}>
             {children}
             <NavButton title={DashboardText[language].Settings} onPress={navigateToSettings(navigation)} />
             <NavButton title={DashboardText[language].logout} onPress={logout(navigation)} />

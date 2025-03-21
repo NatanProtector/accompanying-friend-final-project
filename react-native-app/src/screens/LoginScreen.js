@@ -1,10 +1,7 @@
 import React, { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Button } from 'react-native-elements';
-
 import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screenComponents/BasicScreen';
-
 import NavButton from '../components/components/NavButton';
 
 // Navigate to a specific screen
