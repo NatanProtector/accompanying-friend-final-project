@@ -4,22 +4,15 @@ import {View } from "react-native";
 import TitleContainer from "./TitleContainer";
 import Title from "./Title";
 
-export default function BasicScreen({ children, title,subtitle, language }) {
-    return (
-        <BasicBlueScreen>
-            <View style={{ flex: 1, width: "100%", borderTopLeftRadius: 45, borderTopRightRadius: 45, overflow: 'hidden'}}>
-                <TitleContainer>
-                    <Title
-                        title={title}
-                        subtitle={subtitle || defaultSubtitle[language]}
-                    />
-                </TitleContainer>
-                <WhiteRoundedContainer>
-                    {children}
-                </WhiteRoundedContainer>
+import BasicScreenTemplate from "./BasicScreenTemplate";
 
-            </View>
-        </BasicBlueScreen>
+export default function BasicScreen({ children, title, language }) {
+    return (
+        <BasicScreenTemplate
+            HeaderComponent={<Title title={title} subtitle={defaultSubtitle[language]} />}
+        >
+            {children}
+        </BasicScreenTemplate>
     );
 }
 
