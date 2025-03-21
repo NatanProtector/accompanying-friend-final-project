@@ -10,40 +10,33 @@ export default function SettingsDisplay({ route }) {
 
   return (
     <View style={styles.container}>
-      {/* <CategoryTemplate title={settings_text_citizen_language_category[language].title}> */}
-        <Text style={styles.text} >{settings_text[language].msg}</Text>
-        {/* <Button
-          title={settings_text_citizen_language_category[language].languageButton}
-          onPress={() => { console.log("pressed") }}
-          buttonStyle={styles.button}
-        />
-         <View style={styles.languageChangeContainer}>
-          <Text style={styles.languageChangeText}>
-            {settings_text_citizen_language_category[language].change}
-          </Text>
-          <Button
-            title={settings_text_citizen_language_category[language].languageButton}
-            onPress={switchLanguage}
-            buttonStyle={styles.languageButton}
-          />
-        </View> */}
-      {/* </CategoryTemplate>  */}
+      
+      <CategoryTemplate title={settings_text[language].update}>
+
+        <Text>
+          {settings_text[language].msg}
+        </Text>
+
+      </CategoryTemplate>
+
     </View>
   );
 }
 
 const settings_text = {
   en: {
-    title: "Language",
+    language_title: "Language",
     change: "Change Language: ",
     languageButton: "עברית",
-    msg: "No settings for now"
+    msg: "No settings for now",
+    update: 'Update personal details'
   },
   he: {
-    title: "שפה",
+    language_title: "שפה",
     change: "שנה שפה: ",
     languageButton: "english",
-    msg: "אין הגדרות בניתיים"
+    msg: "אין הגדרות בניתיים",
+    update: 'עדכון פרטים אישיים'
   }
 };
 
@@ -55,6 +48,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    height: '80%',
+    // content goes from the top to the bottom
+    justifyContent: 'flex-start',
   },
   text: {
     fontSize: 18,

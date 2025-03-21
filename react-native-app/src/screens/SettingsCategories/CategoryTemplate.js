@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     overflow: 'hidden',
+    width: '100%',
   },
   categoryHeader: {
     backgroundColor: '#f0f0f0',
