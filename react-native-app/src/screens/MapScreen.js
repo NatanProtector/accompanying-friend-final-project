@@ -42,8 +42,8 @@ const MapScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: "100%", height: 500 },
-  map: { width: "100%", height: "100%" },
+  container: { flex: 1, width: "100%", height: 630 },
+  map: { width: "100%", height: "100%"},
 });
 
 export default MapScreen;
