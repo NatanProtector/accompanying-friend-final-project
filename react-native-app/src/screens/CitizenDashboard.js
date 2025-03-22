@@ -1,20 +1,7 @@
 import { useContext } from 'react';
-
 import MyLanguageContext from '../utils/MyLanguageContext';
-
-import DashboardScreen from '../components/screenComponents/DashboardScreen'
-import { StyleSheet } from 'react-native';
+import DashboardScreen from '../components/screen_components/DashboardScreen'
 import NavButton from '../components/components/NavButton';
-
-// const logout = (navigation) => {
-//     return () => {
-//         navigation.reset({
-//             index: 0,
-//             routes: [{ name: 'Home' }], // Change 'Home' to your actual first screen name
-//         });
-//     };
-// };
-
 
 export default function CitizenDashboard({ navigation }) {
     const { language } = useContext(MyLanguageContext);
@@ -25,9 +12,11 @@ export default function CitizenDashboard({ navigation }) {
         >
             <NavButton
                 title={text[language].startRide}
+                onPress={() => navigation.navigate('StartRide')}
             />
             <NavButton
                 title={text[language].safeLocations}
+                onPress={() => navigation.navigate('SafeLocations')}
             />
 
         </DashboardScreen>

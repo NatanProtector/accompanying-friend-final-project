@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import { Input } from "react-native-elements";
+import { Input } from "react-native-elements"
 import { FontAwesome } from "@expo/vector-icons";
 
-export default function TextField({ value, onChangeText, placeholder, iconPosition, language, icon }) {
+export default function TextField({ value, onChangeText, placeholder, iconPosition, errorMessage, language, icon }) {
   const [isFocused, setIsFocused] = useState(false);
 
   const renderIcon = () => {
@@ -21,6 +21,8 @@ export default function TextField({ value, onChangeText, placeholder, iconPositi
     }
   };
 
+  const textAlign = language === "he" ? "right" : "left"
+
   return (
     <Input
       placeholder={placeholder}
@@ -35,10 +37,12 @@ export default function TextField({ value, onChangeText, placeholder, iconPositi
       ]}
       inputStyle={[
         styles.input,
-        { textAlign: language === "he" ? "right" : "left" }
+        { textAlign: textAlign}
       ]}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
+      errorStyle={[styles.error, { textAlign: textAlign}]}
+      errorMessage={errorMessage}
     />
   );
 }
@@ -46,7 +50,8 @@ export default function TextField({ value, onChangeText, placeholder, iconPositi
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginBottom: 15,
+    // backgroundColor: 'green',
+    // marginBottom: 5,
   },
   inputContainer: {
     borderWidth: 1,
@@ -68,4 +73,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
   },
+  error: { color: "red", fontSize: 14 },
 });

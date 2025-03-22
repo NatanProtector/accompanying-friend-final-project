@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 function CategoryTemplate({ title, children }) {
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     overflow: 'hidden',
+    width: '100%',
   },
   categoryHeader: {
     backgroundColor: '#f0f0f0',
