@@ -19,8 +19,8 @@ import { getDistance } from "geolib";
 import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
 import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyDKuK0L0hTxO0QiyhI6y2AfPLnL4Q4Jp1U";
-const SERVER_URL = "http://192.168.144.21:3001";
+const GOOGLE_MAPS_API_KEY = "";
+const SERVER_URL = "";
 const idNumber = "111111111";
 
 const MapScreen = () => {
