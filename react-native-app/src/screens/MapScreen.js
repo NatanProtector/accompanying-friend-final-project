@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   TextInput,
@@ -8,16 +8,20 @@ import {
   Alert,
   Text,
   TouchableOpacity,
+  Linking,
+  Modal,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker} from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import * as Location from "expo-location";
 import axios from "axios";
 import { getDistance } from "geolib";
+import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
+import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
 
-const GOOGLE_MAPS_API_KEY = ""; // Replace with your key
-const SERVER_URL = ""; // Replace with your backend IP & port
-const idNumber = "111111111"; // Replace with actual logged-in user’s idNumber
+const GOOGLE_MAPS_API_KEY = "AIzaSyDKuK0L0hTxO0QiyhI6y2AfPLnL4Q4Jp1U";
+const SERVER_URL = "http://192.168.144.21:3001";
+const idNumber = "111111111";
 
 const MapScreen = () => {
   const [region, setRegion] = useState(null);
@@ -25,9 +29,14 @@ const MapScreen = () => {
   const [address, setAddress] = useState("");
   const [destination, setDestination] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
-
   const [routeSteps, setRouteSteps] = useState([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [selectedMarkerId, setSelectedMarkerId] = useState(null);
+
+
+  const markerRefs = useRef({});
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -51,7 +60,6 @@ const MapScreen = () => {
     getLocationPermission();
   }, []);
 
-  // Real-time step tracking
   useEffect(() => {
     if (routeSteps.length === 0) return;
 
@@ -94,7 +102,7 @@ const MapScreen = () => {
   const getAddressFromCoords = async (lat, lng) => {
     try {
       const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
-      return `${place.name || ""} ${place.street || ""}, ${place.city || ""}`;
+      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
     } catch (error) {
       return "Unknown location";
     }
@@ -110,8 +118,10 @@ const MapScreen = () => {
       latitude,
       longitude,
       address: addr,
+      name: "Custom Marker", // optional for later
+      description: "No description", // optional for later
     };
-    setMarkers([...markers, newMarker]);
+    setMarkers((prev) => [...prev, newMarker]);
     setDestination({ latitude, longitude });
   };
 
@@ -119,6 +129,7 @@ const MapScreen = () => {
     setMarkers((prev) => prev.filter((m) => m.id !== id));
     setRouteSteps([]);
     setCurrentStepIndex(0);
+    setSelectedMarker(null);
   };
 
   const handleAddMarkerByAddress = async () => {
@@ -141,8 +152,10 @@ const MapScreen = () => {
         latitude,
         longitude,
         address: addr,
+        name: "Custom Marker",
+        description: "No description",
       };
-      setMarkers([...markers, newMarker]);
+      setMarkers((prev) => [...prev, newMarker]);
       setDestination({ latitude, longitude });
       setAddress("");
     } catch (error) {
@@ -152,14 +165,12 @@ const MapScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* 🔍 Magnifier Toggle */}
       <View style={styles.searchToggleContainer}>
         <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
           <Text style={styles.magnifyIcon}>🔍</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 📍 Address Input */}
       {showSearch && (
         <View style={styles.inputContainer}>
           <TextInput
@@ -172,7 +183,6 @@ const MapScreen = () => {
         </View>
       )}
 
-      {/* 🧭 Navigation Box */}
       {routeSteps.length > 0 && (
         <View style={styles.navBox}>
           <Text style={styles.distanceText}>
@@ -184,7 +194,6 @@ const MapScreen = () => {
         </View>
       )}
 
-      {/* 🗺️ Map */}
       {region ? (
         <MapView
           style={styles.map}
@@ -200,6 +209,8 @@ const MapScreen = () => {
               strokeWidth={4}
               strokeColor="blue"
               language="he"
+              mode="DRIVING"
+              region="il"
               onReady={(result) => {
                 const steps = result.legs[0].steps;
                 setRouteSteps(steps);
@@ -208,21 +219,83 @@ const MapScreen = () => {
             />
           )}
 
-          <Marker coordinate={region} title="Your Location" />
+          <Marker coordinate={region} title="Your Location" pinColor="blue" />
 
           {markers.map((marker) => (
             <Marker
               key={marker.id}
               coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-              title={marker.address}
-              description="Tap to remove"
-              onPress={() => handleRemoveMarker(marker.id)}
+              image={selectedMarkerId === marker.id ? greenMarker : redMarker}
+              tracksViewChanges={false}
+              ref={(ref) => {
+                if (ref) markerRefs.current[marker.id] = ref;
+              }}
+              onPress={() => {
+                setSelectedMarker(marker);
+                setSelectedMarkerId(marker.id);
+              }}
             />
           ))}
         </MapView>
       ) : (
         <ActivityIndicator size="large" color="teal" />
       )}
+
+      {selectedMarker && (
+        <View style={styles.actionBar}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              const { latitude, longitude } = selectedMarker;
+              Linking.openURL(`google.navigation:q=${latitude},${longitude}`);
+            }}
+          >
+            <Text style={styles.actionText}>🧭</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              const { latitude, longitude } = selectedMarker;
+              Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`);
+            }}
+          >
+            <Text style={styles.actionText}>📍</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => handleRemoveMarker(selectedMarker.id)}
+          >
+            <Text style={styles.actionText}>🗑️</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setShowInfoModal(true)}
+          >
+            <Text style={styles.actionText}>ℹ️</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <Modal
+        visible={showInfoModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowInfoModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{selectedMarker?.name || "Marker Info"}</Text>
+            <Text>Description: {selectedMarker?.description || "N/A"}</Text>
+            <Text>Address: {selectedMarker?.address || "Unknown"}</Text>
+            <Text>Lat: {selectedMarker?.latitude.toFixed(6)}</Text>
+            <Text>Lng: {selectedMarker?.longitude.toFixed(6)}</Text>
+            <Button title="Close" onPress={() => setShowInfoModal(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -232,8 +305,8 @@ const styles = StyleSheet.create({
   map: { flex: 1, width: "100%", height: "100%" },
   searchToggleContainer: {
     position: "absolute",
-    top: 0,
-    right: 20,
+    top: 60,
+    right: 10,
     zIndex: 1000,
     backgroundColor: "white",
     padding: 8,
@@ -243,8 +316,8 @@ const styles = StyleSheet.create({
   magnifyIcon: { fontSize: 22 },
   inputContainer: {
     position: "absolute",
-    top: 140,
-    left: 10,
+    top: 120,
+    left: 0,
     right: 10,
     flexDirection: "row",
     backgroundColor: "white",
@@ -265,8 +338,9 @@ const styles = StyleSheet.create({
   },
   navBox: {
     position: "absolute",
-    top:0,
-    left: 20,
+    top: 0,
+    left: 0,
+    width: "85%",
     right: 20,
     backgroundColor: "black",
     padding: 15,
@@ -281,6 +355,42 @@ const styles = StyleSheet.create({
   streetText: {
     fontSize: 18,
     color: "#00aaff",
+  },
+  actionBar: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    height: 65,
+    flexDirection: "row",
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 6,
+    elevation: 6,
+    zIndex: 1000,
+  },
+  actionButton: {
+    padding: 10,
+    alignItems: "center",
+  },
+  actionText: {
+    fontSize: 22,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    margin: 20,
+    backgroundColor: "white",
+    padding: 25,
+    borderRadius: 10,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });
 
