@@ -33,7 +33,7 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
   const markerRefs = useRef({});
 
   if (GOOGLE_MAPS_API_KEY === "") {
-    raiseError("Missing Google Maps API key");
+    throw new Error ("Missing Google Maps API key");
   }
 
   useEffect(() => {
