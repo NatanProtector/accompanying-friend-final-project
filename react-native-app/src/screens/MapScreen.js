@@ -301,7 +301,7 @@ const MapScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: "100%", height: "100%" },
+  container: { flex: 1, width: "100%", height: 630 },
   map: { flex: 1, width: "100%", height: "100%" },
   searchToggleContainer: {
     position: "absolute",
@@ -395,4 +395,3 @@ const styles = StyleSheet.create({
 });
 
 export default MapScreen;
-

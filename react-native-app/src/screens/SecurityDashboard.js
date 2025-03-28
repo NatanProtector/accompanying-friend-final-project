@@ -1,16 +1,16 @@
-import { View, Text } from 'react-native';
 import { useContext } from 'react';
-
-import { DashboardTextSecurity } from '../constants/text';
 import MyLanguageContext from '../utils/MyLanguageContext';
+import DashboardScreen from '../components/screen_components/DashboardScreen'
 
-export default function SecurityDashboard({ navigation }) {
-
+export default function CitizenDashboard({ navigation }) {
     const { language } = useContext(MyLanguageContext);
 
     return (
-        <View>
-            <Text>{DashboardTextSecurity[language].title}</Text>
-        </View>
+        <DashboardScreen
+            navigation = {navigation}
+        >
+
+        </DashboardScreen>
     );
 }
+
