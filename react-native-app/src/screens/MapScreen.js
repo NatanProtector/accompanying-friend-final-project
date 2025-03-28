@@ -32,6 +32,10 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
 
   const markerRefs = useRef({});
 
+  if (GOOGLE_MAPS_API_KEY === "") {
+    raiseError("Missing Google Maps API key");
+  }
+
   useEffect(() => {
     const getLocationPermission = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
