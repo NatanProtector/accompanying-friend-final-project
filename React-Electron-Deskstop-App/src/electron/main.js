@@ -7,7 +7,7 @@ app.on("ready", () => {
     })
 
     // Disable the default menu
-    Menu.setApplicationMenu(null);
+    // Menu.setApplicationMenu(null);
 
     mainWindow.loadFile(path.join(app.getAppPath(), "dist-react", "index.html"))
 })
