@@ -1,10 +1,6 @@
-Here's a README template for your React-Electron app:
-
----
-
 # React-Electron Admin Desktop App
 
-This is a desktop application built for the **admin panel** of the **Accompanying Friend Project**. The app is built using **Vite**, **React**, and **Electron**, providing a smooth user experience for managing the project's tasks and data.
+This is a desktop application built for the **admin panel** of the **Accompanying Friend Project**. The app is built using **Vite**, **React**, and **Electron**, providing a smooth user experience for managing the project's registration data.
 
 ## Features
 - **Admin Panel**: A desktop interface for admins to manage project data.
