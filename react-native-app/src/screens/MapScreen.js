@@ -11,13 +11,14 @@ import {
   Linking,
   Modal,
 } from "react-native";
-import MapView, { Marker} from "react-native-maps";
+import MapView, { Marker, Polygon} from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import * as Location from "expo-location";
 import axios from "axios";
 import { getDistance } from "geolib";
 import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
 import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
+import { abcZones } from '../../assets/abcZones_all_labeled';
 
 const GOOGLE_MAPS_API_KEY = "";
 const SERVER_URL = "";
@@ -163,6 +164,13 @@ const MapScreen = () => {
     }
   };
 
+  const getZoneColor = (type) => {
+    return type === 'A'
+      ? 'rgba(255, 0, 0, 0.78)'       // Red
+      : 'rgba(55, 0, 255, 0.88)';    // Yellow
+  };
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.searchToggleContainer}>
@@ -236,6 +244,17 @@ const MapScreen = () => {
               }}
             />
           ))}
+
+{abcZones.map((zone) => (
+  <Polygon
+    key={zone.id}
+    coordinates={zone.coordinates}
+    fillColor={getZoneColor(zone.zone)}
+    strokeColor="black"
+    strokeWidth={1}
+  />
+))}
+
         </MapView>
       ) : (
         <ActivityIndicator size="large" color="teal" />
