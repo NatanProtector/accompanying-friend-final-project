@@ -18,7 +18,7 @@ import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
 import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
 import * as Location from "expo-location";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyAGJN1x8kq5ewP0VG0XgRMqmzMmdidq-TM";
+const GOOGLE_MAPS_API_KEY = "";
 const SERVER_URL = "";
 const idNumber = "111111111";
 
