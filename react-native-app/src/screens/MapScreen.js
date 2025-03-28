@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
-  TextInput,
   Button,
   StyleSheet,
   ActivityIndicator,
@@ -13,30 +12,29 @@ import {
 } from "react-native";
 import MapView, { Marker} from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import * as Location from "expo-location";
 import axios from "axios";
 import { getDistance } from "geolib";
 import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
 import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
+import * as Location from "expo-location";
 
 const GOOGLE_MAPS_API_KEY = "";
 const SERVER_URL = "";
 const idNumber = "111111111";
 
-const MapScreen = () => {
+const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
   const [region, setRegion] = useState(null);
-  const [markers, setMarkers] = useState([]);
-  const [address, setAddress] = useState("");
-  const [destination, setDestination] = useState(null);
-  const [showSearch, setShowSearch] = useState(false);
   const [routeSteps, setRouteSteps] = useState([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState(null);
 
-
   const markerRefs = useRef({});
+
+  if (GOOGLE_MAPS_API_KEY === "") {
+    raiseError("Missing Google Maps API key");
+  }
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -87,26 +85,18 @@ const MapScreen = () => {
     return () => sub.then((s) => s.remove());
   }, [routeSteps, currentStepIndex]);
 
-  const updateUserLocation = async (latitude, longitude) => {
-    try {
-      const response = await axios.put(
-        `${SERVER_URL}/api/auth/update-location/${idNumber}`,
-        { latitude, longitude }
-      );
-      console.log("Location updated:", response.data);
-    } catch (error) {
-      console.error("Error updating location:", error);
-    }
-  };
+  // const updateUserLocation = async (latitude, longitude) => {
+  //   try {
+  //     const response = await axios.put(
+  //       `${SERVER_URL}/api/auth/update-location/${idNumber}`,
+  //       { latitude, longitude }
+  //     );
+  //     console.log("Location updated:", response.data);
+  //   } catch (error) {
+  //     console.error("Error updating location:", error);
+  //   }
+  // };
 
-  const getAddressFromCoords = async (lat, lng) => {
-    try {
-      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
-      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
-    } catch (error) {
-      return "Unknown location";
-    }
-  };
 
   const stripHtml = (html) => html.replace(/<[^>]+>/g, "");
 
@@ -132,40 +122,9 @@ const MapScreen = () => {
     setSelectedMarker(null);
   };
 
-  const handleAddMarkerByAddress = async () => {
-    if (!address.trim()) {
-      Alert.alert("Error", "Please enter an address.");
-      return;
-    }
-
-    try {
-      const location = await Location.geocodeAsync(address);
-      if (location.length === 0) {
-        Alert.alert("Error", "Address not found.");
-        return;
-      }
-
-      const { latitude, longitude } = location[0];
-      const addr = await getAddressFromCoords(latitude, longitude);
-      const newMarker = {
-        id: Math.random().toString(),
-        latitude,
-        longitude,
-        address: addr,
-        name: "Custom Marker",
-        description: "No description",
-      };
-      setMarkers((prev) => [...prev, newMarker]);
-      setDestination({ latitude, longitude });
-      setAddress("");
-    } catch (error) {
-      Alert.alert("Error", "Could not fetch location.");
-    }
-  };
-
   return (
     <View style={styles.container}>
-      <View style={styles.searchToggleContainer}>
+      {/* <View style={styles.searchToggleContainer}>
         <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
           <Text style={styles.magnifyIcon}>🔍</Text>
         </TouchableOpacity>
@@ -181,7 +140,7 @@ const MapScreen = () => {
           />
           <Button title="Add Marker" onPress={handleAddMarkerByAddress} />
         </View>
-      )}
+      )} */}
 
       {routeSteps.length > 0 && (
         <View style={styles.navBox}>

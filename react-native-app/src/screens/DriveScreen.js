@@ -1,21 +1,72 @@
 import { StyleSheet, Text, View, TouchableOpacity, Modal, TextInput } from 'react-native';
-import {SearchLocation} from '../utils/Communication';
+// import {SearchLocation} from '../utils/Communication';
+import * as Location from "expo-location";
 import { useState } from 'react';
 import BasicScreenTemplate from '../components/screen_components/BasicScreenTemplate';
 import NavigationHeader from '../components/screen_components/NavigationHeader';
 import MapScreen from './MapScreen';
 
 export default function DriveScreen() {
-    const [modalVisible, setModalVisible] = useState(false);
+
+    // screen ui
     const [searchText, setSearchText] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+
+    // map states
+    const [markers, setMarkers] = useState([]);
+    const [destination, setDestination] = useState(null);
+
+    const getAddressFromCoords = async (lat, lng) => {
+        try {
+            const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+            return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
+        } catch (error) {
+            console.log("Error:", error);
+            return "Unknown location";
+        }
+      };
 
     const handleSearch = async () => {
+        
         console.log('Search:', searchText);
-        const result = await SearchLocation(searchText).catch((error) => console.log(error));   
-        console.log(result);
+        // const result = await SearchLocation(searchText).catch((error) => console.log(error));   
+        // console.log(result);
+        await handleAddMarkerByAddress();
         setSearchText('');
         setModalVisible(false);
     };
+
+    
+      const handleAddMarkerByAddress = async () => {
+        if (!searchText.trim()) {
+          console.log("Error", "Please enter an address.");
+          return;
+        }
+    
+        try {
+          const location = await Location.geocodeAsync(searchText);
+          if (location.length === 0) {
+            console.log("Error", "Address not found.");
+            return;
+          }
+    
+          const { latitude, longitude } = location[0];
+          const addr = await getAddressFromCoords(latitude, longitude);
+          const newMarker = {
+            id: Math.random().toString(),
+            latitude,
+            longitude,
+            address: addr,
+            name: "Custom Marker",
+            description: "No description",
+          };
+          setMarkers((prev) => [...prev, newMarker]);
+          setDestination({ latitude, longitude });
+        } catch (error) {
+            console.log("Error:", error, "Could not fetch location.");
+        }
+      };
+    
 
     return (
         <BasicScreenTemplate 
@@ -30,7 +81,14 @@ export default function DriveScreen() {
             }
         >
             <View style={styles.container}>
-                <MapScreen />
+                <MapScreen 
+                    address={searchText}
+                    setAddress={setSearchText}
+                    markers={markers}
+                    setMarkers={setMarkers}
+                    destination={destination}
+                    setDestination={setDestination}
+                />
             </View>
 
             {/* Search Modal */}
