@@ -42,7 +42,18 @@ Follow these steps to run the application locally:
    npm install
    ```
 
-3. **Run the app in development mode**:
+3. **Build the app for production**:
+
+   To create a production build of the app, run:
+
+   ```bash
+   npm run build
+   ```
+
+   This will generate optimized build files that can be packaged and distributed.    
+
+
+4. **Run the app in development mode**:
 
    To start the development environment, run the following commands in two separate terminal windows:
 
@@ -54,21 +65,13 @@ Follow these steps to run the application locally:
 
    - **Start Electron**:
 
+     Make a production build (step 3) and then run:
+       
      ```bash
      npm run dev:electron
      ```
-
+   
    This will open the app in Electron with live-reloading enabled for React during development.
-
-4. **Build the app for production**:
-
-   To create a production build of the app, run:
-
-   ```bash
-   npm run build
-   ```
-
-   This will generate optimized build files that can be packaged and distributed.
 
 ## Commands
 
