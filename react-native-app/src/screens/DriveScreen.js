@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, Modal, TextInput } from 'react-native';
-import {SearchLocation} from '../utils/Communication';
+// import {SearchLocation} from '../utils/Communication';
 import * as Location from "expo-location";
 import { useState } from 'react';
 import BasicScreenTemplate from '../components/screen_components/BasicScreenTemplate';
