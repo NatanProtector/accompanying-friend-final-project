@@ -84,10 +84,11 @@ setInterval(() => {
 // ===================================================================================================================== //
 
 
-// mongoose
-// .connect(getMongoURI())
-// .then(() => console.log('MongoDB connected successfully'))
-// .catch((err) => console.log('MongoDB connection error:' , err));
+mongoose
+.connect(getMongoURI())
+.then(() => console.log('MongoDB connected successfully'))
+.catch((err) => console.log('MongoDB connection error:' , err));
+
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
