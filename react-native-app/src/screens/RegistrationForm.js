@@ -85,7 +85,7 @@ export default function RegistrationForm({ route, navigation }) {
   const handleFormSubmit = async (values) => {
     try {
       await SubmitRegisterForm(values);
-  
+
       Alert.alert(
         RegistrationText[language].successTitle,
         RegistrationText[language].successMessage,
@@ -111,13 +111,20 @@ export default function RegistrationForm({ route, navigation }) {
     <BasicScreen title={RegistrationText[language].title} language={language}>
       <Formik
         initialValues={{
-          fullName: '',
-          idNumber: '',
-          phone: '',
-          email: '',
-          password: '',
+          fullName: 'Natan Protector',
+          idNumber: '205438542',
+          phone: '0524739911',
+          email: 'natanprotector@email.com',
+          password: 'Password1!',
           idPhoto: '',
           securityCertificatePhoto: '',
+          // fullName: '',
+          // idNumber: '',
+          // phone: '',
+          // email: '',
+          // password: '',
+          // idPhoto: '',
+          // securityCertificatePhoto: '',
         }}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
