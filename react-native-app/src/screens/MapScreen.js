@@ -18,8 +18,10 @@ import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
 import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
 import * as Location from "expo-location";
 
+import io from "socket.io-client";
+
 const GOOGLE_MAPS_API_KEY = "";
-const SERVER_URL = "";
+const SERVER_URL = "http://10.0.2.2:3001";
 const idNumber = "111111111";
 
 const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
@@ -30,12 +32,14 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState(null);
 
+  const socketRef = useRef(null);
+
   const markerRefs = useRef({});
 
-  if (GOOGLE_MAPS_API_KEY == "")
-    throw new Error ("Missing Google Maps API key");
+  // if (GOOGLE_MAPS_API_KEY == "")
+  //   throw new Error ("Missing Google Maps API key");
   
-  useEffect(() => {
+  useEffect(() => {    
     const getLocationPermission = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -50,12 +54,74 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       };
+
       setRegion(newRegion);
-      await updateUserLocation(location.coords.latitude, location.coords.longitude);
+      
+      // Connect to the Socket.io server and register the user
+      socketRef.current = io(SERVER_URL);
+      
+      socketRef.current.emit("register", {
+        role: "user",
+        userId: idNumber,
+        location: { latitude: location.coords.latitude, longitude: location.coords.longitude },
+      });
+
+      // Start transmitting location every five seconds
+      startLocationTransmission();
+
     };
 
     getLocationPermission();
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect(); // Disconnect socket on unmount
+      }
+    };
+
   }, []);
+
+  const startLocationTransmission = async () => {
+    try {
+      // Get the initial location once before starting the transmission
+      const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+      const { latitude, longitude } = location.coords;
+  
+      setRegion((prevRegion) => ({
+        ...prevRegion,
+        latitude,
+        longitude,
+      }));
+  
+      // Emit the initial location
+      if (socketRef.current) {
+        socketRef.current.emit("update_location", { latitude, longitude });
+      }
+  
+      // Set interval to emit location every 5 seconds
+      const intervalId = setInterval(async () => {
+        const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+        const { latitude, longitude } = location.coords;
+  
+        setRegion((prevRegion) => ({
+          ...prevRegion,
+          latitude,
+          longitude,
+        }));
+  
+        // Emit updated location to the server via Socket.io
+        if (socketRef.current) {
+          socketRef.current.emit("update_location", { latitude, longitude });
+        }
+      }, 5000); // 5000 ms = 5 seconds
+  
+      // Cleanup on unmount or when function is no longer needed
+      return () => clearInterval(intervalId);
+    } catch (error) {
+      console.error("Error transmitting location:", error);
+    }
+  };
+  
 
   useEffect(() => {
     if (routeSteps.length === 0) return;
