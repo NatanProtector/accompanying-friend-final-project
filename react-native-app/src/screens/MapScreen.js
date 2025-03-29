@@ -224,7 +224,7 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
             />
           )}
 
-          <Marker coordinate={region} title="Your Location" pinColor="blue" />
+          {/* <Marker coordinate={region} title="Your Location" pinColor="blue" /> */}
 
           {markers.map((marker) => (
             <Marker
