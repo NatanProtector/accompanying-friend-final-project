@@ -32,10 +32,9 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
 
   const markerRefs = useRef({});
 
-  if (GOOGLE_MAPS_API_KEY === "") {
+  if (GOOGLE_MAPS_API_KEY == "")
     throw new Error ("Missing Google Maps API key");
-  }
-
+  
   useEffect(() => {
     const getLocationPermission = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -97,7 +96,6 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
   //   }
   // };
 
-
   const stripHtml = (html) => html.replace(/<[^>]+>/g, "");
 
   const handleMapPress = async (event) => {
@@ -124,24 +122,6 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.searchToggleContainer}>
-        <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
-          <Text style={styles.magnifyIcon}>🔍</Text>
-        </TouchableOpacity>
-      </View>
-
-      {showSearch && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter address"
-            value={address}
-            onChangeText={setAddress}
-          />
-          <Button title="Add Marker" onPress={handleAddMarkerByAddress} />
-        </View>
-      )} */}
-
       {routeSteps.length > 0 && (
         <View style={styles.navBox}>
           <Text style={styles.distanceText}>

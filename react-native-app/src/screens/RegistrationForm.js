@@ -20,6 +20,7 @@ export default function RegistrationForm({ route, navigation }) {
   const [securityCertificatePhoto, setSecurityCertificatePhoto] = useState(null);
 
   const [showPasswordInfo, setShowPasswordInfo] = useState(true);
+  const [showIDInfo, setShowIDInfo] = useState(true);
 
   useEffect(() => {
     I18nManager.forceRTL(language === 'he');
@@ -142,8 +143,15 @@ export default function RegistrationForm({ route, navigation }) {
               keyboardType="numeric"
               language={language}
               iconPosition={iconPosition}
+              onFocus={() => setShowIDInfo(false)}
               errorMessage = {touched.idNumber && errors.idNumber}
             />
+
+            {showIDInfo && (
+              <Text style={styles.passwordInfo}>
+                {RegistrationText[language].IDInfo}
+              </Text>
+            )}
 
             <TextField
               icon="phone"
@@ -179,9 +187,7 @@ export default function RegistrationForm({ route, navigation }) {
 
             {showPasswordInfo && (
               <Text style={styles.passwordInfo}>
-                {language === 'he'
-                  ? RegistrationText[language].passwordInfo
-                  : RegistrationText[language].passwordInfo}
+                {RegistrationText[language].passwordInfo}
               </Text>
             )}
 
@@ -254,8 +260,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     marginBottom: 16,
     alignSelf: 'center',
   },
@@ -274,6 +280,7 @@ const styles = StyleSheet.create({
 
 const RegistrationText = {
   en: {
+    IDInfo: 'ID number will be used as the username',
     title: 'Registration',
     fullName: 'Full name',
     idNumber: 'ID Number',
@@ -291,9 +298,10 @@ const RegistrationText = {
     passwordInfo: 'Password must be at least 8 characters long, contain an uppercase letter, lowercase letter, a number, and a special character.'
   },
   he: {
+    IDInfo: 'מספר תעודת זהות ישמש כשם המשתמש',
     title: 'הרשמה',
     fullName: 'שם מלא',
-    idNumber: 'תעודת זהות',
+    idNumber: 'מספר תעודת זהות',
     phone: 'טלפון',
     email: 'אימייל',
     uploadID: 'העלה תעודת זהות',

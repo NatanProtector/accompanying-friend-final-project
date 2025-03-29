@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import { Input } from "react-native-elements"
 import { FontAwesome } from "@expo/vector-icons";
 
-export default function TextField({ value, onChangeText, placeholder, iconPosition, errorMessage, language, icon }) {
+export default function TextField({ value, onChangeText, onFocus, placeholder, iconPosition, errorMessage, language, icon }) {
   const [isFocused, setIsFocused] = useState(false);
 
   const renderIcon = () => {
@@ -23,6 +23,11 @@ export default function TextField({ value, onChangeText, placeholder, iconPositi
 
   const textAlign = language === "he" ? "right" : "left"
 
+  const focusHandler = () => {
+    setIsFocused(true);
+    onFocus && onFocus()
+  };
+
   return (
     <Input
       placeholder={placeholder}
@@ -39,7 +44,7 @@ export default function TextField({ value, onChangeText, placeholder, iconPositi
         styles.input,
         { textAlign: textAlign}
       ]}
-      onFocus={() => setIsFocused(true)}
+      onFocus={focusHandler}
       onBlur={() => setIsFocused(false)}
       errorStyle={[styles.error, { textAlign: textAlign}]}
       errorMessage={errorMessage}
