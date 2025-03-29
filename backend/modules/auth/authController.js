@@ -6,6 +6,7 @@ const User = require('../Users/userModel');
 
 router.post('/register', async (req, res) => {
   console.log('Incoming Request Body:', req.body); // Add this
+
   const { firstName, lastName, phone, idNumber, email, idPhoto } = req.body;
 
   const { error } = registrationSchema.validate(req.body);

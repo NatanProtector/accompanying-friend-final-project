@@ -20,6 +20,7 @@ export default function RegistrationForm({ route, navigation }) {
   const [securityCertificatePhoto, setSecurityCertificatePhoto] = useState(null);
 
   const [showPasswordInfo, setShowPasswordInfo] = useState(true);
+  const [showIDInfo, setShowIDInfo] = useState(true);
 
   useEffect(() => {
     I18nManager.forceRTL(language === 'he');
@@ -84,7 +85,7 @@ export default function RegistrationForm({ route, navigation }) {
   const handleFormSubmit = async (values) => {
     try {
       await SubmitRegisterForm(values);
-  
+
       Alert.alert(
         RegistrationText[language].successTitle,
         RegistrationText[language].successMessage,
@@ -110,13 +111,20 @@ export default function RegistrationForm({ route, navigation }) {
     <BasicScreen title={RegistrationText[language].title} language={language}>
       <Formik
         initialValues={{
-          fullName: '',
-          idNumber: '',
-          phone: '',
-          email: '',
-          password: '',
+          fullName: 'Natan Protector',
+          idNumber: '205438542',
+          phone: '0524739911',
+          email: 'natanprotector@email.com',
+          password: 'Password1!',
           idPhoto: '',
           securityCertificatePhoto: '',
+          // fullName: '',
+          // idNumber: '',
+          // phone: '',
+          // email: '',
+          // password: '',
+          // idPhoto: '',
+          // securityCertificatePhoto: '',
         }}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
@@ -142,8 +150,15 @@ export default function RegistrationForm({ route, navigation }) {
               keyboardType="numeric"
               language={language}
               iconPosition={iconPosition}
+              onFocus={() => setShowIDInfo(false)}
               errorMessage = {touched.idNumber && errors.idNumber}
             />
+
+            {showIDInfo && (
+              <Text style={styles.passwordInfo}>
+                {RegistrationText[language].IDInfo}
+              </Text>
+            )}
 
             <TextField
               icon="phone"
@@ -179,9 +194,7 @@ export default function RegistrationForm({ route, navigation }) {
 
             {showPasswordInfo && (
               <Text style={styles.passwordInfo}>
-                {language === 'he'
-                  ? RegistrationText[language].passwordInfo
-                  : RegistrationText[language].passwordInfo}
+                {RegistrationText[language].passwordInfo}
               </Text>
             )}
 
@@ -254,8 +267,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     marginBottom: 16,
     alignSelf: 'center',
   },
@@ -274,6 +287,7 @@ const styles = StyleSheet.create({
 
 const RegistrationText = {
   en: {
+    IDInfo: 'ID number will be used as the username',
     title: 'Registration',
     fullName: 'Full name',
     idNumber: 'ID Number',
@@ -291,9 +305,10 @@ const RegistrationText = {
     passwordInfo: 'Password must be at least 8 characters long, contain an uppercase letter, lowercase letter, a number, and a special character.'
   },
   he: {
+    IDInfo: 'מספר תעודת זהות ישמש כשם המשתמש',
     title: 'הרשמה',
     fullName: 'שם מלא',
-    idNumber: 'תעודת זהות',
+    idNumber: 'מספר תעודת זהות',
     phone: 'טלפון',
     email: 'אימייל',
     uploadID: 'העלה תעודת זהות',
