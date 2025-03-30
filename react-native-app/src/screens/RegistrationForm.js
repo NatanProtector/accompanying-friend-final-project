@@ -84,6 +84,10 @@ export default function RegistrationForm({ route, navigation }) {
 
   const handleFormSubmit = async (values) => {
     try {
+
+      values.registerAs = registerAs;
+      values.multiRole = [registerAs];
+
       await SubmitRegisterForm(values);
 
       Alert.alert(
@@ -111,11 +115,11 @@ export default function RegistrationForm({ route, navigation }) {
     <BasicScreen title={RegistrationText[language].title} language={language}>
       <Formik
         initialValues={{
-          fullName: 'Natan Protector',
-          idNumber: '205438542',
-          phone: '0524739911',
-          email: 'natanprotector@email.com',
-          password: 'Password1!',
+          fullName: '',
+          idNumber: '',
+          phone: '',
+          email: "",
+          password: '',
           idPhoto: '',
           securityCertificatePhoto: '',
           // fullName: '',

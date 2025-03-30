@@ -21,7 +21,7 @@ import * as Location from "expo-location";
 import io from "socket.io-client";
 
 const GOOGLE_MAPS_API_KEY = "";
-const SERVER_URL = "http://10.0.2.2:3001";
+const SERVER_URL = "http://192.168.144.9:3001";
 const idNumber = "111111111";
 
 const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
@@ -83,39 +83,32 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
 
   const startLocationTransmission = async () => {
     try {
-      // Get the initial location once before starting the transmission
       const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
       const { latitude, longitude } = location.coords;
   
+      // Set region only ONCE, during initial setup
       setRegion((prevRegion) => ({
         ...prevRegion,
         latitude,
         longitude,
       }));
   
-      // Emit the initial location
+      // Emit initial location
       if (socketRef.current) {
         socketRef.current.emit("update_location", { latitude, longitude });
       }
   
-      // Set interval to emit location every 5 seconds
+      // Start location updates every 5 seconds, without updating the region
       const intervalId = setInterval(async () => {
-        const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-        const { latitude, longitude } = location.coords;
+        const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+        const { latitude, longitude } = loc.coords;
   
-        setRegion((prevRegion) => ({
-          ...prevRegion,
-          latitude,
-          longitude,
-        }));
-  
-        // Emit updated location to the server via Socket.io
+        // Only send the location over socket, don't change map region
         if (socketRef.current) {
           socketRef.current.emit("update_location", { latitude, longitude });
         }
-      }, 5000); // 5000 ms = 5 seconds
+      }, 5000);
   
-      // Cleanup on unmount or when function is no longer needed
       return () => clearInterval(intervalId);
     } catch (error) {
       console.error("Error transmitting location:", error);
@@ -163,6 +156,15 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
   // };
 
   const stripHtml = (html) => html.replace(/<[^>]+>/g, "");
+
+  const getAddressFromCoords = async (lat, lng) => {
+    try {
+      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
+    } catch (error) {
+      return "Unknown location";
+    }
+  };
 
   const handleMapPress = async (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;

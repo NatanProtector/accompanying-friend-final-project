@@ -5,13 +5,12 @@ const User = require('../Users/userModel');
 
 
 router.post('/register', async (req, res) => {
-  console.log('Incoming Request Body:', req.body); // Add this
-
-  const { firstName, lastName, phone, idNumber, email, idPhoto } = req.body;
+  console.log('Incoming Request Body:', req.body); 
+  const { firstName, lastName, phone, password, idNumber, email, idPhoto, multiRole, securityCertificatePhoto } = req.body;
 
   const { error } = registrationSchema.validate(req.body);
   if (error) {
-    console.log('Validation Error:', error.details); // Log validation errors
+    console.log('Validation Error:', error.details); 
     return res.status(400).json({ error: error.details[0].message });
   }
 
@@ -24,7 +23,10 @@ router.post('/register', async (req, res) => {
       phone,
       idNumber,
       email,
+      password,
       idPhoto,
+      multiRole,
+      securityCertificatePhoto,
       registrationStatus: 'pending',
     });
 
@@ -80,6 +82,15 @@ router.get("/get-user-by-idNumber/:idNumber", async (req, res) => {
     }
 
     res.json({ idNumber: user.idNumber, _id: user._id });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+});
+// Fetch user by idNumber
+router.get("/healthcheck", async (req, res) => {
+
+  try {
+    res.json({ message: "Server is running" });
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error });
   }

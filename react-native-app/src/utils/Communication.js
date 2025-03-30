@@ -1,5 +1,5 @@
 
-const SERVER_URL = "http://10.0.2.2:3001";
+const SERVER_URL = "http://192.168.144.9:3001";
 
 const splitFullName = (fullName) => {
   fullName = fullName.trim();
@@ -10,7 +10,7 @@ const splitFullName = (fullName) => {
 };
 
 export const SubmitRegisterForm = (formData) => {
-  // console.log("Sending Form Data:", formData);
+  console.log("Sending Form Data:", formData);
 
   // Reformat full name to first name and last name
   const { firstName, lastName } = splitFullName(formData.fullName);
@@ -19,16 +19,20 @@ export const SubmitRegisterForm = (formData) => {
 
   // reconstruct formData to { firstName, lastName, phone, idNumber, email, idPhoto }
   formData = {
-    firstName: firstName,
-    lastName: lastName,
+    firstName,
+    lastName,
     phone: formData.phone,
     idNumber: formData.idNumber,
     email: formData.email,
+    password: formData.password, // ✅ Add this
     idPhoto: formData.idPhoto,
+    multiRole: [formData.registerAs || 'citizen'], // optional fallback
+    securityCertificatePhoto: formData.securityCertificatePhoto || null, // optional
   };
 
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("Form Data:", `${SERVER_URL}/api/auth/register`);
       const response = await fetch(`${SERVER_URL}/api/auth/register`, {
         method: "POST",
         headers: {
