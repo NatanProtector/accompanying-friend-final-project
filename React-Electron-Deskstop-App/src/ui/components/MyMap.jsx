@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { APIProvider, Map, Marker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import io from 'socket.io-client';
-import screenConfigs from '../../constants/screenConfig';
-
 
 const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const serverUrl = import.meta.env.VITE_SERVER_URL;
-
 const socket = io(serverUrl); // Connect to your server
 
 const MyMap = () => {
@@ -58,8 +55,8 @@ const MyMap = () => {
     <APIProvider apiKey={key}>
         <Map
         style={{ width:"100%", height: "100%" }}
-        defaultCenter={{ lat: 22.54992, lng: 0 }}
-        defaultZoom={3}
+        defaultCenter={{  lat: 31.95, lng: 35.2137 }}
+        defaultZoom={9}
         gestureHandling={'greedy'}
         disableDefaultUI={true}
         // onClick={handleMapClick}

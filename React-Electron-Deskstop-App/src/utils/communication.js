@@ -1,4 +1,4 @@
-const getPendingUsers = (shouldReject = false) => {
+export const getPendingUsers = (shouldReject = false) => {
     return new Promise((resolve, reject) => {
         // Simulate fetching pending users from the server
         setTimeout(() => {
@@ -16,7 +16,7 @@ const getPendingUsers = (shouldReject = false) => {
                     phone: "1234567890",
                     idNumber: "987654321",
                     email: "john.doe@example.com",
-                    idPhoto: null,
+                    idPhoto: "https://http.cat/404",
                     registrationStatus: "pending",
                     location: {
                         type: "Point",
@@ -26,11 +26,11 @@ const getPendingUsers = (shouldReject = false) => {
                 {
                     firstName: "Jane",
                     lastName: "Smith",
-                    fullName: "Jane Smith",
+                    fullName: "Jane Smith", 
                     phone: "0987654321",
                     idNumber: "123456789",
                     email: "jane.smith@example.com",
-                    idPhoto: null,
+                    idPhoto: "https://http.cat/102",
                     registrationStatus: "pending",
                     location: {
                         type: "Point",
@@ -44,7 +44,7 @@ const getPendingUsers = (shouldReject = false) => {
                     phone: "1122334455",
                     idNumber: "5566778899",
                     email: "alice.johnson@example.com",
-                    idPhoto: null,
+                    idPhoto: "https://http.cat/200",
                     registrationStatus: "pending",
                     location: {
                         type: "Point",

@@ -19,6 +19,5 @@ const style = {
         justifyContent: 'center',
         height: '100%',
         width: '100%',
-        backgroundColor: 'red'
     }
 }
