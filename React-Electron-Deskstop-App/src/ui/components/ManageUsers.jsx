@@ -1,11 +1,27 @@
 import React, { useState } from "react";
 import StandardContainer from "./StandardContainer";
 import { getPendingUsers } from "../../utils/Communication";
+import UserDisplay from "./UserDisplay";
 
 const ManageUsers = () => {
     // State for search input and selected search criteria
     const [searchValue, setSearchValue] = useState("");
     const [searchBy, setSearchBy] = useState("email");
+    const [userType, setUserType] = useState("pending");
+
+    const [users, setUsers] = useState([]);
+
+    useState(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await getPendingUsers();
+                setUsers(response);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+        fetchUsers();
+    }, []);
 
     // Handler for the search button
     const handleSearch = () => {
@@ -50,6 +66,17 @@ const ManageUsers = () => {
                             <option value="IDnumber">ID Number</option>
                         </select>
 
+                        {/* Select input for user type criteria */}
+                        <select
+                            value={searchBy}
+                            onChange={(e) => setUserType(e.target.value)}
+                            style={style.select}
+                        >
+                            <option value="pending">pending</option>
+                            <option value="approved">approved</option>
+                            <option value="pending and approved">pending and approved</option>
+                        </select>
+
                         {/* Search button */}
                         <button onClick={handleSearch} style={style.button}>
                             Search
@@ -59,6 +86,13 @@ const ManageUsers = () => {
                         <button onClick={handleShowAllPendingUsers} style={style.button}>
                             Show All Pending Users
                         </button>
+                    </div>
+                    <div style={style.content}>
+                        {
+                            users.map((user) => (
+                                <UserDisplay key={user.id} user={user} />
+                            ))
+                        }
                     </div>
                 </div>
             </div>
@@ -84,6 +118,8 @@ const style = {
     controls: {
         display: "flex",
         flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
         gap: "10px",
         marginTop: "10px",
     },
@@ -105,5 +141,12 @@ const style = {
         backgroundColor: "#007BFF",
         color: "#fff",
         cursor: "pointer",
+    },
+    content: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
     },
 };

@@ -27,6 +27,7 @@ const UserDisplay = ({ user }) => {
       {idPhoto && (
         <div>
           <strong>ID Photo:</strong>
+          <br />
           <img src={idPhoto} alt="ID Photo" style={styles.image} />
         </div>
       )}
@@ -59,10 +60,7 @@ const styles = {
     border: '1px solid #ccc',
     borderRadius: '8px',
     padding: '16px',
-    width: '100%',
-    height: '100%',
     margin: '16px auto',
-    backgroundColor: 'red',
   },
   image: {
     maxWidth: '100%',

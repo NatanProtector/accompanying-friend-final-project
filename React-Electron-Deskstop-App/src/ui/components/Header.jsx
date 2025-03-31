@@ -23,7 +23,8 @@ const style = {
       listStyle: 'none', 
       display: 'flex', 
       gap: '20px',
-      padding: 0
+      padding: 0,
+      marginLeft: '20px'
     }
   }
 
