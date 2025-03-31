@@ -1,4 +1,4 @@
-export const getPendingUsers = (shouldReject = false) => {
+export const getAllPendingUsers = (shouldReject = false) => {
     return new Promise((resolve, reject) => {
         // Simulate fetching pending users from the server
         setTimeout(() => {
@@ -53,7 +53,51 @@ export const getPendingUsers = (shouldReject = false) => {
                 },
             ];
 
-            resolve(pendingUsers); // Resolve with the list of pending users
-        }, 1000); // Simulate a delay of 1 second
+            resolve(pendingUsers);
+        }, 1000);
     });
 };
+
+
+
+export const getUsersByEmail = (email) => {
+    return new Promise((resolve, reject) => {
+      fetch(`/get-user/${email}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => resolve(data))
+        .catch((error) => reject(error));
+    });
+  };
+
+  export const getUsersByUserId = (userID) => {
+    return new Promise((resolve, reject) => {
+      fetch(`/get-user-by-id/${userID}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => resolve(data))
+        .catch((error) => reject(error));
+    });
+  };
+
+  export const getUsersById = (Id) => {
+    return new Promise((resolve, reject) => {
+      fetch(`/get-user-by-idNumber/${Id}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => resolve(data))
+        .catch((error) => reject(error));
+    });
+  };

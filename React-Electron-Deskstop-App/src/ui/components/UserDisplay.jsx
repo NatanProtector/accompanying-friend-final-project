@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const UserDisplay = ({ user }) => {
+const UserDisplay = ({ user, onSelect, onUnselect }) => {
+  // State to manage the checkbox
+  const [isChecked, setIsChecked] = useState(false);
+
+  // Function to handle checkbox change
+  const handleCheckboxChange = () => {
+    if (isChecked)
+      onUnselect && onUnselect();
+    else
+      onSelect && onSelect();
+
+    setIsChecked(!isChecked);
+  };
+
   // Destructure the user object for easier access
   const {
     firstName,
@@ -17,6 +30,16 @@ const UserDisplay = ({ user }) => {
 
   return (
     <div style={styles.container}>
+      {/* Checkbox in the top-right corner */}
+      <div style={styles.checkboxContainer}>
+        <input
+          style={styles.checkbox}
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+        />
+      </div>
+
       <h2>User Details</h2>
       <p><strong>First Name:</strong> {firstName}</p>
       <p><strong>Last Name:</strong> {lastName}</p>
@@ -33,6 +56,13 @@ const UserDisplay = ({ user }) => {
       )}
       <p><strong>Registration Status:</strong> {registrationStatus}</p>
       <p><strong>Location Coordinates:</strong> [{coordinates[0]}, {coordinates[1]}]</p>
+
+      {/* Example usage of checkbox state */}
+      {isChecked && (
+        <div style={{ marginTop: '16px', color: 'green' }}>
+          Additional info is toggled ON!
+        </div>
+      )}
     </div>
   );
 };
@@ -61,11 +91,34 @@ const styles = {
     borderRadius: '8px',
     padding: '16px',
     margin: '16px auto',
+    position: 'relative', // To position the checkbox in the top-right corner
   },
   image: {
     maxWidth: '100%',
     height: 'auto',
     marginTop: '8px',
+  },
+  checkboxContainer: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+  },
+  checkbox: {
+    cursor: 'pointer',
+    width: '24px', 
+    height: '24px', 
+    borderRadius: '4px',
+    border: '2px solid #007BFF',
+    backgroundColor: '#fff',
+    outline: 'none',
+    position: 'relative',
+  },
+  checkboxChecked: {
+    backgroundColor: '#007BFF',
+  },
+  checkboxLabel: {
+    marginLeft: '8px',
+    fontSize: '16px',
   },
 };
 
