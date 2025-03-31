@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import MapView, { Marker} from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import axios from "axios";
 import { getDistance } from "geolib";
 import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
 import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
@@ -21,7 +20,7 @@ import * as Location from "expo-location";
 import io from "socket.io-client";
 
 const GOOGLE_MAPS_API_KEY = "";
-const SERVER_URL = "http://192.168.144.9:3001";
+const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
 const MapScreen = ({markers, setMarkers, destination, setDestination}) => {

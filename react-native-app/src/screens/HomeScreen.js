@@ -6,6 +6,7 @@ import BasicScreen from "../components/screen_components/BasicScreen";
 import NavButton from "../components/components/NavButton";
 import TextFieldPassword from "../components/components/TextFieldPassword";
 import TextFieldUsername from "../components/components/TextFieldUsername";
+import { SubmitLoginForm } from "../utils/Communication";
 
 const navigateToRecovery = (navigation, setShowError) => {
   return () => {
@@ -25,14 +26,45 @@ export default function HomeScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const iconPosition = language === "en" ? "left" : "right";
 
-  const handleLogin = () => {
-    if (username === "" && password === "") {
-      navigation.navigate("Login");
-    } else {
-      setShowError(true); 
+  const handleLogin = async () => {
+    try {
+      const response = await SubmitLoginForm({
+        idNumber: username,
+        password: password,
+      });
+
+      const { multiRole } = response;
+
+      if (multiRole.length === 1) {
+        if (multiRole[0] === "citizen") {
+          navigation.navigate("Dashboard/Citizen");
+        } else if (multiRole[0] === "security") {
+          navigation.navigate("Dashboard/Security");
+        }
+      } else {
+        navigation.navigate("Login", { multiRole });
+      }
+    } catch (error) {
+      console.log("Login failed:", error);
+
+      const rawMessage = error.message || "Login failed";
+    
+      // Translate based on known server messages
+      if (rawMessage.includes("ID number is incorrect")) {
+        setErrorMessage(HomeText[language].wrongId);
+      } else if (rawMessage.includes("Password is incorrect")) {
+        setErrorMessage(HomeText[language].wrongPassword);
+      } else if (rawMessage.includes("pending approval")) {
+        setErrorMessage(HomeText[language].pendingApproval);
+      } else {
+        setErrorMessage(HomeText[language].wrongCredentials);
+      }
+    
+      setShowError(true);
     }
   };
 
@@ -94,7 +126,7 @@ export default function HomeScreen({ navigation }) {
           <View style={style.modalContainer}>
             <View style={style.errorBox}>
               <Text style={style.modalText}>
-                {HomeText[language].wrongCredentials}
+                {errorMessage}
               </Text>
               <TouchableOpacity
                 style={style.closeButton}
@@ -191,11 +223,14 @@ const HomeText = {
     login: "Login",
     register: "Register",
     passwordPlaceholder: "Password",
-    usernamePlaceholder: "Username",
+    usernamePlaceholder: "ID Number",
     forgotPassword: "Forgot password?",
     notRegistered: "Not registered?",
     registerHere: "Register here",
     wrongCredentials: "Wrong username or password, please try again",
+    wrongId: "ID number is incorrect.",
+    wrongPassword: "Password is incorrect.",
+    pendingApproval: "Your request is still pending approval.",
     close: "Close",
   },
   he: {
@@ -203,11 +238,14 @@ const HomeText = {
     login: "כניסה",
     register: "הרשם",
     passwordPlaceholder: "סיסמה",
-    usernamePlaceholder: "שם משתמש",
+    usernamePlaceholder: "תעודת זהות",
     forgotPassword: "שכחתם סיסמה?",
     notRegistered: "לא רשום?",
     registerHere: "הרשם כאן",
     wrongCredentials: "שם משתמש או סיסמא לא נכונים, נא לנסות שנית",
+    wrongId: "תעודת זהות שגויה.",
+    wrongPassword: "סיסמה שגויה.",
+    pendingApproval: "הבקשה שלך עדיין ממתינה לאישור.",
     close: "סגור",
   },
 };

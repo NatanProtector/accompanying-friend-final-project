@@ -1,5 +1,5 @@
 
-const SERVER_URL = "http://192.168.144.9:3001";
+const SERVER_URL = "http://192.168.1.228:3001";
 
 const splitFullName = (fullName) => {
   fullName = fullName.trim();
@@ -26,7 +26,10 @@ export const SubmitRegisterForm = (formData) => {
     email: formData.email,
     password: formData.password, // ✅ Add this
     idPhoto: formData.idPhoto,
-    multiRole: [formData.registerAs || 'citizen'], // optional fallback
+    multiRole:
+    formData.registerAs === "both"
+      ? ["citizen", "security"]
+      : [formData.registerAs || "citizen"],
     securityCertificatePhoto: formData.securityCertificatePhoto || null, // optional
   };
 
@@ -61,20 +64,29 @@ export const SubmitRegisterForm = (formData) => {
 
 
 export const SubmitLoginForm = async (formData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(`${SERVER_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-  return new Promise((resolve, reject) => {
-    console.log('Form Data:', formData);
-    
-    // Simulate success or failure:
-    const shouldFail = false; // Change to true to simulate failure
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
 
-    if (shouldFail) {
-      reject(new Error('Submission failed'));
-    } else {
-      resolve('Form submitted successfully');
+      const data = await response.json();
+      console.log("Login Success:", data);
+      resolve(data);
+    } catch (error) {
+      console.error("Login Error:", error);
+      reject(error);
     }
   });
-}
+};
+
 
 export const ReportEmergency = async (formData) => {
     return new Promise((resolve, reject) => {

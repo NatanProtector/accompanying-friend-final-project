@@ -1,11 +1,33 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { Input } from "react-native-elements";
 import { FontAwesome } from "@expo/vector-icons";
 
-export default function TextFieldPassword({ value, onChangeText, placeholder, onFocus, iconPosition, errorMessage, language }) {
+export default function TextFieldPassword({
+  value,
+  onChangeText,
+  placeholder,
+  onFocus,
+  iconPosition,
+  errorMessage,
+  language
+}) {
   const [isFocused, setIsFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const align = language === "he" ? "right" : "left";
+
+  // Set lock icon depending on language
+  const lockIcon =
+    language === "he"
+      ? { rightIcon: <FontAwesome name="lock" size={20} color="gray" /> }
+      : { leftIcon: <FontAwesome name="lock" size={20} color="gray" /> };
+
+  // Set eye icon depending on language
+  const eyeIcon = (
+    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+      <FontAwesome name={showPassword ? "eye" : "eye-slash"} size={20} color="gray" />
+    </TouchableOpacity>
+  );
 
   return (
     <View style={[styles.container, { flexDirection: language === "he" ? "row-reverse" : "row" }]}>
@@ -13,9 +35,11 @@ export default function TextFieldPassword({ value, onChangeText, placeholder, on
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
-        secureTextEntry
-        leftIcon={iconPosition === "left" ? <FontAwesome name="lock" size={20} color="gray" /> : null}
-        rightIcon={iconPosition === "right" ? <FontAwesome name="lock" size={20} color="gray" /> : null}
+        secureTextEntry={!showPassword}
+        {...lockIcon}
+        {...(language === "he"
+          ? { leftIcon: eyeIcon }
+          : { rightIcon: eyeIcon })}
         containerStyle={styles.inputContainer}
         inputContainerStyle={[
           styles.inputInnerContainer,
@@ -23,9 +47,12 @@ export default function TextFieldPassword({ value, onChangeText, placeholder, on
         ]}
         inputStyle={[styles.input, { textAlign: align }]}
         placeholderTextColor="gray"
-        onFocus={() => { onFocus && onFocus(); setIsFocused(true)}}
+        onFocus={() => {
+          onFocus && onFocus();
+          setIsFocused(true);
+        }}
         onBlur={() => setIsFocused(false)}
-        errorStyle={[styles.error, { textAlign: align}]}
+        errorStyle={[styles.error, { textAlign: align }]}
         errorMessage={errorMessage}
       />
     </View>
@@ -50,7 +77,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    elevation: 3, // Android shadow
+    elevation: 3,
   },
   inputFocused: {
     borderColor: "#4A90E2",
@@ -59,5 +86,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
   },
-  error: { color: "red", fontSize: 14 },
+  error: {
+    color: "red",
+    fontSize: 14,
+  },
 });

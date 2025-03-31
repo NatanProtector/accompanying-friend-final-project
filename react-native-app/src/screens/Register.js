@@ -25,6 +25,11 @@ export default function Register({ navigation }) {
                 onPress={() => navigation.navigate('RegisterForm', { registerAs: 'security' })}
                 // buttonStyle={styles.button}
             />
+            <NavButton
+                title={RegisterText[language].both}
+                onPress={() => navigation.navigate('RegisterForm', { registerAs: 'both' })}
+                // buttonStyle={styles.button}
+            />
         </BasicScreen>
     );
 }
@@ -54,11 +59,13 @@ const RegisterText = {
         prompt: 'You are registering as a..',
         citizen: 'Register as Citizen',
         security: 'Register as Security',
+        both: 'Register as Both',
     },
     he: {
         title: 'הרשמה',
         prompt: 'אתם נרשמים בתור..',
         citizen: 'רישום אזרח',
         security: 'רישום אבטחה',
+        both: 'רישום עבור שניהם',
     },
 };

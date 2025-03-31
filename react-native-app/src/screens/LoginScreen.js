@@ -9,28 +9,29 @@ const moveToDashboard = (navigation, screenName) => {
     navigation.navigate(screenName);
 };
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, route }) {
     const { language } = useContext(MyLanguageContext);
+    const multiRole = route?.params?.multiRole || [];
 
     return (
         <BasicScreen title={LoginText[language].title} language={language}>
-            <View style={styles.buttonGroup}>
-                <Text style={styles.text} >
-                    {LoginText[language].prompt}
-                </Text>
-                <NavButton
-                    title={LoginText[language].citizen}
-                    onPress={() => moveToDashboard(navigation, 'Dashboard/Citizen')}
-                    // buttonStyle={styles.roleButton}
-                />
-                <NavButton
-                    title={LoginText[language].security}
-                    onPress={() => moveToDashboard(navigation, 'Dashboard/Security')}
-                    // buttonStyle={styles.roleButton}
-                />
-            </View>
+          <View style={styles.buttonGroup}>
+            <Text style={styles.text}>{LoginText[language].prompt}</Text>
+            {multiRole.includes('citizen') && (
+              <NavButton
+                title={LoginText[language].citizen}
+                onPress={() => navigation.navigate('Dashboard/Citizen')}
+              />
+            )}
+            {multiRole.includes('security') && (
+              <NavButton
+                title={LoginText[language].security}
+                onPress={() => navigation.navigate('Dashboard/Security')}
+              />
+            )}
+          </View>
         </BasicScreen>
-    );
+      );
 }
 
 const styles = StyleSheet.create({
