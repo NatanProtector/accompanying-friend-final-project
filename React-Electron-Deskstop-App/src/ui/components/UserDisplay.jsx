@@ -57,12 +57,6 @@ const UserDisplay = ({ user, onSelect, onUnselect }) => {
       <p><strong>Registration Status:</strong> {registrationStatus}</p>
       <p><strong>Location Coordinates:</strong> [{coordinates[0]}, {coordinates[1]}]</p>
 
-      {/* Example usage of checkbox state */}
-      {isChecked && (
-        <div style={{ marginTop: '16px', color: 'green' }}>
-          Additional info is toggled ON!
-        </div>
-      )}
     </div>
   );
 };
