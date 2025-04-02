@@ -4,11 +4,6 @@ import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screen_components/BasicScreen';
 import NavButton from '../components/components/NavButton';
 
-// Navigate to a specific screen
-const moveToDashboard = (navigation, screenName) => {
-    navigation.navigate(screenName);
-};
-
 export default function LoginScreen({ navigation, route }) {
     const { language } = useContext(MyLanguageContext);
     const multiRole = route?.params?.multiRole || [];

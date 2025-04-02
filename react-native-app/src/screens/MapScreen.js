@@ -10,26 +10,27 @@ import {
   Linking,
   Modal,
 } from "react-native";
-import MapView, { Marker} from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
-import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
-import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
+import redMarker from "../../assets/markers/map-marker-svgrepo-com (1).png";
+import greenMarker from "../../assets/markers/map-marker-svgrepo-com.png";
 import * as Location from "expo-location";
-
+import { GOOGLE_MAPS_API_KEY } from "@env";
+import DriverDirections from "../components/components/DriverDirections";
 import io from "socket.io-client";
 
-const GOOGLE_MAPS_API_KEY = "";
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
-const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
+const MapScreen = ({ markers, setMarkers, destination, setDestination }) => {
   const [region, setRegion] = useState(null);
   const [routeSteps, setRouteSteps] = useState([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState(null);
+  const [showDirections, setShowDirections] = useState(false);
 
   const socketRef = useRef(null);
 
@@ -37,8 +38,8 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
 
   // if (GOOGLE_MAPS_API_KEY == "")
   //   throw new Error ("Missing Google Maps API key");
-  
-  useEffect(() => {    
+
+  useEffect(() => {
     const getLocationPermission = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -55,19 +56,21 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
       };
 
       setRegion(newRegion);
-      
+
       // Connect to the Socket.io server and register the user
       socketRef.current = io(SERVER_URL);
-      
+
       socketRef.current.emit("register", {
         role: "user",
         userId: idNumber,
-        location: { latitude: location.coords.latitude, longitude: location.coords.longitude },
+        location: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
       });
 
       // Start transmitting location every five seconds
       startLocationTransmission();
-
     };
 
     getLocationPermission();
@@ -77,49 +80,55 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
         socketRef.current.disconnect(); // Disconnect socket on unmount
       }
     };
-
   }, []);
 
   const startLocationTransmission = async () => {
     try {
-      const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
       const { latitude, longitude } = location.coords;
-  
+
       // Set region only ONCE, during initial setup
       setRegion((prevRegion) => ({
         ...prevRegion,
         latitude,
         longitude,
       }));
-  
+
       // Emit initial location
       if (socketRef.current) {
         socketRef.current.emit("update_location", { latitude, longitude });
       }
-  
+
       // Start location updates every 5 seconds, without updating the region
       const intervalId = setInterval(async () => {
-        const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+        const loc = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
         const { latitude, longitude } = loc.coords;
-  
+
         // Only send the location over socket, don't change map region
         if (socketRef.current) {
           socketRef.current.emit("update_location", { latitude, longitude });
         }
       }, 5000);
-  
+
       return () => clearInterval(intervalId);
     } catch (error) {
       console.error("Error transmitting location:", error);
     }
   };
-  
 
   useEffect(() => {
     if (routeSteps.length === 0) return;
 
     const sub = Location.watchPositionAsync(
-      { accuracy: Location.Accuracy.High, timeInterval: 1000, distanceInterval: 3 },
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 1000,
+        distanceInterval: 3,
+      },
       (location) => {
         const { latitude, longitude } = location.coords;
         const step = routeSteps[currentStepIndex];
@@ -158,7 +167,10 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
 
   const getAddressFromCoords = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      const [place] = await Location.reverseGeocodeAsync({
+        latitude: lat,
+        longitude: lng,
+      });
       return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
     } catch (error) {
       return "Unknown location";
@@ -197,6 +209,23 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
           <Text style={styles.streetText}>
             {stripHtml(routeSteps[currentStepIndex]?.html_instructions || "")}
           </Text>
+          <TouchableOpacity
+            style={styles.directionsButton}
+            onPress={() => setShowDirections(!showDirections)}
+          >
+            <Text style={styles.directionsButtonText}>
+              {showDirections ? "Hide Directions" : "Show All Directions"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {showDirections && routeSteps.length > 0 && (
+        <View style={styles.directionsContainer}>
+          <DriverDirections
+            steps={routeSteps}
+            currentStepIndex={currentStepIndex}
+          />
         </View>
       )}
 
@@ -230,7 +259,10 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
           {markers.map((marker) => (
             <Marker
               key={marker.id}
-              coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
               image={selectedMarkerId === marker.id ? greenMarker : redMarker}
               tracksViewChanges={false}
               ref={(ref) => {
@@ -263,7 +295,9 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
             style={styles.actionButton}
             onPress={() => {
               const { latitude, longitude } = selectedMarker;
-              Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`);
+              Linking.openURL(
+                `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+              );
             }}
           >
             <Text style={styles.actionText}>📍</Text>
@@ -293,7 +327,9 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedMarker?.name || "Marker Info"}</Text>
+            <Text style={styles.modalTitle}>
+              {selectedMarker?.name || "Marker Info"}
+            </Text>
             <Text>Description: {selectedMarker?.description || "N/A"}</Text>
             <Text>Address: {selectedMarker?.address || "Unknown"}</Text>
             <Text>Lat: {selectedMarker?.latitude.toFixed(6)}</Text>
@@ -397,6 +433,25 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  directionsContainer: {
+    position: "absolute",
+    bottom: 80,
+    left: 10,
+    right: 10,
+    zIndex: 1000,
+  },
+  directionsButton: {
+    backgroundColor: "#4958FF",
+    padding: 8,
+    borderRadius: 8,
+    marginTop: 8,
+    alignItems: "center",
+  },
+  directionsButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 

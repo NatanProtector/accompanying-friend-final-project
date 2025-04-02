@@ -56,7 +56,12 @@ export default function NavigationHeader() {
 
       <View style={styles.display_container}>
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "gray" }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "gray",
+          }}
         >
           <Text>Display</Text>
         </View>
