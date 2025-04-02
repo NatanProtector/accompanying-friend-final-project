@@ -1,6 +1,6 @@
-import { Map, Marker } from "@vis.gl/react-google-maps";import MapController from "./MapController";
+import { Map, Marker } from "@vis.gl/react-google-maps";
+import MapController from "./MapController";
 import PropTypes from "prop-types";
-import React from "react";
 
 const MapComponent = ({
   userLocations,
@@ -9,7 +9,7 @@ const MapComponent = ({
   centerCoords,
   mapZoom,
   defaultPosition,
-  defaultZoom
+  defaultZoom,
 }) => {
   return (
     <Map
@@ -21,18 +21,22 @@ const MapComponent = ({
       onClick={onMapClick}
       reuseMaps={true}
     >
-      <MapController clickedPosition={centerCoords} zoomLevel={mapZoom} />
+      {centerCoords && mapZoom && (
+        <MapController clickedPosition={centerCoords} zoomLevel={mapZoom} />
+      )}
 
-      {userLocations.map((user, index) => (
-        <Marker
-          key={`user-${index}`}
-          position={{
-            lat: user.location.latitude,
-            lng: user.location.longitude,
-          }}
-          title={`User: ${user.id}`}
-        />
-      ))}
+      {userLocations &&
+        userLocations.length > 0 &&
+        userLocations.map((user, index) => (
+          <Marker
+            key={`user-${index}`}
+            position={{
+              lat: user.location.latitude,
+              lng: user.location.longitude,
+            }}
+            title={`User: ${user.id}`}
+          />
+        ))}
 
       {clickedPosition && (
         <Marker
@@ -61,17 +65,22 @@ MapComponent.propTypes = {
         longitude: PropTypes.number.isRequired,
       }).isRequired,
     })
-  ).isRequired,
+  ),
   clickedPosition: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired,
   }),
-  onMapClick: PropTypes.func.isRequired,
+  onMapClick: PropTypes.func,
   centerCoords: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired,
-  }).isRequired,
-  mapZoom: PropTypes.number.isRequired,
+  }),
+  mapZoom: PropTypes.number,
+  defaultPosition: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired,
+  }),
+  defaultZoom: PropTypes.number,
 };
 
 export default MapComponent;

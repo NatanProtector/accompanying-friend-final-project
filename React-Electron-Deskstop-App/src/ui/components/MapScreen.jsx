@@ -79,7 +79,9 @@ const MapScreen = () => {
 
   return (
     <APIProvider apiKey={key}>
+
       <MapComponent
+        style={{ width: "80%", height: "100%" }}
         userLocations={userLocations}
         clickedPosition={clickedPosition}
         onMapClick={handleMapClick}
@@ -114,6 +116,7 @@ const MapScreen = () => {
           </form>
         </div>
       )}
+
     </APIProvider>
   );
 };
