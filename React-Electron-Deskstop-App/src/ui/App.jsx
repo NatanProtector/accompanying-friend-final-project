@@ -1,37 +1,24 @@
 import React from 'react';
-import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import MyMap from './components/MyMap';
-
-const Home = () => <h2>Home Page</h2>;
-
-const ManageUsers = () => <h2>Manage Users Page</h2>;
+import Home from './components/Home';
+import BasicScreen from './components/BasicScreen';
+import Header from './components/Header';
+import ManageUsers from './components/ManageUsers';
 
 const App = () => {
   return (
     <Router>
-      <div>
-        {/* Navigation links */}
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/Manage/Users">Manage Users</Link>
-            </li>
-            <li>
-              <Link to="/map">Map</Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* Define routes for different components */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Manage/Users" element={<ManageUsers />} />
-          <Route path="/map" element={<MyMap />} />
-        </Routes>
-      </div>
+      <BasicScreen
+        header={<Header />}
+        content={
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/Manage/Users" element={<ManageUsers />} />
+            <Route path="/map" element={<MyMap />} />
+          </Routes>
+        }
+      />
     </Router>
   );
 };

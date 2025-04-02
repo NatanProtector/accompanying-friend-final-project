@@ -10,12 +10,11 @@ const splitFullName = (fullName) => {
 };
 
 export const SubmitRegisterForm = (formData) => {
+
   console.log("Sending Form Data:", formData);
 
   // Reformat full name to first name and last name
   const { firstName, lastName } = splitFullName(formData.fullName);
-  formData.firstName = firstName;
-  formData.lastName = lastName;
 
   // reconstruct formData to { firstName, lastName, phone, idNumber, email, idPhoto }
   formData = {
