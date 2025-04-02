@@ -1,4 +1,3 @@
-import React from 'react';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import MyMap from './components/MyMap';
 import Home from './components/Home';
