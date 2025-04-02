@@ -42,22 +42,24 @@ export default function RegistrationForm({ route, navigation }) {
       .email(validationMessages[language].invalidEmail)
       .required(validationMessages[language].requiredEmail),
 
-    password: Yup.string()
+      password: Yup.string()
       .required(validationMessages[language].requiredPassword)
       .min(8, validationMessages[language].minPassword)
-      .matches(/^[A-Za-z0-9!@#$%^&*()_+=\-[\]{}|:;"'<>,.?/]+$/, validationMessages[language].invalidPassword)
       .matches(/[A-Z]/, validationMessages[language].upperCase)
       .matches(/[a-z]/, validationMessages[language].lowerCase)
       .matches(/\d/, validationMessages[language].number)
       .matches(/[!@#$%^&*(),.?":{}|<>]/, validationMessages[language].specialChar),
+    
 
     // For testing removed  
     idPhoto: Yup.string()
       .required(validationMessages[language].requiredIdPhoto),
 
-    securityCertificatePhoto: registerAs === 'security' 
+    securityCertificatePhoto: (registerAs === 'security'||registerAs === 'both') 
       ? Yup.string().required(validationMessages[language].requiredCertificate)
       : Yup.string().nullable(),
+
+      
   });
 
   // Image picker logic
@@ -84,6 +86,16 @@ export default function RegistrationForm({ route, navigation }) {
 
   const handleFormSubmit = async (values) => {
     try {
+
+      values.registerAs = registerAs;
+
+      if (registerAs === 'both') {
+        values.multiRole = ['citizen', 'security'];
+      } else {
+        values.multiRole = [registerAs];
+      }
+      
+
       await SubmitRegisterForm(values);
 
       Alert.alert(
@@ -111,11 +123,11 @@ export default function RegistrationForm({ route, navigation }) {
     <BasicScreen title={RegistrationText[language].title} language={language}>
       <Formik
         initialValues={{
-          fullName: 'Natan Protector',
-          idNumber: '205438542',
-          phone: '0524739911',
-          email: 'natanprotector@email.com',
-          password: 'Password1!',
+          fullName: '',
+          idNumber: '',
+          phone: '',
+          email: "",
+          password: '',
           idPhoto: '',
           securityCertificatePhoto: '',
           // fullName: '',
@@ -214,7 +226,7 @@ export default function RegistrationForm({ route, navigation }) {
             {idPhoto && <Image source={{ uri: idPhoto }} style={styles.image} />}
             {touched.idPhoto && errors.idPhoto && <Text style={styles.error}>{errors.idPhoto}</Text>}
 
-            {registerAs === 'security' && (
+            {(registerAs === 'security' || registerAs === 'both') && (
               <>
                 <TouchableOpacity
                   style={styles.uploadButton}
@@ -313,8 +325,8 @@ const RegistrationText = {
     email: 'אימייל',
     uploadID: 'העלה תעודת זהות',
     uploadedID: 'תעודת זהות הועלתה',
-    uploadCertificate: 'העלה אישור אבטחה',
-    uploadedCertificate: 'אישור הועלה',
+    uploadCertificate: 'העלה תעודת מאבטח',
+    uploadedCertificate: 'תעודת מאבטח הועלתה',
     submit: 'שלח',
     password: 'סיסמה',
     successTitle: 'הצלחה',
@@ -357,6 +369,6 @@ const validationMessages = {
     number: 'חייב להכיל לפחות מספר אחד',
     specialChar: 'חייב להכיל לפחות תו מיוחד אחד',
     requiredIdPhoto: 'נדרש להעלות תמונת תעודת זהות',
-    requiredCertificate: 'נדרש להעלות אישור אבטחה',
+    requiredCertificate: 'נדרש להעלות תעודת מאבטח',
   }
 };
