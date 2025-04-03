@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import BasicScreen from '../components/screen_components/BasicScreen';
-import NavButton from '../components/components/NavButton';
+import NavButton from '../components/general_components/NavButton';
 
 export default function LoginScreen({ navigation, route }) {
     const { language } = useContext(MyLanguageContext);

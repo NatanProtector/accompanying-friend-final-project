@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { BlurView } from "expo-blur";
 import MyLanguageContext from "../../utils/MyLanguageContext";
 import { ReportEmergency } from "../../utils/Communication";
-import ReportButton from "../components/ReportButton";
+import ReportButton from "../general_components/ReportButton";
 
 export default function NavigationHeader() {
   const { language } = useContext(MyLanguageContext);

@@ -3,9 +3,9 @@ import { View, StyleSheet, Text, TouchableOpacity, Alert, Image, I18nManager } f
 import * as ImagePicker from 'expo-image-picker';
 import BasicScreen from '../components/screen_components/BasicScreen';
 import MyLanguageContext from '../utils/MyLanguageContext';
-import TextField from '../components/components/TextField';
-import TextFieldPassword from '../components/components/TextFieldPassword';
-import NavButton from '../components/components/NavButton';
+import TextField from '../components/general_components/TextField';
+import TextFieldPassword from '../components/general_components/TextFieldPassword';
+import NavButton from '../components/general_components/NavButton';
 import { CommonActions } from "@react-navigation/native";
 import { Formik } from 'formik';
 import * as Yup from 'yup';

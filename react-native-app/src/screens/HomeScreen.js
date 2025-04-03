@@ -3,9 +3,9 @@ import { useContext, useState } from "react";
 import { BlurView } from "expo-blur";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import BasicScreen from "../components/screen_components/BasicScreen";
-import NavButton from "../components/components/NavButton";
-import TextFieldPassword from "../components/components/TextFieldPassword";
-import TextFieldUsername from "../components/components/TextFieldUsername";
+import NavButton from "../components/general_components/NavButton";
+import TextFieldPassword from "../components/general_components/TextFieldPassword";
+import TextFieldUsername from "../components/general_components/TextFieldUsername";
 import { SubmitLoginForm } from "../utils/Communication";
 
 /**

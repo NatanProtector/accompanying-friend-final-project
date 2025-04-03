@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useEffect, useRef } from "react";
 import {
   View,
   Button,
@@ -13,28 +13,41 @@ import {
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
-import redMarker from "../../assets/markers/map-marker-svgrepo-com (1).png";
-import greenMarker from "../../assets/markers/map-marker-svgrepo-com.png";
+import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
+import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
 import * as Location from "expo-location";
 import { GOOGLE_MAPS_API_KEY } from "@env";
-import DriverDirections from "../components/components/DriverDirections";
+import DriverDirections from "../general_components/DriverDirections";
 import io from "socket.io-client";
 
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
-const MapScreen = ({ markers, setMarkers, destination, setDestination }) => {
-  const [region, setRegion] = useState(null);
-  const [routeSteps, setRouteSteps] = useState([]);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [selectedMarkerId, setSelectedMarkerId] = useState(null);
-  const [showDirections, setShowDirections] = useState(false);
-
+const MapScreen = ({
+  markers,
+  setMarkers,
+  destination,
+  setDestination,
+  region,
+  setRegion,
+  routeSteps,
+  setRouteSteps,
+  currentStepIndex,
+  setCurrentStepIndex,
+  selectedMarker,
+  setSelectedMarker,
+  showInfoModal,
+  setShowInfoModal,
+  selectedMarkerId,
+  setSelectedMarkerId,
+  showDirections,
+  setShowDirections,
+  markerRefs,
+  handleMapPress,
+  handleRemoveMarker,
+  stripHtml,
+}) => {
   const socketRef = useRef(null);
-
-  const markerRefs = useRef({});
 
   // if (GOOGLE_MAPS_API_KEY == "")
   //   throw new Error ("Missing Google Maps API key");
@@ -163,8 +176,6 @@ const MapScreen = ({ markers, setMarkers, destination, setDestination }) => {
   //   }
   // };
 
-  const stripHtml = (html) => html.replace(/<[^>]+>/g, "");
-
   const getAddressFromCoords = async (lat, lng) => {
     try {
       const [place] = await Location.reverseGeocodeAsync({
@@ -175,28 +186,6 @@ const MapScreen = ({ markers, setMarkers, destination, setDestination }) => {
     } catch (error) {
       return "Unknown location";
     }
-  };
-
-  const handleMapPress = async (event) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    const addr = await getAddressFromCoords(latitude, longitude);
-    const newMarker = {
-      id: Math.random().toString(),
-      latitude,
-      longitude,
-      address: addr,
-      name: "Custom Marker", // optional for later
-      description: "No description", // optional for later
-    };
-    setMarkers((prev) => [...prev, newMarker]);
-    setDestination({ latitude, longitude });
-  };
-
-  const handleRemoveMarker = (id) => {
-    setMarkers((prev) => prev.filter((m) => m.id !== id));
-    setRouteSteps([]);
-    setCurrentStepIndex(0);
-    setSelectedMarker(null);
   };
 
   return (
