@@ -8,7 +8,6 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-// import {SearchLocation} from '../utils/Communication';
 import * as Location from "expo-location";
 import { useState, useEffect, useRef } from "react";
 import BasicScreenTemplate from "../components/screen_components/BasicScreenTemplate";
@@ -21,11 +20,18 @@ import { GOOGLE_MAPS_API_KEY } from "@env";
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
+/**
+ * BUG
+ * - when title is too long, it does not look good, its behind the search button
+ */
+
 export default function DriveScreen() {
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [destinationText, setDestinationText] = useState("");
+
 
   // map states
   const [marker, setMarker] = useState(null);
@@ -51,8 +57,6 @@ export default function DriveScreen() {
     }
 
     try {
-      console.log(GOOGLE_MAPS_API_KEY);
-
       // Use Google Places Autocomplete API
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
@@ -61,7 +65,6 @@ export default function DriveScreen() {
       );
 
       const data = await response.json();
-      console.log("Autocomplete Data:", data);
 
       if (data.predictions && data.predictions.length > 0) {
         // For now, just show the predictions without coordinates
@@ -231,6 +234,15 @@ export default function DriveScreen() {
     return () => sub.then((s) => s.remove());
   }, [routeSteps, currentStepIndex]);
 
+  // Update destination text when route steps change
+  useEffect(() => {
+    if (routeSteps.length > 0 && marker) {
+      setDestinationText(marker.name);
+    } else {
+      setDestinationText("");
+    }
+  }, [routeSteps, marker]);
+
   // Remove HTML tags from text
   const stripHtml = (html) => html.replace(/<[^>]+>/g, "");
 
@@ -257,7 +269,7 @@ export default function DriveScreen() {
       latitude,
       longitude,
       address: addr,
-      name: "Destination",
+      name: `${latitude}, ${longitude}`,
       description: "Your selected destination",
     };
     setMarker(newMarker);
@@ -342,12 +354,16 @@ export default function DriveScreen() {
         />
       }
       FooterComponent={
-        <TouchableOpacity
-          style={styles.searchButton}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.searchIcon}>🔍</Text>
-        </TouchableOpacity>
+        <View style={styles.footerContainer}>
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.searchIcon}>🔍</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.destinationText}>{destinationText}</Text>
+        </View>
       }
     >
       <View style={styles.container}>
@@ -433,6 +449,17 @@ export default function DriveScreen() {
   );
 }
 
+// <View style={styles.footerContainer}>
+//   <TouchableOpacity
+//     style={styles.searchButton}
+//     onPress={() => setModalVisible(true)}
+//   >
+//     <Text style={styles.searchIcon}>🔍</Text>
+//   </TouchableOpacity>
+
+//   <Text style={styles.destinationText}>{destinationText}</Text>
+// </View>
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -458,6 +485,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
+    zIndex: 1001,
+    minWidth: 50,
+    minHeight: 50,
+    alignItems: "center",
+    justifyContent: "center",
   },
   searchIcon: {
     fontSize: 24,
@@ -546,7 +578,6 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     marginTop: 10,
     marginBottom: 10,
-    // Make scrollable when results are more than 150
     overflow: "scroll",
   },
   searchResultItem: {
@@ -563,5 +594,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginTop: 2,
+  },
+  footerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    padding: 10,
+    position: "relative",
+    zIndex: 1000,
+  },
+  destinationText: {
+    color: "black",
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
+    marginBottom: 15,
   },
 });

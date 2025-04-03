@@ -1,4 +1,4 @@
-import React, {useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Button,
@@ -205,6 +205,11 @@ const MapScreen = ({
           region={region}
           showsUserLocation={true}
           onPress={handleMapPress}
+          cacheEnabled={true}
+          reuseMap={true}
+          loadingEnabled={true}
+          loadingBackgroundColor="white"
+          loadingIndicatorColor="teal"
         >
           {destination && (
             <MapViewDirections
