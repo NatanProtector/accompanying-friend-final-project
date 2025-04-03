@@ -235,7 +235,27 @@ export default function DriveScreen() {
 
   return (
     <BasicScreenTemplate
-      HeaderComponent={<NavigationHeader />}
+      HeaderComponent={<NavigationHeader
+        DisplayComponent={
+          routeSteps.length > 0 && (
+            <View style={styles.navBox}>
+              <Text style={styles.distanceText}>
+                {routeSteps[currentStepIndex]?.distance?.text || ""}
+              </Text>
+              <Text style={styles.streetText}>
+                {stripHtml(routeSteps[currentStepIndex]?.html_instructions || "")}
+              </Text>
+              <TouchableOpacity
+                style={styles.directionsButton}
+                onPress={() => setShowDirections(!showDirections)}
+              >
+                <Text style={styles.directionsButtonText}>
+                  {showDirections ? "Hide Directions" : "Show All Directions"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />}
       FooterComponent={
         <TouchableOpacity
           style={styles.searchButton}
@@ -380,6 +400,39 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     color: "white",
+    fontWeight: "bold",
+  },
+  navBox: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    right: 20,
+    backgroundColor: "black",
+    padding: 15,
+    borderRadius: 12,
+    zIndex: 999,
+  },
+  distanceText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  streetText: {
+    fontSize: 18,
+    color: "#00aaff",
+  },
+  directionsButton: {
+    backgroundColor: "#4958FF",
+    padding: 8,
+    borderRadius: 8,
+    marginTop: 8,
+    alignItems: "center",
+  },
+  directionsButtonText: {
+    color: "white",
+    fontSize: 14,
     fontWeight: "bold",
   },
 });
