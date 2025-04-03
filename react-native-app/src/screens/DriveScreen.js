@@ -6,6 +6,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  ScrollView,
 } from "react-native";
 // import {SearchLocation} from '../utils/Communication';
 import * as Location from "expo-location";
@@ -15,6 +16,7 @@ import NavigationHeader from "../components/screen_components/NavigationHeader";
 import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
+import { GOOGLE_MAPS_API_KEY } from "@env";
 
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
@@ -23,6 +25,7 @@ export default function DriveScreen() {
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
 
   // map states
   const [marker, setMarker] = useState(null);
@@ -37,6 +40,83 @@ export default function DriveScreen() {
 
   const socketRef = useRef(null);
   const markerRefs = useRef({});
+
+  // Handle search input change and update results
+  const handleSearchInputChange = async (text) => {
+    setSearchText(text);
+
+    if (text.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      console.log(GOOGLE_MAPS_API_KEY);
+
+      // Use Google Places Autocomplete API
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
+          text
+        )}&key=${GOOGLE_MAPS_API_KEY}&language=he&components=country:il`
+      );
+
+      const data = await response.json();
+      console.log("Autocomplete Data:", data);
+
+      if (data.predictions && data.predictions.length > 0) {
+        // For now, just show the predictions without coordinates
+        const results = data.predictions.map((prediction, index) => ({
+          id: index.toString(),
+          name: prediction.structured_formatting.main_text,
+          description: prediction.structured_formatting.secondary_text,
+          address: prediction.description,
+          placeId: prediction.place_id,
+        }));
+
+        setSearchResults(results);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.log("Error searching locations:", error);
+      setSearchResults([]);
+    }
+  };
+
+  const handleResultSelect = async (result) => {
+    try {
+      // console.log("Selected result:", result);
+      // console.log("Place ID:", result.placeId);
+
+      // Get place details to get coordinates
+      const detailsResponse = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}`
+      );
+
+      const detailsData = await detailsResponse.json();
+      // console.log("Place Details Response:", detailsData);
+
+      if (detailsData.result && detailsData.result.geometry) {
+        const { lat, lng } = detailsData.result.geometry.location;
+        const newMarker = {
+          id: "1",
+          latitude: lat,
+          longitude: lng,
+          name: result.name,
+          description: result.description,
+          address: result.address,
+        };
+        setMarker(newMarker);
+        setDestination({ latitude: lat, longitude: lng });
+        setModalVisible(false);
+      } else {
+        console.log("No geometry data in response");
+      }
+    } catch (error) {
+      console.log("Error getting place details:", error);
+      Alert.alert("Error", "Could not get location details. Please try again.");
+    }
+  };
 
   // Initialize location permissions and socket connection
   useEffect(() => {
@@ -194,7 +274,7 @@ export default function DriveScreen() {
 
   // Handle search button press
   const handleSearch = async () => {
-    console.log("Search:", searchText);
+    // console.log("Search:", searchText);
     // const result = await SearchLocation(searchText).catch((error) => console.log(error));
     // console.log(result);
     await handleAddMarkerByAddress();
@@ -235,27 +315,32 @@ export default function DriveScreen() {
 
   return (
     <BasicScreenTemplate
-      HeaderComponent={<NavigationHeader
-        DisplayComponent={
-          routeSteps.length > 0 && (
-            <View style={styles.navBox}>
-              <Text style={styles.distanceText}>
-                {routeSteps[currentStepIndex]?.distance?.text || ""}
-              </Text>
-              <Text style={styles.streetText}>
-                {stripHtml(routeSteps[currentStepIndex]?.html_instructions || "")}
-              </Text>
-              <TouchableOpacity
-                style={styles.directionsButton}
-                onPress={() => setShowDirections(!showDirections)}
-              >
-                <Text style={styles.directionsButtonText}>
-                  {showDirections ? "Hide Directions" : "Show All Directions"}
+      HeaderComponent={
+        <NavigationHeader
+          DisplayComponent={
+            routeSteps.length > 0 && (
+              <View style={styles.navBox}>
+                <Text style={styles.distanceText}>
+                  {routeSteps[currentStepIndex]?.distance?.text || ""}
                 </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        />}
+                <Text style={styles.streetText}>
+                  {stripHtml(
+                    routeSteps[currentStepIndex]?.html_instructions || ""
+                  )}
+                </Text>
+                <TouchableOpacity
+                  style={styles.directionsButton}
+                  onPress={() => setShowDirections(!showDirections)}
+                >
+                  <Text style={styles.directionsButtonText}>
+                    {showDirections ? "Hide Directions" : "Show All Directions"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }
+        />
+      }
       FooterComponent={
         <TouchableOpacity
           style={styles.searchButton}
@@ -303,7 +388,7 @@ export default function DriveScreen() {
               style={styles.input}
               placeholder="Type your search..."
               value={searchText}
-              onChangeText={setSearchText}
+              onChangeText={handleSearchInputChange}
             />
 
             <View style={styles.modalButtons}>
@@ -315,11 +400,32 @@ export default function DriveScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setModalVisible(false)}
+                onPress={() => {
+                  setModalVisible(false);
+                  setSearchText("");
+                  setSearchResults([]);
+                }}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
+
+            {searchResults.length > 0 && (
+              <ScrollView style={styles.searchResultsContainer}>
+                {searchResults.map((result) => (
+                  <TouchableOpacity
+                    key={result.id}
+                    style={styles.searchResultItem}
+                    onPress={() => handleResultSelect(result)}
+                  >
+                    <Text style={styles.searchResultText}>{result.name}</Text>
+                    <Text style={styles.searchResultSubtext}>
+                      {result.description}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
           </View>
         </View>
       </Modal>
@@ -434,5 +540,28 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  searchResultsContainer: {
+    width: "100%",
+    maxHeight: 200,
+    marginTop: 10,
+    marginBottom: 10,
+    // Make scrollable when results are more than 150
+    overflow: "scroll",
+  },
+  searchResultItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  searchResultText: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "bold",
+  },
+  searchResultSubtext: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 2,
   },
 });
