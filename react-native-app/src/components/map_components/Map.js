@@ -205,7 +205,6 @@ const MapScreen = ({
           region={region}
           showsUserLocation={true}
           onPress={handleMapPress}
-          cacheEnabled={true}
           reuseMap={true}
           loadingEnabled={true}
           loadingBackgroundColor="white"
