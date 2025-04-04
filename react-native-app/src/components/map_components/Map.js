@@ -25,9 +25,7 @@ const idNumber = "111111111";
 
 const MapScreen = ({
   markers,
-  setMarkers,
   destination,
-  setDestination,
   region,
   setRegion,
   routeSteps,
@@ -41,11 +39,9 @@ const MapScreen = ({
   selectedMarkerId,
   setSelectedMarkerId,
   showDirections,
-  setShowDirections,
   markerRefs,
   handleMapPress,
   handleRemoveMarker,
-  stripHtml,
   followUser,
 }) => {
   const socketRef = useRef(null);
@@ -254,12 +250,13 @@ const MapScreen = ({
               language="he"
               mode="DRIVING"
               region="il"
+              units="metric"
               onReady={(result) => {
                 const steps = result.legs[0].steps;
-                console.log("Route Steps:", steps);
-                console.log("First Step:", steps[0]);
+                console.log("Route Steps:", JSON.stringify(steps, null, 2));
+                console.log("First Step:", steps[1]);
                 console.log("First Step Maneuver:", steps[0]?.maneuver);
-                console.log("First Step Distance:", steps[0]?.distance);
+                console.log("First Step Distance:", steps[0]?.distance?.text);
                 setRouteSteps(steps);
                 setCurrentStepIndex(0);
               }}

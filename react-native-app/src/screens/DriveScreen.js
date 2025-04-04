@@ -351,14 +351,15 @@ export default function DriveScreen() {
                   {routeSteps[currentStepIndex]?.distance?.text || ""}
                 </Text>
                 <Text style={styles.streetText}>
-                  {stripHtml(
-                    routeSteps[currentStepIndex]?.html_instructions || ""
-                  )}
-
-                  {/* {routeSteps[currentStepIndex]?.maneuver &&
+                  {routeSteps[currentStepIndex + 1]?.maneuver &&
                   routeSteps[currentStepIndex]?.distance?.text
-                    ? `In ${routeSteps[currentStepIndex].distance.text}, ${routeSteps[currentStepIndex].maneuver}`
-                    : ""} */}
+                    ? `In ${
+                        routeSteps[currentStepIndex].distance.text
+                      }, ${routeSteps[currentStepIndex + 1].maneuver.replace(
+                        /-/g,
+                        " "
+                      )}`
+                    : ""}
                 </Text>
                 <View style={styles.buttonsRow}>
                   <TouchableOpacity
@@ -400,12 +401,9 @@ export default function DriveScreen() {
     >
       <View style={styles.container}>
         <Map
-          address={searchText}
-          setAddress={setSearchText}
           markers={marker ? [marker] : []}
           setMarkers={(newMarkers) => setMarker(newMarkers[0] || null)}
           destination={destination}
-          setDestination={setDestination}
           region={region}
           setRegion={setRegion}
           routeSteps={routeSteps}
@@ -423,7 +421,6 @@ export default function DriveScreen() {
           markerRefs={markerRefs}
           handleMapPress={handleMapPress}
           handleRemoveMarker={handleRemoveMarker}
-          stripHtml={stripHtml}
           followUser={followUser}
         />
       </View>
