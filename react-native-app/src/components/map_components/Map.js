@@ -43,6 +43,7 @@ const MapScreen = ({
   handleMapPress,
   handleRemoveMarker,
   followUser,
+  userHeading,
 }) => {
   const socketRef = useRef(null);
   const mapRef = useRef(null);
@@ -97,8 +98,10 @@ const MapScreen = ({
     try {
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
+        enableHighAccuracy: true,
+        heading: true,
       });
-      const { latitude, longitude } = location.coords;
+      const { latitude, longitude, heading } = location.coords;
 
       // Set region only ONCE, during initial setup
       setRegion((prevRegion) => ({
@@ -116,8 +119,10 @@ const MapScreen = ({
       const intervalId = setInterval(async () => {
         const loc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
+          enableHighAccuracy: true,
+          heading: true,
         });
-        const { latitude, longitude } = loc.coords;
+        const { latitude, longitude, heading } = loc.coords;
 
         // Send location update
         if (socketRef.current) {
@@ -214,9 +219,13 @@ const MapScreen = ({
           showsCompass={true}
           showsUserHeadingIndicator={true}
           followsUserLocation={followUser}
+          showsHeadingIndicator={true}
+          userLocationCalloutEnabled={true}
+          userLocationPriority="high"
+          userLocationUpdateInterval={1000}
           onUserLocationChange={(event) => {
             if (followUser) {
-              const { coordinate, heading } = event.nativeEvent;
+              const { coordinate } = event.nativeEvent;
               const newRegion = {
                 ...region,
                 latitude: coordinate.latitude,
@@ -231,7 +240,7 @@ const MapScreen = ({
                     latitude: coordinate.latitude,
                     longitude: coordinate.longitude,
                   },
-                  heading: heading || 0,
+                  heading: userHeading || 0,
                   pitch: 45,
                   zoom: 17,
                   duration: 1000,
@@ -253,10 +262,6 @@ const MapScreen = ({
               units="metric"
               onReady={(result) => {
                 const steps = result.legs[0].steps;
-                console.log("Route Steps:", JSON.stringify(steps, null, 2));
-                console.log("First Step:", steps[1]);
-                console.log("First Step Maneuver:", steps[0]?.maneuver);
-                console.log("First Step Distance:", steps[0]?.distance?.text);
                 setRouteSteps(steps);
                 setCurrentStepIndex(0);
               }}

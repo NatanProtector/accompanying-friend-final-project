@@ -23,6 +23,15 @@ const idNumber = "111111111";
 /**
  * BUG
  * - when title is too long, it does not look good, its behind the search button
+ * - heading and location updated on map, every 5 seconds, which leads to choppy movement.
+ * - many style issues
+ * 
+ * TODO:
+ * - seperate server updates on location adn display updates on map. they dont have to match.
+ * - Getting location by cllicking map is handled completely differently then getting location
+ *   by searching for and clicking an address, or by clicking the search button. standardize this.
+ * - Clean the spaghetti code. sepreate to Map component to handle display (Done?) and MapController
+ *   for handeling the maps functionality.
  */
 
 export default function DriveScreen() {
@@ -43,6 +52,7 @@ export default function DriveScreen() {
   const [selectedMarkerId, setSelectedMarkerId] = useState(null);
   const [showDirections, setShowDirections] = useState(false);
   const [followUser, setFollowUser] = useState(false);
+  const [userHeading, setUserHeading] = useState(null);
 
   const socketRef = useRef(null);
   const markerRefs = useRef({});
@@ -167,8 +177,10 @@ export default function DriveScreen() {
     try {
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
+        enableHighAccuracy: true,
+        heading: true,
       });
-      const { latitude, longitude } = location.coords;
+      const { latitude, longitude, heading } = location.coords;
 
       // Set region only ONCE, during initial setup
       setRegion((prevRegion) => ({
@@ -178,21 +190,25 @@ export default function DriveScreen() {
       }));
 
       // Emit initial location
-      if (socketRef.current) {
-        socketRef.current.emit("update_location", { latitude, longitude });
-      }
+      // if (socketRef.current) {
+      //   socketRef.current.emit("update_location", { latitude, longitude });
+      // }
 
-      // Start location updates every 5 seconds, without updating the region
+      // Start location updates every 5 seconds
       const intervalId = setInterval(async () => {
         const loc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
+          enableHighAccuracy: true,
+          heading: true,
         });
-        const { latitude, longitude } = loc.coords;
+        const { latitude, longitude, heading } = loc.coords;
 
-        // Only send the location over socket, don't change map region
-        if (socketRef.current) {
-          socketRef.current.emit("update_location", { latitude, longitude });
-        }
+        setUserHeading(heading);
+
+        // Send location update
+        // if (socketRef.current) {
+        //   socketRef.current.emit("update_location", { latitude, longitude });
+        // }
       }, 5000);
 
       return () => clearInterval(intervalId);
@@ -287,9 +303,6 @@ export default function DriveScreen() {
 
   // Handle search button press
   const handleSearch = async () => {
-    // console.log("Search:", searchText);
-    // const result = await SearchLocation(searchText).catch((error) => console.log(error));
-    // console.log(result);
     await handleAddMarkerByAddress();
     setSearchText("");
     setModalVisible(false);
@@ -422,6 +435,7 @@ export default function DriveScreen() {
           handleMapPress={handleMapPress}
           handleRemoveMarker={handleRemoveMarker}
           followUser={followUser}
+          userHeading={userHeading}
         />
       </View>
 
@@ -443,7 +457,7 @@ export default function DriveScreen() {
                 onPress={handleSearch}
               >
                 <Text style={styles.modalButtonText}>Search</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>*
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => {
