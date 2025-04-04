@@ -46,8 +46,10 @@ const MapScreen = ({
   handleMapPress,
   handleRemoveMarker,
   stripHtml,
+  followUser,
 }) => {
   const socketRef = useRef(null);
+  const mapRef = useRef(null);
 
   // if (GOOGLE_MAPS_API_KEY == "")
   //   throw new Error ("Missing Google Maps API key");
@@ -114,14 +116,14 @@ const MapScreen = ({
         socketRef.current.emit("update_location", { latitude, longitude });
       }
 
-      // Start location updates every 5 seconds, without updating the region
+      // Start location updates every 5 seconds
       const intervalId = setInterval(async () => {
         const loc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
         });
         const { latitude, longitude } = loc.coords;
 
-        // Only send the location over socket, don't change map region
+        // Send location update
         if (socketRef.current) {
           socketRef.current.emit("update_location", { latitude, longitude });
         }
@@ -201,6 +203,7 @@ const MapScreen = ({
 
       {region ? (
         <MapView
+          ref={mapRef}
           style={styles.map}
           region={region}
           showsUserLocation={true}
@@ -209,6 +212,40 @@ const MapScreen = ({
           loadingEnabled={true}
           loadingBackgroundColor="white"
           loadingIndicatorColor="teal"
+          showsMyLocationButton={true}
+          showsCompass={true}
+          // Note: followsUserLocation only works for apple map
+          followsUserLocation={followUser}
+          onUserLocationChange={(event) => {
+            if (followUser) {
+              const { coordinate, heading } = event.nativeEvent;
+              const newRegion = {
+                ...region,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+              };
+              setRegion(newRegion);
+
+              // Animate camera to new location with heading
+              if (mapRef.current) {
+                mapRef.current.animateCamera({
+                  center: {
+                    latitude: coordinate.latitude,
+                    longitude: coordinate.longitude,
+                  },
+                  heading: heading || 0,
+                  pitch: 0,
+                  zoom: 15,
+                  duration: 1000,
+                });
+              }
+            }
+          }}
+
+          // showsScale={true}
+          // showsTraffic={true}
+          // showsBuildings={true}
+          // showsIndoors={true}
         >
           {destination && (
             <MapViewDirections
@@ -227,8 +264,6 @@ const MapScreen = ({
               }}
             />
           )}
-
-          {/* <Marker coordinate={region} title="Your Location" pinColor="blue" /> */}
 
           {markers.map((marker) => (
             <Marker

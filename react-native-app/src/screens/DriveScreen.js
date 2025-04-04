@@ -32,7 +32,6 @@ export default function DriveScreen() {
   const [searchResults, setSearchResults] = useState([]);
   const [destinationText, setDestinationText] = useState("");
 
-
   // map states
   const [marker, setMarker] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -43,6 +42,7 @@ export default function DriveScreen() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState(null);
   const [showDirections, setShowDirections] = useState(false);
+  const [followUser, setFollowUser] = useState(false);
 
   const socketRef = useRef(null);
   const markerRefs = useRef({});
@@ -88,9 +88,6 @@ export default function DriveScreen() {
 
   const handleResultSelect = async (result) => {
     try {
-      // console.log("Selected result:", result);
-      // console.log("Place ID:", result.placeId);
-
       // Get place details to get coordinates
       const detailsResponse = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}`
@@ -109,9 +106,11 @@ export default function DriveScreen() {
           description: result.description,
           address: result.address,
         };
-        setMarker(newMarker);
-        setDestination({ latitude: lat, longitude: lng });
         setModalVisible(false);
+        setMarker(newMarker);
+        setSearchResults([])
+        setSearchText("")
+        startDrive({ latitude: lat, longitude: lng });
       } else {
         console.log("No geometry data in response");
       }
@@ -273,7 +272,7 @@ export default function DriveScreen() {
       description: "Your selected destination",
     };
     setMarker(newMarker);
-    setDestination({ latitude, longitude });
+    startDrive({ latitude, longitude });
   };
 
   // Remove marker and reset route
@@ -319,10 +318,24 @@ export default function DriveScreen() {
         description: "Your selected destination",
       };
       setMarker(newMarker);
-      setDestination({ latitude, longitude });
+      startDrive({ latitude, longitude });
     } catch (error) {
       console.log("Error:", error, "Could not fetch location.");
     }
+  };
+
+  const startDrive = (destination) => {
+    setFollowUser(true);
+    setDestination(destination);
+  };
+
+  const cancelDrive = () => {
+    setRouteSteps([]);
+    setCurrentStepIndex(0);
+    setDestination(null);
+    setMarker(null);
+    setShowDirections(false);
+    setFollowUser(false);
   };
 
   return (
@@ -340,14 +353,26 @@ export default function DriveScreen() {
                     routeSteps[currentStepIndex]?.html_instructions || ""
                   )}
                 </Text>
-                <TouchableOpacity
-                  style={styles.directionsButton}
-                  onPress={() => setShowDirections(!showDirections)}
-                >
-                  <Text style={styles.directionsButtonText}>
-                    {showDirections ? "Hide Directions" : "Show All Directions"}
-                  </Text>
-                </TouchableOpacity>
+                <View style={styles.buttonsRow}>
+                  <TouchableOpacity
+                    style={styles.directionsButton}
+                    onPress={() => setShowDirections(!showDirections)}
+                  >
+                    <Text style={styles.directionsButtonText}>
+                      {showDirections
+                        ? "Hide Directions"
+                        : "Show All Directions"}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.directionsButton, styles.cancelButton]}
+                    onPress={cancelDrive}
+                  >
+                    <Text style={styles.directionsButtonText}>
+                      Cancel Drive
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             )
           }
@@ -392,6 +417,7 @@ export default function DriveScreen() {
           handleMapPress={handleMapPress}
           handleRemoveMarker={handleRemoveMarker}
           stripHtml={stripHtml}
+          followUser={followUser}
         />
       </View>
 
@@ -420,6 +446,7 @@ export default function DriveScreen() {
                   setModalVisible(false);
                   setSearchText("");
                   setSearchResults([]);
+                  setFollowUser(false);
                 }}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
@@ -448,17 +475,6 @@ export default function DriveScreen() {
     </BasicScreenTemplate>
   );
 }
-
-// <View style={styles.footerContainer}>
-//   <TouchableOpacity
-//     style={styles.searchButton}
-//     onPress={() => setModalVisible(true)}
-//   >
-//     <Text style={styles.searchIcon}>🔍</Text>
-//   </TouchableOpacity>
-
-//   <Text style={styles.destinationText}>{destinationText}</Text>
-// </View>
 
 const styles = StyleSheet.create({
   container: {
@@ -533,7 +549,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   cancelButton: {
-    backgroundColor: "gray",
+    backgroundColor: "#FF3B30",
     marginLeft: 10,
   },
   modalButtonText: {
@@ -561,12 +577,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#00aaff",
   },
+  buttonsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
   directionsButton: {
     backgroundColor: "#4958FF",
     padding: 8,
     borderRadius: 8,
-    marginTop: 8,
     alignItems: "center",
+    flex: 1,
+    marginHorizontal: 4,
   },
   directionsButtonText: {
     color: "white",
