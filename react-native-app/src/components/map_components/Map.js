@@ -169,6 +169,15 @@ const MapScreen = ({
     return () => sub.then((s) => s.remove());
   }, [routeSteps, currentStepIndex]);
 
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.animateCamera({
+        pitch: followUser ? 45 : 0,
+        duration: 1000,
+      });
+    }
+  }, [followUser]);
+
   // const updateUserLocation = async (latitude, longitude) => {
   //   try {
   //     const response = await axios.put(
@@ -241,7 +250,7 @@ const MapScreen = ({
                     longitude: coordinate.longitude,
                   },
                   heading: userHeading || 0,
-                  pitch: 45,
+                  pitch: followUser ? 45 : 0,
                   zoom: 17,
                   duration: 1000,
                 });
@@ -256,7 +265,7 @@ const MapScreen = ({
               apikey={GOOGLE_MAPS_API_KEY}
               strokeWidth={4}
               strokeColor="blue"
-              language="he"
+              language="en"
               mode="DRIVING"
               region="il"
               units="metric"
@@ -268,7 +277,6 @@ const MapScreen = ({
               optimizeWaypoints={true}
               resetOnChange={false}
               precision="high"
-              // SUS????? AI wrote this, seems to be good but, dont know if its necessary
               waypoints={[]}
               splitWaypoints={false}
               timePrecision="now"
@@ -276,7 +284,7 @@ const MapScreen = ({
               directionsServiceOptions={{
                 alternatives: false,
                 avoid: [],
-                language: "he",
+                language: "en",
                 region: "il",
                 units: "metric",
                 mode: "driving",

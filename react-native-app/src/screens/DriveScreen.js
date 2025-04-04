@@ -9,13 +9,14 @@ import {
   ScrollView,
 } from "react-native";
 import * as Location from "expo-location";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import BasicScreenTemplate from "../components/screen_components/BasicScreenTemplate";
 import NavigationHeader from "../components/screen_components/NavigationHeader";
 import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY } from "@env";
+import MyLanguageContext from "../utils/MyLanguageContext";
 
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
@@ -25,7 +26,7 @@ const idNumber = "111111111";
  * - when title is too long, it does not look good, its behind the search button
  * - heading and location updated on map, every 5 seconds, which leads to choppy movement.
  * - many style issues
- * 
+ *
  * TODO:
  * - seperate server updates on location adn display updates on map. they dont have to match.
  * - Getting location by cllicking map is handled completely differently then getting location
@@ -71,7 +72,7 @@ export default function DriveScreen() {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
           text
-        )}&key=${GOOGLE_MAPS_API_KEY}&language=he&components=country:il`
+        )}&key=${GOOGLE_MAPS_API_KEY}&language=en&components=country:il`
       );
 
       const data = await response.json();
@@ -100,7 +101,7 @@ export default function DriveScreen() {
     try {
       // Get place details to get coordinates
       const detailsResponse = await fetch(
-        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}`
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}&language=en`
       );
 
       const detailsData = await detailsResponse.json();
@@ -457,7 +458,7 @@ export default function DriveScreen() {
                 onPress={handleSearch}
               >
                 <Text style={styles.modalButtonText}>Search</Text>
-              </TouchableOpacity>*
+              </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => {
