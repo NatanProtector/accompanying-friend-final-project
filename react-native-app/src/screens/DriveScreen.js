@@ -108,8 +108,8 @@ export default function DriveScreen() {
         };
         setModalVisible(false);
         setMarker(newMarker);
-        setSearchResults([])
-        setSearchText("")
+        setSearchResults([]);
+        setSearchText("");
         startDrive({ latitude: lat, longitude: lng });
       } else {
         console.log("No geometry data in response");
@@ -210,9 +210,11 @@ export default function DriveScreen() {
         accuracy: Location.Accuracy.High,
         timeInterval: 1000,
         distanceInterval: 3,
+        enableHighAccuracy: true,
+        heading: true,
       },
       (location) => {
-        const { latitude, longitude } = location.coords;
+        const { latitude, longitude, heading } = location.coords;
         const step = routeSteps[currentStepIndex];
         if (!step) return;
 
@@ -352,6 +354,11 @@ export default function DriveScreen() {
                   {stripHtml(
                     routeSteps[currentStepIndex]?.html_instructions || ""
                   )}
+
+                  {/* {routeSteps[currentStepIndex]?.maneuver &&
+                  routeSteps[currentStepIndex]?.distance?.text
+                    ? `In ${routeSteps[currentStepIndex].distance.text}, ${routeSteps[currentStepIndex].maneuver}`
+                    : ""} */}
                 </Text>
                 <View style={styles.buttonsRow}>
                   <TouchableOpacity

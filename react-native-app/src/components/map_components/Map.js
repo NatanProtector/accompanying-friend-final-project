@@ -143,9 +143,11 @@ const MapScreen = ({
         accuracy: Location.Accuracy.High,
         timeInterval: 1000,
         distanceInterval: 3,
+        enableHighAccuracy: true,
+        heading: true, // Enable heading tracking
       },
       (location) => {
-        const { latitude, longitude } = location.coords;
+        const { latitude, longitude, heading } = location.coords;
         const step = routeSteps[currentStepIndex];
         if (!step) return;
 
@@ -203,9 +205,9 @@ const MapScreen = ({
 
       {region ? (
         <MapView
+          initialRegion={region}
           ref={mapRef}
           style={styles.map}
-          region={region}
           showsUserLocation={true}
           onPress={handleMapPress}
           reuseMap={true}
@@ -214,7 +216,7 @@ const MapScreen = ({
           loadingIndicatorColor="teal"
           showsMyLocationButton={true}
           showsCompass={true}
-          // Note: followsUserLocation only works for apple map
+          showsUserHeadingIndicator={true}
           followsUserLocation={followUser}
           onUserLocationChange={(event) => {
             if (followUser) {
@@ -234,18 +236,13 @@ const MapScreen = ({
                     longitude: coordinate.longitude,
                   },
                   heading: heading || 0,
-                  pitch: 0,
-                  zoom: 15,
+                  pitch: 45,
+                  zoom: 17,
                   duration: 1000,
                 });
               }
             }
           }}
-
-          // showsScale={true}
-          // showsTraffic={true}
-          // showsBuildings={true}
-          // showsIndoors={true}
         >
           {destination && (
             <MapViewDirections
@@ -259,8 +256,38 @@ const MapScreen = ({
               region="il"
               onReady={(result) => {
                 const steps = result.legs[0].steps;
+                console.log("Route Steps:", steps);
+                console.log("First Step:", steps[0]);
+                console.log("First Step Maneuver:", steps[0]?.maneuver);
+                console.log("First Step Distance:", steps[0]?.distance);
                 setRouteSteps(steps);
                 setCurrentStepIndex(0);
+              }}
+              optimizeWaypoints={true}
+              resetOnChange={false}
+              precision="high"
+              // SUS????? AI wrote this, seems to be good but, dont know if its necessary
+              waypoints={[]}
+              splitWaypoints={false}
+              timePrecision="now"
+              directionsServiceBaseUrl="https://maps.googleapis.com/maps/api/directions/json"
+              directionsServiceOptions={{
+                alternatives: false,
+                avoid: [],
+                language: "he",
+                region: "il",
+                units: "metric",
+                mode: "driving",
+                traffic_model: "best_guess",
+                departure_time: "now",
+                arrival_time: null,
+                waypoints: [],
+                optimize: false,
+                avoid_ferries: false,
+                avoid_highways: false,
+                avoid_tolls: false,
+                transit_mode: [],
+                transit_routing_preference: null,
               }}
             />
           )}
