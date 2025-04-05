@@ -3,10 +3,15 @@ import { useContext, useState } from "react";
 import { BlurView } from "expo-blur";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import BasicScreen from "../components/screen_components/BasicScreen";
-import NavButton from "../components/components/NavButton";
-import TextFieldPassword from "../components/components/TextFieldPassword";
-import TextFieldUsername from "../components/components/TextFieldUsername";
+import NavButton from "../components/general_components/NavButton";
+import TextFieldPassword from "../components/general_components/TextFieldPassword";
+import TextFieldUsername from "../components/general_components/TextFieldUsername";
 import { SubmitLoginForm } from "../utils/Communication";
+
+/**
+ * Bugs:
+    - Multiple clickes on login at once will cause the app to crash.
+ */
 
 const navigateToRecovery = (navigation, setShowError) => {
   return () => {
@@ -45,9 +50,12 @@ export default function HomeScreen({ navigation }) {
         } else if (multiRole[0] === "security") {
           navigation.navigate("Dashboard/Security");
         }
-      } else {
+      } else if (multiRole.length === 2) {
         navigation.navigate("Login", { multiRole });
+      } else {
+        throw new Error("Invalid multiRole at HomeScreen");
       }
+
     } catch (error) {
       console.log("Login failed:", error);
 

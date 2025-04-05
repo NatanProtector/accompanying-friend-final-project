@@ -3,9 +3,9 @@ import * as Yup from 'yup';
 import React, { useContext } from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import BasicScreen from '../components/screen_components/BasicScreen';
-import TextField from "../components/components/TextField";
+import TextField from "../components/general_components/TextField";
 import MyLanguageContext from "../utils/MyLanguageContext";
-import NavButton from "../components/components/NavButton";
+import NavButton from "../components/general_components/NavButton";
 import { CommonActions } from "@react-navigation/native";
 
 export default function AccountRecoveryScreen({ navigation }) {

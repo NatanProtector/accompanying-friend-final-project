@@ -13,15 +13,13 @@ export default function BasicScreenTemplate({ children, HeaderComponent, FooterC
 
                 </TitleContainer>
 
-                <WhiteRoundedContainer>
+                <WhiteRoundedContainer FooterComponent={FooterComponent}>
 
                     {children}
 
                 </WhiteRoundedContainer>
 
             </View>
-
-            {FooterComponent}
 
         </BasicBlueScreen>
     );

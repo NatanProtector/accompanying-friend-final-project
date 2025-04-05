@@ -3,9 +3,9 @@ import { useContext, useState } from "react";
 import { BlurView } from "expo-blur";
 import MyLanguageContext from "../../utils/MyLanguageContext";
 import { ReportEmergency } from "../../utils/Communication";
-import ReportButton from "../components/ReportButton";
+import ReportButton from "../general_components/ReportButton";
 
-export default function NavigationHeader() {
+export default function NavigationHeader({DisplayComponent}) {
   const { language } = useContext(MyLanguageContext);
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState("option1");
@@ -56,9 +56,14 @@ export default function NavigationHeader() {
 
       <View style={styles.display_container}>
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "gray" }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            // backgroundColor: "gray",
+          }}
         >
-          <Text>Display</Text>
+          {DisplayComponent}
         </View>
       </View>
 
@@ -116,10 +121,10 @@ const styles = StyleSheet.create({
     // margin: 5,
   },
   alert_container: {
-    width: "35%",
+    width: "25%",
   },
   display_container: {
-    width: "65%",
+    width: "75%",
   },
   modalContainer: {
     flex: 1,

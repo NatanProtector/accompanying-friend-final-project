@@ -6,7 +6,7 @@ import getDayPeriod from '../../utils/getDayPeriod'
 import MyLanguageContext from '../../utils/MyLanguageContext';
 // import { Button } from 'react-native-elements';
 import BasicScreen from './BasicScreen';
-import NavButton from '../components/NavButton';
+import NavButton from '../general_components/NavButton';
 
 const logout = (navigation) => {
     return () => {
