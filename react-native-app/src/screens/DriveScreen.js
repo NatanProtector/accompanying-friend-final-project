@@ -16,13 +16,14 @@ import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY } from "@env";
-import MyLanguageContext from "../utils/MyLanguageContext";
+import DriveController from "../components/map_components/DriveController";
+// import MyLanguageContext from "../utils/MyLanguageContext";
 
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
 /**
- * BUG
+ * BUG:
  * - when title is too long, it does not look good, its behind the search button
  * - heading and location updated on map, every 5 seconds, which leads to choppy movement.
  * - many style issues
@@ -36,24 +37,47 @@ const idNumber = "111111111";
  */
 
 export default function DriveScreen() {
+  const { functions, states, setStates } = DriveController();
+
+  const {
+    handleMapPress,
+    handleRemoveMarker,
+    startDrive,
+    cancelDrive,
+  } = functions;
+  
+  const {
+    marker,
+    destination,
+    region,
+    routeSteps,
+    currentStepIndex,
+    selectedMarker,
+    showInfoModal,
+    selectedMarkerId,
+    showDirections,
+    followUser,
+    userHeading,
+  } = states;
+
+  const {
+    setMarker,
+    setRegion,
+    setRouteSteps,
+    setCurrentStepIndex,
+    setSelectedMarker,
+    setSelectedMarkerId,
+    setShowInfoModal,
+    setShowDirections,
+    setFollowUser,
+    setUserHeading,
+  } = setStates;
+
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [destinationText, setDestinationText] = useState("");
-
-  // map states
-  const [marker, setMarker] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const [region, setRegion] = useState(null);
-  const [routeSteps, setRouteSteps] = useState([]);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [selectedMarkerId, setSelectedMarkerId] = useState(null);
-  const [showDirections, setShowDirections] = useState(false);
-  const [followUser, setFollowUser] = useState(false);
-  const [userHeading, setUserHeading] = useState(null);
 
   const socketRef = useRef(null);
   const markerRefs = useRef({});
@@ -199,7 +223,6 @@ export default function DriveScreen() {
         const { latitude, longitude, heading } = loc.coords;
 
         setUserHeading(heading);
-
       }, 5000);
 
       return () => clearInterval(intervalId);
@@ -251,58 +274,6 @@ export default function DriveScreen() {
     }
   }, [routeSteps, marker]);
 
-  // Convert coordinates to human-readable address
-  const getAddressFromCoords = async (lat, lng) => {
-    try {
-      const [place] = await Location.reverseGeocodeAsync({
-        latitude: lat,
-        longitude: lng,
-      });
-      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
-    } catch (error) {
-      console.log("Error:", error);
-      return "Unknown location";
-    }
-  };
-
-  // Handle map tap to place a marker
-  const handleMapPress = async (event) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    const addr = await getAddressFromCoords(latitude, longitude);
-    const newMarker = {
-      id: "1",
-      latitude,
-      longitude,
-      address: addr,
-      name: `${latitude}, ${longitude}`,
-      description: "Your selected destination",
-    };
-    setMarker(newMarker);
-    startDrive({ latitude, longitude });
-  };
-
-  // Remove marker and reset route
-  const handleRemoveMarker = () => {
-    setMarker(null);
-    setRouteSteps([]);
-    setCurrentStepIndex(0);
-    setSelectedMarker(null);
-  };
-
-  const startDrive = (destination) => {
-    setFollowUser(true);
-    setDestination(destination);
-  };
-
-  const cancelDrive = () => {
-    setRouteSteps([]);
-    setCurrentStepIndex(0);
-    setDestination(null);
-    setMarker(null);
-    setShowDirections(false);
-    setFollowUser(false);
-  };
-
   return (
     <BasicScreenTemplate
       HeaderComponent={
@@ -326,7 +297,7 @@ export default function DriveScreen() {
                 </Text>
                 <View style={styles.buttonsRow}>
                   <TouchableOpacity
-                    style={styles.directionsButton}
+                    style={[styles.directionsButton, styles.driveButtons]}
                     onPress={() => setShowDirections(!showDirections)}
                   >
                     <Text style={styles.directionsButtonText}>
@@ -336,7 +307,7 @@ export default function DriveScreen() {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.directionsButton, styles.cancelButton]}
+                    style={[styles.cancelButton, styles.driveButtons]}
                     onPress={cancelDrive}
                   >
                     <Text style={styles.directionsButtonText}>
@@ -393,7 +364,6 @@ export default function DriveScreen() {
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-
             <Text style={styles.modalTitle}>Search Location</Text>
             <View style={styles.modalInputs}>
               <TextInput
@@ -402,7 +372,6 @@ export default function DriveScreen() {
                 value={searchText}
                 onChangeText={handleSearchInputChange}
               />
-
 
               <TouchableOpacity
                 style={styles.cancelButton}
@@ -549,11 +518,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 8,
   },
+  driveButtons: {
+    width: "50%",
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+  },
   directionsButton: {
     backgroundColor: "#4958FF",
     padding: 8,
-    borderRadius: 8,
-    alignItems: "center",
     flex: 1,
     marginHorizontal: 4,
   },
