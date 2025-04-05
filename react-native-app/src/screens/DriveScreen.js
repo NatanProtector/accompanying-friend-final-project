@@ -190,12 +190,6 @@ export default function DriveScreen() {
         longitude,
       }));
 
-      // Emit initial location
-      // if (socketRef.current) {
-      //   socketRef.current.emit("update_location", { latitude, longitude });
-      // }
-
-      // Start location updates every 5 seconds
       const intervalId = setInterval(async () => {
         const loc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
@@ -206,10 +200,6 @@ export default function DriveScreen() {
 
         setUserHeading(heading);
 
-        // Send location update
-        // if (socketRef.current) {
-        //   socketRef.current.emit("update_location", { latitude, longitude });
-        // }
       }, 5000);
 
       return () => clearInterval(intervalId);
@@ -261,9 +251,6 @@ export default function DriveScreen() {
     }
   }, [routeSteps, marker]);
 
-  // Remove HTML tags from text
-  const stripHtml = (html) => html.replace(/<[^>]+>/g, "");
-
   // Convert coordinates to human-readable address
   const getAddressFromCoords = async (lat, lng) => {
     try {
@@ -300,44 +287,6 @@ export default function DriveScreen() {
     setRouteSteps([]);
     setCurrentStepIndex(0);
     setSelectedMarker(null);
-  };
-
-  // Handle search button press
-  const handleSearch = async () => {
-    await handleAddMarkerByAddress();
-    setSearchText("");
-    setModalVisible(false);
-  };
-
-  // Add marker by searching for an address
-  const handleAddMarkerByAddress = async () => {
-    if (!searchText.trim()) {
-      console.log("Error", "Please enter an address.");
-      return;
-    }
-
-    try {
-      const location = await Location.geocodeAsync(searchText);
-      if (location.length === 0) {
-        console.log("Error", "Address not found.");
-        return;
-      }
-
-      const { latitude, longitude } = location[0];
-      const addr = await getAddressFromCoords(latitude, longitude);
-      const newMarker = {
-        id: "1",
-        latitude,
-        longitude,
-        address: addr,
-        name: "Destination",
-        description: "Your selected destination",
-      };
-      setMarker(newMarker);
-      startDrive({ latitude, longitude });
-    } catch (error) {
-      console.log("Error:", error, "Could not fetch location.");
-    }
   };
 
   const startDrive = (destination) => {
@@ -444,23 +393,19 @@ export default function DriveScreen() {
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Search</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Type your search..."
-              value={searchText}
-              onChangeText={handleSearchInputChange}
-            />
 
-            <View style={styles.modalButtons}>
+            <Text style={styles.modalTitle}>Search Location</Text>
+            <View style={styles.modalInputs}>
+              <TextInput
+                style={styles.input}
+                placeholder="Type your search..."
+                value={searchText}
+                onChangeText={handleSearchInputChange}
+              />
+
+
               <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleSearch}
-              >
-                <Text style={styles.modalButtonText}>Search</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
+                style={styles.cancelButton}
                 onPress={() => {
                   setModalVisible(false);
                   setSearchText("");
@@ -549,25 +494,28 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   input: {
-    width: "100%",
+    width: "70%",
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
+    height: "100%",
   },
-  modalButtons: {
+  modalInputs: {
+    width: "100%",
+    height: 50,
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
   },
-  modalButton: {
-    backgroundColor: "#4958FF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
   cancelButton: {
+    width: "30%",
+    height: "100%",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
     backgroundColor: "#FF3B30",
     marginLeft: 10,
   },
