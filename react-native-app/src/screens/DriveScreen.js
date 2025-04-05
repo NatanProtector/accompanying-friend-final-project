@@ -1,3 +1,18 @@
+/**
+ * BUG:
+ * - when title is too long, it does not look good, its behind the search button
+ * - heading and location updated on map, every 5 seconds, which leads to choppy movement.
+ * - many style issues
+ *
+ * TODO:
+ * - seperate server updates on location adn display updates on map. they dont have to match.
+ * - Getting location by cllicking map is handled completely differently then getting location
+ *   by searching for and clicking an address, or by clicking the search button. standardize this.
+ * - Clean the spaghetti code. sepreate to Map component to handle display (Done?) and MapController
+ *   for handeling the maps functionality.
+ * - Right now it will only center on the user, make center and drag listener to center on the camera without
+ *   preventing the user from dragging the map.
+ */
 import {
   StyleSheet,
   Text,
@@ -16,63 +31,12 @@ import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY } from "@env";
-import DriveController from "../components/map_components/DriveController";
 // import MyLanguageContext from "../utils/MyLanguageContext";
 
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
-/**
- * BUG:
- * - when title is too long, it does not look good, its behind the search button
- * - heading and location updated on map, every 5 seconds, which leads to choppy movement.
- * - many style issues
- *
- * TODO:
- * - seperate server updates on location adn display updates on map. they dont have to match.
- * - Getting location by cllicking map is handled completely differently then getting location
- *   by searching for and clicking an address, or by clicking the search button. standardize this.
- * - Clean the spaghetti code. sepreate to Map component to handle display (Done?) and MapController
- *   for handeling the maps functionality.
- */
-
 export default function DriveScreen() {
-  const { functions, states, setStates } = DriveController();
-
-  const {
-    handleMapPress,
-    handleRemoveMarker,
-    handleResultSelect,
-    cancelDrive,
-  } = functions;
-  
-  const {
-    marker,
-    destination,
-    region,
-    routeSteps,
-    currentStepIndex,
-    selectedMarker,
-    showInfoModal,
-    selectedMarkerId,
-    showDirections,
-    followUser,
-    userHeading,
-  } = states;
-
-  const {
-    setMarker,
-    setRegion,
-    setRouteSteps,
-    setCurrentStepIndex,
-    setSelectedMarker,
-    setSelectedMarkerId,
-    setShowInfoModal,
-    setShowDirections,
-    setFollowUser,
-    setUserHeading,
-  } = setStates;
-
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -81,7 +45,104 @@ export default function DriveScreen() {
 
   const socketRef = useRef(null);
   const markerRefs = useRef({});
+  const [marker, setMarker] = useState(null);
+  const [destination, setDestination] = useState(null);
+  const [region, setRegion] = useState(null);
+  const [routeSteps, setRouteSteps] = useState([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [selectedMarkerId, setSelectedMarkerId] = useState(null);
+  const [showDirections, setShowDirections] = useState(false);
+  const [followUser, setFollowUser] = useState(false);
+  const [userHeading, setUserHeading] = useState(null);
 
+
+  // Convert coordinates to human-readable address
+  const getAddressFromCoords = async (lat, lng) => {
+    try {
+      const [place] = await Location.reverseGeocodeAsync({
+        latitude: lat,
+        longitude: lng,
+      });
+      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
+    } catch (error) {
+      console.log("Error:", error);
+      return "Unknown location";
+    }
+  };
+
+  // Handle map tap to place a marker
+  const handleMapPress = async (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    const addr = await getAddressFromCoords(latitude, longitude);
+    const newMarker = {
+      id: "1",
+      latitude,
+      longitude,
+      address: addr,
+      name: `(${latitude.toFixed(2)}, ${longitude.toFixed(2)})`,
+      description: "Your selected destination",
+    };
+    setMarker(newMarker);
+    startDrive({ latitude, longitude });
+  };
+
+  // Remove marker and reset route
+  const handleRemoveMarker = () => {
+    setMarker(null);
+    setRouteSteps([]);
+    setCurrentStepIndex(0);
+    setSelectedMarker(null);
+  };
+
+  const startDrive = (destination) => {
+    setFollowUser(true);
+    setDestination(destination);
+  };
+
+  const cancelDrive = () => {
+    setRouteSteps([]);
+    setCurrentStepIndex(0);
+    setDestination(null);
+    setMarker(null);
+    setShowDirections(false);
+    setFollowUser(false);
+  };
+
+  const handleResultSelect = async (result) => {
+    try {
+      // Get place details to get coordinates
+      const detailsResponse = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}&language=en`
+      );
+
+      const detailsData = await detailsResponse.json();
+      // console.log("Place Details Response:", detailsData);
+
+      if (detailsData.result && detailsData.result.geometry) {
+        const { lat, lng } = detailsData.result.geometry.location;
+        const newMarker = {
+          id: "1",
+          latitude: lat,
+          longitude: lng,
+          name: result.name,
+          description: result.description,
+          address: result.address,
+        };
+        setModalVisible(false);
+        setMarker(newMarker);
+        setSearchResults([]);
+        setSearchText("");
+        startDrive({ latitude: lat, longitude: lng });
+      } else {
+        console.log("No geometry data in response");
+      }
+    } catch (error) {
+      console.log("Error getting place details:", error);
+      Alert.alert("Error", "Could not get location details. Please try again.");
+    }
+  };
   // Handle search input change and update results
   const handleSearchInputChange = async (text) => {
     setSearchText(text);
@@ -248,9 +309,9 @@ export default function DriveScreen() {
           DisplayComponent={
             routeSteps.length > 0 && (
               <View style={styles.navBox}>
-                <Text style={styles.distanceText}>
+                {/* <Text style={styles.distanceText}>
                   {routeSteps[currentStepIndex]?.distance?.text || ""}
-                </Text>
+                </Text> */}
                 <Text style={styles.streetText}>
                   {routeSteps[currentStepIndex + 1]?.maneuver &&
                   routeSteps[currentStepIndex]?.distance?.text
@@ -454,6 +515,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#FF3B30",
     marginLeft: 10,
+    fontSize: 16,
   },
   modalButtonText: {
     color: "white",
@@ -466,19 +528,14 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     right: 20,
-    backgroundColor: "black",
     padding: 15,
     borderRadius: 12,
-    zIndex: 999,
-  },
-  distanceText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "white",
   },
   streetText: {
-    fontSize: 18,
-    color: "#00aaff",
+    fontWeight: "bold",
+    fontSize: 26,
+    margin: 5,
+    color: "white",
   },
   buttonsRow: {
     flexDirection: "row",
@@ -493,7 +550,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   directionsButton: {
-    backgroundColor: "#4958FF",
+    backgroundColor: "blue",
     padding: 8,
     flex: 1,
     marginHorizontal: 4,
