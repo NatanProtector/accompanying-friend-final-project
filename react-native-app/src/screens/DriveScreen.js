@@ -3,6 +3,8 @@
  * - when title is too long, it does not look good, its behind the search button
  * - heading and location updated on map, every 5 seconds, which leads to choppy movement.
  * - many style issues
+ * - The cancel in the search modal is canceling the ride.
+ * - suggestion: make single state for inRide, and change other state via useEffect
  *
  * TODO:
  * - seperate server updates on location adn display updates on map. they dont have to match.
@@ -56,7 +58,6 @@ export default function DriveScreen() {
   const [showDirections, setShowDirections] = useState(false);
   const [followUser, setFollowUser] = useState(false);
   const [userHeading, setUserHeading] = useState(null);
-
 
   // Convert coordinates to human-readable address
   const getAddressFromCoords = async (lat, lng) => {
@@ -181,7 +182,6 @@ export default function DriveScreen() {
       setSearchResults([]);
     }
   };
-
 
   // Initialize location permissions and socket connection
   useEffect(() => {
@@ -407,7 +407,6 @@ export default function DriveScreen() {
                   setModalVisible(false);
                   setSearchText("");
                   setSearchResults([]);
-                  setFollowUser(false);
                 }}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
@@ -475,7 +474,6 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
     alignItems: "center",
   },
   modalContent: {
@@ -483,6 +481,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
+    top: "25%",
     alignItems: "center",
   },
   modalTitle: {
@@ -505,6 +504,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+  },
+  searchResultsContainer: {
+    width: "100%",
+    maxHeight: 300,
+    marginTop: 10,
+    marginBottom: 10,
+    overflow: "scroll",
   },
   cancelButton: {
     width: "30%",
@@ -560,17 +566,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
   },
-  searchResultsContainer: {
-    width: "100%",
-    maxHeight: 200,
-    marginTop: 10,
-    marginBottom: 10,
-    overflow: "scroll",
-  },
   searchResultItem: {
-    padding: 10,
+    padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+  },
+  searchResultItemPressed: {
+    backgroundColor: "#f0f0f0",
   },
   searchResultText: {
     fontSize: 16,
