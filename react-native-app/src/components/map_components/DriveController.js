@@ -13,6 +13,7 @@ const DriveController = () => {
   const [followUser, setFollowUser] = useState(false);
   const [userHeading, setUserHeading] = useState(null);
 
+
   // Convert coordinates to human-readable address
   const getAddressFromCoords = async (lat, lng) => {
     try {
@@ -65,12 +66,46 @@ const DriveController = () => {
     setFollowUser(false);
   };
 
+  const handleResultSelect = async (result) => {
+    try {
+      // Get place details to get coordinates
+      const detailsResponse = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}&language=en`
+      );
+
+      const detailsData = await detailsResponse.json();
+      // console.log("Place Details Response:", detailsData);
+
+      if (detailsData.result && detailsData.result.geometry) {
+        const { lat, lng } = detailsData.result.geometry.location;
+        const newMarker = {
+          id: "1",
+          latitude: lat,
+          longitude: lng,
+          name: result.name,
+          description: result.description,
+          address: result.address,
+        };
+        setModalVisible(false);
+        setMarker(newMarker);
+        setSearchResults([]);
+        setSearchText("");
+        startDrive({ latitude: lat, longitude: lng });
+      } else {
+        console.log("No geometry data in response");
+      }
+    } catch (error) {
+      console.log("Error getting place details:", error);
+      Alert.alert("Error", "Could not get location details. Please try again.");
+    }
+  };
+
   return {
     functions: {
       getAddressFromCoords,
       handleMapPress,
       handleRemoveMarker,
-      startDrive,
+      handleResultSelect,
       cancelDrive,
     },
     states: {
