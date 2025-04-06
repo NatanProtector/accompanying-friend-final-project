@@ -61,6 +61,7 @@ export default function App() {
     );
   };
 
+  // Note: unecessary to have both wrappers
   const wrapScreenWithBoth = (Component) => {
     return (props) => (
       <BackButtonWrapper>
@@ -85,7 +86,7 @@ export default function App() {
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="Home"
-            component={wrapScreenWithNotification(HomeScreen)}
+            component={HomeScreen}
             options={options}
           />
           <Stack.Screen
@@ -110,7 +111,7 @@ export default function App() {
           />
           <Stack.Screen
             name="Dashboard/Security"
-            component={wrapScreenLanguageButton(SecurityDashboard)}
+            component={wrapScreenWithNotification(wrapScreenLanguageButton(SecurityDashboard))}
             options={options}
           />
           <Stack.Screen
