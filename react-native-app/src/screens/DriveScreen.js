@@ -38,7 +38,7 @@ import { GOOGLE_MAPS_API_KEY } from "@env";
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
-export default function DriveScreen() {
+export default function DriveScreen({ initialDestination }) {
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -58,6 +58,12 @@ export default function DriveScreen() {
   const [showDirections, setShowDirections] = useState(false);
   const [followUser, setFollowUser] = useState(false);
   const [userHeading, setUserHeading] = useState(null);
+
+  const onMapReady = () => {
+    if (initialDestination) {
+      startDrive(initialDestination);
+    }
+  };
 
   // Convert coordinates to human-readable address
   const getAddressFromCoords = async (lat, lng) => {
@@ -385,6 +391,7 @@ export default function DriveScreen() {
           handleRemoveMarker={handleRemoveMarker}
           followUser={followUser}
           userHeading={userHeading}
+          onMapReady={onMapReady}
         />
       </View>
 

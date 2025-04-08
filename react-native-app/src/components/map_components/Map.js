@@ -44,6 +44,7 @@ const MapScreen = ({
   handleRemoveMarker,
   followUser,
   userHeading,
+  onMapReady
 }) => {
   const socketRef = useRef(null);
   const mapRef = useRef(null);
@@ -232,6 +233,7 @@ const MapScreen = ({
           userLocationCalloutEnabled={true}
           userLocationPriority="high"
           userLocationUpdateInterval={1000}
+          onMapReady={onMapReady}
           onUserLocationChange={(event) => {
             if (followUser) {
               const { coordinate } = event.nativeEvent;

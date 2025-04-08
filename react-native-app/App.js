@@ -1,34 +1,34 @@
-import HomeScreen from './src/screens/HomeScreen';
-import LoginScreen from './src/screens/LoginScreen';
-import Register from './src/screens/Register';
-import RegistrationForm from './src/screens/RegistrationForm';
-import CitizenDashboard from './src/screens/CitizenDashboard';
-import SecurityDashboard from './src/screens/SecurityDashboard';
-import SettingsDisplay from './src/screens/SettingsDisplay';
-import DriveScreen from './src/screens/DriveScreen';
-import SafeLocationScreen from './src/screens/SafeLocationScreen';
+import HomeScreen from "./src/screens/HomeScreen";
+import LoginScreen from "./src/screens/LoginScreen";
+import Register from "./src/screens/Register";
+import RegistrationForm from "./src/screens/RegistrationForm";
+import CitizenDashboard from "./src/screens/CitizenDashboard";
+import SecurityDashboard from "./src/screens/SecurityDashboard";
+import SettingsDisplay from "./src/screens/SettingsDisplay";
+import DriveScreen from "./src/screens/DriveScreen";
+import SafeLocationScreen from "./src/screens/SafeLocationScreen";
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import LanguageButtonWrapper from './src/utils/LanguageButtonWrapper';
-import BackButtonWrapper from './src/utils/BackButtonWrapper';
+import LanguageButtonWrapper from "./src/utils/LanguageButtonWrapper";
+import BackButtonWrapper from "./src/utils/BackButtonWrapper";
+import NotificationWrapper from "./src/utils/NotificationWrapper";
 
-import MyLanguageContext from './src/utils/MyLanguageContext';
+import MyLanguageContext from "./src/utils/MyLanguageContext";
 
-import AccountRecoveryScreen from './src/screens/AccountRecoveryScreen';
+import AccountRecoveryScreen from "./src/screens/AccountRecoveryScreen";
 
 const Stack = createStackNavigator();
 
 export default function App() {
-
-  const [language, setLanguage] = useState('he');
+  const [language, setLanguage] = useState("he");
 
   const switchLanguage = () => {
-    setLanguage((lang) => (lang === 'en' ? 'he' : 'en'));
-  }
+    setLanguage((lang) => (lang === "en" ? "he" : "en"));
+  };
 
   /**Note:
    * Incosistent use of wrapScreenWithBackButton and wrapScreenLanguageButton,
@@ -44,41 +44,100 @@ export default function App() {
 
   const wrapScreenLanguageButton = (Component) => {
     return (props) => (
-      <LanguageButtonWrapper title={language === 'en' ? 'עברית' : 'English'} onClick={switchLanguage}>
+      <LanguageButtonWrapper
+        title={language === "en" ? "עברית" : "English"}
+        onClick={switchLanguage}
+      >
         <Component {...props} />
       </LanguageButtonWrapper>
     );
-  }
+  };
 
+  const wrapScreenWithNotification = (Component) => {
+    return (props) => (
+      <NotificationWrapper>
+        <Component {...props} />
+      </NotificationWrapper>
+    );
+  };
+
+  // Note: unecessary to have both wrappers
   const wrapScreenWithBoth = (Component) => {
     return (props) => (
       <BackButtonWrapper>
-        <LanguageButtonWrapper title={language === 'en' ? 'עברית' : 'English'} onClick={switchLanguage}>
+        <LanguageButtonWrapper
+          title={language === "en" ? "עברית" : "English"}
+          onClick={switchLanguage}
+        >
           <Component {...props} />
         </LanguageButtonWrapper>
-      </BackButtonWrapper>  
+      </BackButtonWrapper>
     );
   };
-  
 
-  options={headerShown: false, cardStyle: { backgroundColor: '#FEFEFE' }}
+  const options = {
+    headerShown: false,
+    cardStyle: { backgroundColor: "#FEFEFE" },
+  };
 
   return (
-        <MyLanguageContext.Provider value={{ language }}>
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home">
-              <Stack.Screen name="Home" component={wrapScreenLanguageButton(HomeScreen)} options={options}/>
-              <Stack.Screen name="Recovery" component={wrapScreenWithBoth(AccountRecoveryScreen)} options={options}/>
-              <Stack.Screen name="Login" component={wrapScreenWithBoth(LoginScreen)} options={options}/>
-              <Stack.Screen name="Register" component={wrapScreenWithBoth(Register)} options={options}/>
-              <Stack.Screen name="RegisterForm" component={wrapScreenWithBoth(RegistrationForm)} options={options}/>
-              <Stack.Screen name="Dashboard/Security" component={SecurityDashboard} options={options}/>
-              <Stack.Screen name="Dashboard/Citizen" component={CitizenDashboard} options={options} />
-              <Stack.Screen name="Settings" component={wrapScreenWithBoth(SettingsDisplay)} options={options} />
-              <Stack.Screen name="StartRide" component={wrapScreenWithBackButton(DriveScreen)} options={options}/>
-              <Stack.Screen name="SafeLocations" component={wrapScreenWithBackButton(SafeLocationScreen)} options={options}/>
-            </Stack.Navigator>
-          </NavigationContainer>
-        </MyLanguageContext.Provider>
-      );
+    <MyLanguageContext.Provider value={{ language }}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen 
+            name="Home" 
+            component={HomeScreen}
+            options={options}
+          />
+          <Stack.Screen
+            name="Recovery"
+            component={wrapScreenWithBoth(AccountRecoveryScreen)}
+            options={options}
+          />
+          <Stack.Screen
+            name="Login"
+            component={wrapScreenWithBoth(LoginScreen)}
+            options={options}
+          />
+          <Stack.Screen
+            name="Register"
+            component={wrapScreenWithBoth(Register)}
+            options={options}
+          />
+          <Stack.Screen
+            name="RegisterForm"
+            component={wrapScreenWithBoth(RegistrationForm)}
+            options={options}
+          />
+          <Stack.Screen
+            name="Dashboard/Security"
+            component={wrapScreenWithNotification(
+              wrapScreenLanguageButton(SecurityDashboard)
+            )}
+            options={options}
+          />
+          <Stack.Screen
+            name="Dashboard/Citizen"
+            component={CitizenDashboard}
+            options={options}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={wrapScreenWithBoth(SettingsDisplay)}
+            options={options}
+          />
+          <Stack.Screen
+            name="StartRide"
+            component={wrapScreenWithBackButton(DriveScreen)}
+            options={options}
+          />
+          <Stack.Screen
+            name="SafeLocations"
+            component={wrapScreenWithBackButton(SafeLocationScreen)}
+            options={options}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </MyLanguageContext.Provider>
+  );
 }
