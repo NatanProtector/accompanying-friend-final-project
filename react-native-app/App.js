@@ -84,8 +84,8 @@ export default function App() {
     <MyLanguageContext.Provider value={{ language }}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen
-            name="Home"
+          <Stack.Screen 
+            name="Home" 
             component={HomeScreen}
             options={options}
           />
@@ -111,7 +111,9 @@ export default function App() {
           />
           <Stack.Screen
             name="Dashboard/Security"
-            component={wrapScreenWithNotification(wrapScreenLanguageButton(SecurityDashboard))}
+            component={wrapScreenWithNotification(
+              wrapScreenLanguageButton(SecurityDashboard)
+            )}
             options={options}
           />
           <Stack.Screen
