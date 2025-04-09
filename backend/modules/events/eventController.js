@@ -20,7 +20,16 @@ exports.reportEvent = async (req, res) => {
 };
 
 
-
+exports.getEventsByStatus = async (req, res) => {
+    const { status } = req.params;
+    try {
+      const events = await Event.find({ status });
+      res.status(200).json(events);
+    } catch (err) {
+      console.error(`[GET /events/status/${status}] Error:`, err);
+      res.status(500).json({ message: "Failed to fetch events by status" });
+    }
+  };
 
 exports.getAllEvents = async (req, res) => {
   try {

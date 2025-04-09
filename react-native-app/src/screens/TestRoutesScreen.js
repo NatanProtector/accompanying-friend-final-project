@@ -53,6 +53,18 @@ const TestRoutesScreen = () => {
       label: "GET /auth/denied-users",
       call: () => authorizedFetch(`${SERVER_URL}/api/auth/denied-users`).then(res => res.json())
     },
+    {
+      label: "GET /events/status/finished",
+      call: () => authorizedFetch(`${SERVER_URL}/api/events/status/finished`).then(res => res.json())
+    },
+    {
+      label: "GET /events/status/pending",
+      call: () => authorizedFetch(`${SERVER_URL}/api/events/status/pending`).then(res => res.json())
+    },
+    {
+      label: "GET /events/status/ongoing",
+      call: () => authorizedFetch(`${SERVER_URL}/api/events/status/ongoing`).then(res => res.json())
+    },
     
   ];
 
