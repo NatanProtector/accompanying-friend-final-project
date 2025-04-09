@@ -3,7 +3,7 @@ const { registrationSchema } = require('./authValidation');
 const router = express.Router();
 const User = require('../Users/userModel');
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
 
 router.post('/register', async (req, res) => {
   console.log('Incoming Request Body:', req.body); 
@@ -60,16 +60,34 @@ router.post('/login', async (req, res) => {
       return res.status(403).json({ message: 'Your registration is still pending approval.' });
     }
 
+    // ✅ Create the JWT token
+    const payload = {
+      _id: user._id,
+      idNumber: user.idNumber,
+      email: user.email,
+      multiRole: user.multiRole,
+      registrationStatus: user.registrationStatus
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+
     res.json({
       message: 'Login successful',
-      idNumber: user.idNumber,
-      fullName: user.fullName,
-      multiRole: user.multiRole
+      token,
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        idNumber: user.idNumber,
+        multiRole: user.multiRole
+      }
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ message: 'Server error during login', error });
   }
 });
+
 
 // Get all users with registrationStatus 'pending'
 router.get('/pending-users', async (req, res) => {
@@ -82,6 +100,27 @@ router.get('/pending-users', async (req, res) => {
   }
 });
 
+// Get approved users
+router.get("/approved-users", async (req, res) => {
+  try {
+    const users = await User.find({ registrationStatus: "approved" });
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Failed to fetch approved users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Get denied users
+router.get("/denied-users", async (req, res) => {
+  try {
+    const users = await User.find({ registrationStatus: "denied" });
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Failed to fetch denied users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 
 // Fetch user by email to get idNumber and _id
@@ -94,7 +133,7 @@ router.get("/get-user/:email", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ idNumber: user.idNumber, _id: user._id });
+    res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error });
   }
@@ -110,7 +149,7 @@ router.get("/get-user-by-id/:userId", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ idNumber: user.idNumber, _id: user._id });
+    res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error });
   }
@@ -126,12 +165,13 @@ router.get("/get-user-by-idNumber/:idNumber", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ idNumber: user.idNumber, _id: user._id });
+    res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error });
   }
 });
-// Fetch user by idNumber
+
+// Healthcheck route to check if the server is running
 router.get("/healthcheck", async (req, res) => {
 
   try {

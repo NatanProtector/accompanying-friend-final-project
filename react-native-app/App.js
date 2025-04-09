@@ -7,6 +7,7 @@ import SecurityDashboard from './src/screens/SecurityDashboard';
 import SettingsDisplay from './src/screens/SettingsDisplay';
 import DriveScreen from './src/screens/DriveScreen';
 import SafeLocationScreen from './src/screens/SafeLocationScreen';
+import TestRoutesScreen from './src/screens/TestRoutesScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -77,6 +78,12 @@ export default function App() {
               <Stack.Screen name="Settings" component={wrapScreenWithBoth(SettingsDisplay)} options={options} />
               <Stack.Screen name="StartRide" component={wrapScreenWithBackButton(DriveScreen)} options={options}/>
               <Stack.Screen name="SafeLocations" component={wrapScreenWithBackButton(SafeLocationScreen)} options={options}/>
+              <Stack.Screen
+  name="TestRoutes"
+  component={wrapScreenLanguageButton(TestRoutesScreen)}
+  options={options}
+/>
+
             </Stack.Navigator>
           </NavigationContainer>
         </MyLanguageContext.Provider>
