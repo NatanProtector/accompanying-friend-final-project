@@ -41,6 +41,9 @@ import { GOOGLE_MAPS_API_KEY } from "@env";
 
 // import MyLanguageContext from "../utils/MyLanguageContext";
 
+const MAP_UPDATE_INTERVAL = 2500;
+const LOCATION_UPDATE_INTERVAL = 5000;
+
 const SERVER_URL = "http://192.168.68.104:3001";
 const idNumber = "111111111";
 
@@ -217,10 +220,7 @@ export default function DriveScreen({ initialDestination }) {
       // Connect to the Socket.io server and register the user
       socketRef.current = io(SERVER_URL);
 
-      console.log("socketRef.current", socketRef.current);
-
       socketRef.current.on("connect", () => {
-        console.log("connected to server");
 
         socketRef.current.emit("register", {
           role: "user",
@@ -271,7 +271,7 @@ export default function DriveScreen({ initialDestination }) {
         const { latitude, longitude, heading } = loc.coords;
 
         setUserHeading(heading);
-      }, 5000);
+      }, MAP_UPDATE_INTERVAL);
 
       return () => clearInterval(intervalId);
     } catch (error) {
@@ -288,7 +288,7 @@ export default function DriveScreen({ initialDestination }) {
             longitude: region.longitude,
           });
         }
-      }, 5000);
+      }, LOCATION_UPDATE_INTERVAL);
 
       return () => clearInterval(intervalId);
     } catch (error) {
