@@ -15,7 +15,7 @@
  * - Right now it will only center on the user, make center and drag listener to center on the camera without
  *   preventing the user from dragging the map.
  * - Sucurity needs to transmit location even when not in ride. (sepereate to securityDriveScreen and cityDriveScreen)
- * 
+ *
  * NOTE:
  * - Remeber to change server url based on wifi connection.
  * */
@@ -37,14 +37,15 @@ import NavigationHeader from "../components/screen_components/NavigationHeader";
 import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
-import { GOOGLE_MAPS_API_KEY } from "@env";
+import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 
 // import MyLanguageContext from "../utils/MyLanguageContext";
+
+console.log("SERVER_URL", SERVER_URL);
 
 const MAP_UPDATE_INTERVAL = 2500;
 const LOCATION_UPDATE_INTERVAL = 5000;
 
-const SERVER_URL = "http://192.168.68.104:3001";
 const idNumber = "111111111";
 
 export default function DriveScreen({ initialDestination }) {
@@ -221,7 +222,6 @@ export default function DriveScreen({ initialDestination }) {
       socketRef.current = io(SERVER_URL);
 
       socketRef.current.on("connect", () => {
-
         socketRef.current.emit("register", {
           role: "user",
           userId: idNumber,

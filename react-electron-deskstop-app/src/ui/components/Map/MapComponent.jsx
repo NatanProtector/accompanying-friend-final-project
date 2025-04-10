@@ -25,6 +25,7 @@ const MapComponent = ({
         <MapController clickedPosition={centerCoords} zoomLevel={mapZoom} />
       )}
 
+      {/* Users now have red circle markers */}
       {userLocations &&
         userLocations.length > 0 &&
         userLocations.map((user, index) => (
@@ -35,21 +36,22 @@ const MapComponent = ({
               lng: user.location.longitude,
             }}
             title={`User: ${user.id}`}
+            icon={{
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: "red",
+              fillOpacity: 1,
+              strokeWeight: 2,
+              strokeColor: "white",
+            }}
           />
         ))}
 
+      {/* Clicked position now has a normal default marker */}
       {clickedPosition && (
         <Marker
           position={clickedPosition}
           title={"Clicked Location"}
-          icon={{
-            path: window.google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            fillColor: "red",
-            fillOpacity: 1,
-            strokeWeight: 2,
-            strokeColor: "white",
-          }}
         />
       )}
     </Map>
@@ -67,18 +69,18 @@ MapComponent.propTypes = {
     })
   ),
   clickedPosition: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lng: PropTypes.number.isRequired,
+    lat: PropTypes.number,
+    lng: PropTypes.number,
   }),
   onMapClick: PropTypes.func,
   centerCoords: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lng: PropTypes.number.isRequired,
+    lat: PropTypes.number,
+    lng: PropTypes.number,
   }),
   mapZoom: PropTypes.number,
   defaultPosition: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lng: PropTypes.number.isRequired,
+    lat: PropTypes.number,
+    lng: PropTypes.number,
   }),
   defaultZoom: PropTypes.number,
 };
