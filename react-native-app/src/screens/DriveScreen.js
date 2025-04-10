@@ -14,7 +14,12 @@
  *   for handeling the maps functionality.
  * - Right now it will only center on the user, make center and drag listener to center on the camera without
  *   preventing the user from dragging the map.
- */
+ * - Sucurity needs to transmit location even when not in ride. (sepereate to securityDriveScreen and cityDriveScreen)
+ * 
+ * NOTE:
+ * - Remeber to change server url based on wifi connection.
+ * */
+
 import {
   StyleSheet,
   Text,
@@ -26,16 +31,17 @@ import {
   ScrollView,
 } from "react-native";
 import * as Location from "expo-location";
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import BasicScreenTemplate from "../components/screen_components/BasicScreenTemplate";
 import NavigationHeader from "../components/screen_components/NavigationHeader";
 import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY } from "@env";
+
 // import MyLanguageContext from "../utils/MyLanguageContext";
 
-const SERVER_URL = "http://192.168.1.228:3001";
+const SERVER_URL = "http://192.168.68.104:3001";
 const idNumber = "111111111";
 
 export default function DriveScreen({ initialDestination }) {
@@ -211,17 +217,25 @@ export default function DriveScreen({ initialDestination }) {
       // Connect to the Socket.io server and register the user
       socketRef.current = io(SERVER_URL);
 
-      socketRef.current.emit("register", {
-        role: "user",
-        userId: idNumber,
-        location: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        },
+      console.log("socketRef.current", socketRef.current);
+
+      socketRef.current.on("connect", () => {
+        console.log("connected to server");
+
+        socketRef.current.emit("register", {
+          role: "user",
+          userId: idNumber,
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+        });
+
+        // Start transmitting location
+        startLocationServerUpdates();
       });
 
-      // Start transmitting location every five seconds
-      startLocationTransmission();
+      startLocationMapUpdates();
     };
     getLocationPermission();
     return () => {
@@ -231,8 +245,8 @@ export default function DriveScreen({ initialDestination }) {
     };
   }, []);
 
-  // Send location updates to server every 5 seconds
-  const startLocationTransmission = async () => {
+  // Send location updates to map every 5 seconds
+  const startLocationMapUpdates = async () => {
     try {
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
@@ -261,7 +275,24 @@ export default function DriveScreen({ initialDestination }) {
 
       return () => clearInterval(intervalId);
     } catch (error) {
-      console.error("Error transmitting location:", error);
+      console.error("Error updating location on map:", error);
+    }
+  };
+
+  const startLocationServerUpdates = async () => {
+    try {
+      const intervalId = setInterval(async () => {
+        if (region) {
+          socketRef.current.emit("update_location", {
+            latitude: region.latitude,
+            longitude: region.longitude,
+          });
+        }
+      }, 5000);
+
+      return () => clearInterval(intervalId);
+    } catch (error) {
+      console.error("Error updating location on server:", error);
     }
   };
 
