@@ -1,7 +1,7 @@
 import DriveScreen from "./DriveScreen";
 
 const CitizenDriveScreen = () => {
-  return <DriveScreen />;
+  return <DriveScreen userRole="citizen" />;
 };
 
 export default CitizenDriveScreen;

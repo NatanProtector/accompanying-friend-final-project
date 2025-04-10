@@ -41,14 +41,12 @@ import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 
 // import MyLanguageContext from "../utils/MyLanguageContext";
 
-console.log("SERVER_URL", SERVER_URL);
-
 const MAP_UPDATE_INTERVAL = 2500;
 const LOCATION_UPDATE_INTERVAL = 5000;
 
 const idNumber = "111111111";
 
-export default function DriveScreen({ initialDestination }) {
+export default function DriveScreen({ initialDestination, userRole }) {
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -223,7 +221,7 @@ export default function DriveScreen({ initialDestination }) {
 
       socketRef.current.on("connect", () => {
         socketRef.current.emit("register", {
-          role: "user",
+          role: userRole,
           userId: idNumber,
           location: {
             latitude: location.coords.latitude,

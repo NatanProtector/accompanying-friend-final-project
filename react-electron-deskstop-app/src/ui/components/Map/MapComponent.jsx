@@ -39,7 +39,7 @@ const MapComponent = ({
             icon={{
               path: window.google.maps.SymbolPath.CIRCLE,
               scale: 8,
-              fillColor: "red",
+              fillColor: user.role === "citizen" ? "green" : "blue",
               fillOpacity: 1,
               strokeWeight: 2,
               strokeColor: "white",
