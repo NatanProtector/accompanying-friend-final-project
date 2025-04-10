@@ -216,26 +216,31 @@ export default function DriveScreen({ initialDestination, userRole }) {
 
       setRegion(newRegion);
 
-      // Connect to the Socket.io server and register the user
-      socketRef.current = io(SERVER_URL);
+      if (userRole === "citizen") {
 
-      socketRef.current.on("connect", () => {
-        socketRef.current.emit("register", {
-          role: userRole,
-          userId: idNumber,
-          location: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
+        // Connect to the Socket.io server and register the user
+        socketRef.current = io(SERVER_URL);
+
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register", {
+            role: userRole,
+            userId: idNumber,
+            location: {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+          });
+
+          // Start transmitting location
+          startLocationServerUpdates();
         });
-
-        // Start transmitting location
-        startLocationServerUpdates();
-      });
+      }
 
       startLocationMapUpdates();
     };
+
     getLocationPermission();
+    
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
