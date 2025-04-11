@@ -29,7 +29,7 @@ const io = new Server(server, {
   });
 
   // Store connected users and admins
-const users = new Map();  // key: socket.id, value: { id, location }
+const users = new Map();  // key: socket.id, value: { id, location , role}
 const admins = new Set(); // store admin socket ids
 
 io.on('connection', (socket) => {
