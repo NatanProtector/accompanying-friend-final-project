@@ -1,5 +1,4 @@
-
-const SERVER_URL = "http://192.168.1.228:3001";
+import { SERVER_URL } from "@env";
 
 const splitFullName = (fullName) => {
   fullName = fullName.trim();
@@ -23,13 +22,13 @@ export const SubmitRegisterForm = (formData) => {
     phone: formData.phone,
     idNumber: formData.idNumber,
     email: formData.email,
-    password: formData.password, // ✅ Add this
+    password: formData.password,
     idPhoto: formData.idPhoto,
     multiRole:
     formData.registerAs === "both"
       ? ["citizen", "security"]
       : [formData.registerAs || "citizen"],
-    securityCertificatePhoto: formData.securityCertificatePhoto || null, // optional
+    securityCertificatePhoto: formData.securityCertificatePhoto || null,
   };
 
   return new Promise(async (resolve, reject) => {
@@ -126,3 +125,4 @@ export const SearchLocation = async (formData) => {
       }
     });
 }
+
