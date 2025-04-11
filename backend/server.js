@@ -29,7 +29,7 @@ const io = new Server(server, {
   });
 
   // Store connected users and admins
-const users = new Map();  // key: socket.id, value: { id, location }
+const users = new Map();  // key: socket.id, value: { id, location , role}
 const admins = new Set(); // store admin socket ids
 
 io.on('connection', (socket) => {
@@ -41,9 +41,9 @@ io.on('connection', (socket) => {
     if (role === 'admin') {
       admins.add(socket.id);
       console.log(`Admin connected: ${socket.id}`);
-    } else if (role === 'user') {
-      users.set(socket.id, { id: userId, location });
-      console.log(`User connected: ${userId}`);
+    } else if (role === 'citizen' || role === 'security') {
+      users.set(socket.id, { id: userId, location , role: role});
+      console.log(`${role} connected: ${userId}`);
     }
   });
 
@@ -75,7 +75,7 @@ setInterval(() => {
     const userList = Array.from(users.values());
     admins.forEach((adminSocketId) => {
         const adminSocket = io.sockets.sockets.get(adminSocketId);
-        if (adminSocket) {
+        if (adminSocket) {          
             adminSocket.emit('user_list_update', userList);
         }
     });

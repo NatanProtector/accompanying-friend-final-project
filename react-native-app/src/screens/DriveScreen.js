@@ -14,7 +14,12 @@
  *   for handeling the maps functionality.
  * - Right now it will only center on the user, make center and drag listener to center on the camera without
  *   preventing the user from dragging the map.
- */
+ * - Sucurity needs to transmit location even when not in ride. (sepereate to securityDriveScreen and cityDriveScreen)
+ *
+ * NOTE:
+ * - Remeber to change server url based on wifi connection.
+ * */
+
 import {
   StyleSheet,
   Text,
@@ -26,19 +31,23 @@ import {
   ScrollView,
 } from "react-native";
 import * as Location from "expo-location";
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import BasicScreenTemplate from "../components/screen_components/BasicScreenTemplate";
 import NavigationHeader from "../components/screen_components/NavigationHeader";
 import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
-import { GOOGLE_MAPS_API_KEY } from "@env";
+import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
+import { v4 as uuidv4 } from 'uuid';
+
 // import MyLanguageContext from "../utils/MyLanguageContext";
 
-const SERVER_URL = "http://192.168.1.228:3001";
-const idNumber = "111111111";
+const MAP_UPDATE_INTERVAL = 2500;
+const LOCATION_UPDATE_INTERVAL = 5000;
 
-export default function DriveScreen({ initialDestination }) {
+const idNumber = uuidv4();
+
+export default function DriveScreen({ initialDestination, userRole }) {
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -208,22 +217,31 @@ export default function DriveScreen({ initialDestination }) {
 
       setRegion(newRegion);
 
-      // Connect to the Socket.io server and register the user
-      socketRef.current = io(SERVER_URL);
+      if (userRole === "citizen") {
 
-      socketRef.current.emit("register", {
-        role: "user",
-        userId: idNumber,
-        location: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        },
-      });
+        // Connect to the Socket.io server and register the user
+        socketRef.current = io(SERVER_URL);
 
-      // Start transmitting location every five seconds
-      startLocationTransmission();
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register", {
+            role: userRole,
+            userId: idNumber,
+            location: {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+          });
+
+          // Start transmitting location
+          startLocationServerUpdates();
+        });
+      }
+
+      startLocationMapUpdates();
     };
+
     getLocationPermission();
+    
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -231,8 +249,8 @@ export default function DriveScreen({ initialDestination }) {
     };
   }, []);
 
-  // Send location updates to server every 5 seconds
-  const startLocationTransmission = async () => {
+  // Send location updates to map every 5 seconds
+  const startLocationMapUpdates = async () => {
     try {
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
@@ -257,11 +275,28 @@ export default function DriveScreen({ initialDestination }) {
         const { latitude, longitude, heading } = loc.coords;
 
         setUserHeading(heading);
-      }, 5000);
+      }, MAP_UPDATE_INTERVAL);
 
       return () => clearInterval(intervalId);
     } catch (error) {
-      console.error("Error transmitting location:", error);
+      console.error("Error updating location on map:", error);
+    }
+  };
+
+  const startLocationServerUpdates = async () => {
+    try {
+      const intervalId = setInterval(async () => {
+        if (region) {
+          socketRef.current.emit("update_location", {
+            latitude: region.latitude,
+            longitude: region.longitude,
+          });
+        }
+      }, LOCATION_UPDATE_INTERVAL);
+
+      return () => clearInterval(intervalId);
+    } catch (error) {
+      console.error("Error updating location on server:", error);
     }
   };
 

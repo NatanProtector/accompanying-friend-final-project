@@ -5,7 +5,8 @@ import RegistrationForm from "./src/screens/RegistrationForm";
 import CitizenDashboard from "./src/screens/CitizenDashboard";
 import SecurityDashboard from "./src/screens/SecurityDashboard";
 import SettingsDisplay from "./src/screens/SettingsDisplay";
-import DriveScreen from "./src/screens/DriveScreen";
+import CitizenDriveScreen from "./src/screens/CitizenDriveScreen";
+import SecurityDriveScreen from "./src/screens/SecurityDriveScreen";
 import SafeLocationScreen from "./src/screens/SafeLocationScreen";
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -127,8 +128,13 @@ export default function App() {
             options={options}
           />
           <Stack.Screen
-            name="StartRide"
-            component={wrapScreenWithBackButton(DriveScreen)}
+            name="StartRide/Citizen"
+            component={wrapScreenWithBackButton(CitizenDriveScreen)}
+            options={options}
+          />
+          <Stack.Screen
+            name="StartRide/Security"
+            component={wrapScreenWithBackButton(SecurityDriveScreen)}
             options={options}
           />
           <Stack.Screen

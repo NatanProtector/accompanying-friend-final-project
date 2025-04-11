@@ -1,43 +1,101 @@
-import { useContext } from 'react';
-import MyLanguageContext from '../utils/MyLanguageContext';
-import DashboardScreen from '../components/screen_components/DashboardScreen'
-import NavButton from '../components/general_components/NavButton';
+import { useContext, useState, useEffect } from "react";
+import { Alert } from "react-native";
+import MyLanguageContext from "../utils/MyLanguageContext";
+import DashboardScreen from "../components/screen_components/DashboardScreen";
+import NavButton from "../components/general_components/NavButton";
+import * as Location from "expo-location";
+import { SERVER_URL } from "@env";
+import LocationTransmissionsToServer from "../utils/LocationTransmissionsToServer";
+import { v4 as uuidv4 } from 'uuid';
 
-export default function CitizenDashboard({ navigation }) {
+const LOCATION_UPDATE_INTERVAL = 5000;
+const idNumber = uuidv4();;
 
-    const { language } = useContext(MyLanguageContext);
+export default function SecurityDashboard({ navigation }) {
+  const { language } = useContext(MyLanguageContext);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
-    const handleBackgroundPress = () => {
-        console.log("Background pressed");
+  useEffect(() => {
+    let locationIntervalId;
+
+    const startLocationUpdates = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Security dashboard requires location access to function."
+        );
+        return;
+      }
+
+      try {
+        const location = await Location.getCurrentPositionAsync({});
+        setCurrentLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+
+        locationIntervalId = setInterval(async () => {
+          try {
+            const loc = await Location.getCurrentPositionAsync({});
+            setCurrentLocation({
+              latitude: loc.coords.latitude,
+              longitude: loc.coords.longitude,
+            });
+          } catch (updateError) {
+            console.error("Error getting location update:", updateError);
+          }
+        }, LOCATION_UPDATE_INTERVAL);
+      } catch (initialError) {
+        console.error("Error getting initial location:", initialError);
+        Alert.alert("Location Error", "Could not fetch initial location.");
+      }
     };
 
-    return (
-        <DashboardScreen
-            navigation = {navigation}
-        >
+    startLocationUpdates();
 
-            <NavButton
-                title={text[language].startRide}
-                onPress={() => navigation.navigate("StartRide")}
-            />
+    return () => {
+      if (locationIntervalId) {
+        clearInterval(locationIntervalId);
+      }
+    };
+  }, []);
 
-            <NavButton
-                title={text[language].putInBackground}
-                onPress={handleBackgroundPress}
-            />
+  const handleBackgroundPress = () => {
+    console.log("Background pressed");
+  };
 
-        </DashboardScreen>
-    );
+  return (
+    <DashboardScreen navigation={navigation}>
+      <LocationTransmissionsToServer
+        userRole="security"
+        userId={idNumber}
+        location={currentLocation}
+        serverUrl={SERVER_URL}
+        updateInterval={LOCATION_UPDATE_INTERVAL}
+        isEnabled={!!currentLocation}
+      />
+
+      <NavButton
+        title={text[language].startRide}
+        onPress={() => navigation.navigate("StartRide/Security")}
+      />
+
+      <NavButton
+        title={text[language].putInBackground}
+        onPress={handleBackgroundPress}
+      />
+    </DashboardScreen>
+  );
 }
 
 const text = {
-    en: {
-        startRide: "Start Ride",
-        putInBackground: "Put in Background",
-    },
-    he: {
-        startRide: "התחלת נסיעה",
-        putInBackground: "מצער אפליקציה",
-    },
+  en: {
+    startRide: "Start Ride",
+    putInBackground: "Put in Background",
+  },
+  he: {
+    startRide: "התחלת נסיעה",
+    putInBackground: "מצער אפליקציה",
+  },
 };
-

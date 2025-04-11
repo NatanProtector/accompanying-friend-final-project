@@ -21,7 +21,7 @@ const NotificationWrapper = ({ children }) => {
   };
 
   const navigateToCoordinates = () => {
-    navigation.navigate("StartRide", {
+    navigation.navigate("StartRide/Security", {
       initialDestination: {
         latitude: 31.7683,
         longitude: 35.2137,
