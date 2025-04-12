@@ -1,18 +1,18 @@
 import { useContext } from 'react';
 import MyLanguageContext from '../utils/MyLanguageContext';
 import DashboardScreen from '../components/screen_components/DashboardScreen'
-import NavButton from '../components/components/NavButton';
+import NavButton from '../components/general_components/NavButton';
 
 export default function CitizenDashboard({ navigation }) {
     const { language } = useContext(MyLanguageContext);
 
     return (
         <DashboardScreen
-            navigation = {navigation}
+            navigation={navigation}
         >
             <NavButton
                 title={text[language].startRide}
-                onPress={() => navigation.navigate('StartRide')}
+                onPress={() => navigation.navigate('StartRide/Citizen')}
             />
             <NavButton
                 title={text[language].safeLocations}

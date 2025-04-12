@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Button,
@@ -10,35 +10,49 @@ import {
   Linking,
   Modal,
 } from "react-native";
-import MapView, { Marker} from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
-import redMarker from '../../assets/markers/map-marker-svgrepo-com (1).png';
-import greenMarker from '../../assets/markers/map-marker-svgrepo-com.png';
+import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
+import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
 import * as Location from "expo-location";
-
+import { GOOGLE_MAPS_API_KEY } from "@env";
+import DriverDirections from "../general_components/DriverDirections";
 import io from "socket.io-client";
 
-const GOOGLE_MAPS_API_KEY = "";
 const SERVER_URL = "http://192.168.1.228:3001";
 const idNumber = "111111111";
 
-const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
-  const [region, setRegion] = useState(null);
-  const [routeSteps, setRouteSteps] = useState([]);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [selectedMarkerId, setSelectedMarkerId] = useState(null);
-
+const MapScreen = ({
+  markers,
+  destination,
+  region,
+  setRegion,
+  routeSteps,
+  setRouteSteps,
+  currentStepIndex,
+  setCurrentStepIndex,
+  selectedMarker,
+  setSelectedMarker,
+  showInfoModal,
+  setShowInfoModal,
+  selectedMarkerId,
+  setSelectedMarkerId,
+  showDirections,
+  markerRefs,
+  handleMapPress,
+  handleRemoveMarker,
+  followUser,
+  userHeading,
+  onMapReady
+}) => {
   const socketRef = useRef(null);
-
-  const markerRefs = useRef({});
+  const mapRef = useRef(null);
 
   // if (GOOGLE_MAPS_API_KEY == "")
   //   throw new Error ("Missing Google Maps API key");
-  
-  useEffect(() => {    
+
+  useEffect(() => {
     const getLocationPermission = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -55,19 +69,21 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
       };
 
       setRegion(newRegion);
-      
+
       // Connect to the Socket.io server and register the user
       socketRef.current = io(SERVER_URL);
-      
+
       socketRef.current.emit("register", {
         role: "user",
         userId: idNumber,
-        location: { latitude: location.coords.latitude, longitude: location.coords.longitude },
+        location: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
       });
 
       // Start transmitting location every five seconds
       startLocationTransmission();
-
     };
 
     getLocationPermission();
@@ -77,51 +93,63 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
         socketRef.current.disconnect(); // Disconnect socket on unmount
       }
     };
-
   }, []);
 
   const startLocationTransmission = async () => {
     try {
-      const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-      const { latitude, longitude } = location.coords;
-  
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+        enableHighAccuracy: true,
+        heading: true,
+      });
+      const { latitude, longitude, heading } = location.coords;
+
       // Set region only ONCE, during initial setup
       setRegion((prevRegion) => ({
         ...prevRegion,
         latitude,
         longitude,
       }));
-  
+
       // Emit initial location
       if (socketRef.current) {
         socketRef.current.emit("update_location", { latitude, longitude });
       }
-  
-      // Start location updates every 5 seconds, without updating the region
+
+      // Start location updates every 5 seconds
       const intervalId = setInterval(async () => {
-        const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-        const { latitude, longitude } = loc.coords;
-  
-        // Only send the location over socket, don't change map region
+        const loc = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+          enableHighAccuracy: true,
+          heading: true,
+        });
+        const { latitude, longitude, heading } = loc.coords;
+
+        // Send location update
         if (socketRef.current) {
           socketRef.current.emit("update_location", { latitude, longitude });
         }
       }, 5000);
-  
+
       return () => clearInterval(intervalId);
     } catch (error) {
       console.error("Error transmitting location:", error);
     }
   };
-  
 
   useEffect(() => {
     if (routeSteps.length === 0) return;
 
     const sub = Location.watchPositionAsync(
-      { accuracy: Location.Accuracy.High, timeInterval: 1000, distanceInterval: 3 },
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 1000,
+        distanceInterval: 3,
+        enableHighAccuracy: true,
+        heading: true, // Enable heading tracking
+      },
       (location) => {
-        const { latitude, longitude } = location.coords;
+        const { latitude, longitude, heading } = location.coords;
         const step = routeSteps[currentStepIndex];
         if (!step) return;
 
@@ -142,6 +170,15 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
     return () => sub.then((s) => s.remove());
   }, [routeSteps, currentStepIndex]);
 
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.animateCamera({
+        pitch: followUser ? 45 : 0,
+        duration: 1000,
+      });
+    }
+  }, [followUser]);
+
   // const updateUserLocation = async (latitude, longitude) => {
   //   try {
   //     const response = await axios.put(
@@ -154,58 +191,74 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
   //   }
   // };
 
-  const stripHtml = (html) => html.replace(/<[^>]+>/g, "");
-
   const getAddressFromCoords = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      const [place] = await Location.reverseGeocodeAsync({
+        latitude: lat,
+        longitude: lng,
+      });
       return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
     } catch (error) {
       return "Unknown location";
     }
   };
 
-  const handleMapPress = async (event) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    const addr = await getAddressFromCoords(latitude, longitude);
-    const newMarker = {
-      id: Math.random().toString(),
-      latitude,
-      longitude,
-      address: addr,
-      name: "Custom Marker", // optional for later
-      description: "No description", // optional for later
-    };
-    setMarkers((prev) => [...prev, newMarker]);
-    setDestination({ latitude, longitude });
-  };
-
-  const handleRemoveMarker = (id) => {
-    setMarkers((prev) => prev.filter((m) => m.id !== id));
-    setRouteSteps([]);
-    setCurrentStepIndex(0);
-    setSelectedMarker(null);
-  };
-
   return (
     <View style={styles.container}>
-      {routeSteps.length > 0 && (
-        <View style={styles.navBox}>
-          <Text style={styles.distanceText}>
-            {routeSteps[currentStepIndex]?.distance?.text || ""}
-          </Text>
-          <Text style={styles.streetText}>
-            {stripHtml(routeSteps[currentStepIndex]?.html_instructions || "")}
-          </Text>
+      {showDirections && routeSteps.length > 0 && (
+        <View style={styles.directionsContainer}>
+          <DriverDirections
+            steps={routeSteps}
+            currentStepIndex={currentStepIndex}
+          />
         </View>
       )}
 
       {region ? (
         <MapView
+          initialRegion={region}
+          ref={mapRef}
           style={styles.map}
-          region={region}
           showsUserLocation={true}
           onPress={handleMapPress}
+          reuseMap={true}
+          loadingEnabled={true}
+          loadingBackgroundColor="white"
+          loadingIndicatorColor="teal"
+          showsMyLocationButton={true}
+          showsCompass={true}
+          showsUserHeadingIndicator={true}
+          followsUserLocation={followUser}
+          showsHeadingIndicator={true}
+          userLocationCalloutEnabled={true}
+          userLocationPriority="high"
+          userLocationUpdateInterval={1000}
+          onMapReady={onMapReady}
+          onUserLocationChange={(event) => {
+            if (followUser) {
+              const { coordinate } = event.nativeEvent;
+              const newRegion = {
+                ...region,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+              };
+              setRegion(newRegion);
+
+              // Animate camera to new location with heading
+              if (mapRef.current) {
+                mapRef.current.animateCamera({
+                  center: {
+                    latitude: coordinate.latitude,
+                    longitude: coordinate.longitude,
+                  },
+                  heading: userHeading || 0,
+                  pitch: followUser ? 45 : 0,
+                  zoom: 17,
+                  duration: 1000,
+                });
+              }
+            }
+          }}
         >
           {destination && (
             <MapViewDirections
@@ -214,23 +267,50 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
               apikey={GOOGLE_MAPS_API_KEY}
               strokeWidth={4}
               strokeColor="blue"
-              language="he"
+              language="en"
               mode="DRIVING"
               region="il"
+              units="metric"
               onReady={(result) => {
                 const steps = result.legs[0].steps;
                 setRouteSteps(steps);
                 setCurrentStepIndex(0);
               }}
+              optimizeWaypoints={true}
+              resetOnChange={false}
+              precision="high"
+              waypoints={[]}
+              splitWaypoints={false}
+              timePrecision="now"
+              directionsServiceBaseUrl="https://maps.googleapis.com/maps/api/directions/json"
+              directionsServiceOptions={{
+                alternatives: false,
+                avoid: [],
+                language: "en",
+                region: "il",
+                units: "metric",
+                mode: "driving",
+                traffic_model: "best_guess",
+                departure_time: "now",
+                arrival_time: null,
+                waypoints: [],
+                optimize: false,
+                avoid_ferries: false,
+                avoid_highways: false,
+                avoid_tolls: false,
+                transit_mode: [],
+                transit_routing_preference: null,
+              }}
             />
           )}
-
-          {/* <Marker coordinate={region} title="Your Location" pinColor="blue" /> */}
 
           {markers.map((marker) => (
             <Marker
               key={marker.id}
-              coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
               image={selectedMarkerId === marker.id ? greenMarker : redMarker}
               tracksViewChanges={false}
               ref={(ref) => {
@@ -263,7 +343,9 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
             style={styles.actionButton}
             onPress={() => {
               const { latitude, longitude } = selectedMarker;
-              Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`);
+              Linking.openURL(
+                `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+              );
             }}
           >
             <Text style={styles.actionText}>📍</Text>
@@ -293,7 +375,9 @@ const MapScreen = ({markers, setMarkers, destination, setDestination}) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedMarker?.name || "Marker Info"}</Text>
+            <Text style={styles.modalTitle}>
+              {selectedMarker?.name || "Marker Info"}
+            </Text>
             <Text>Description: {selectedMarker?.description || "N/A"}</Text>
             <Text>Address: {selectedMarker?.address || "Unknown"}</Text>
             <Text>Lat: {selectedMarker?.latitude.toFixed(6)}</Text>
@@ -342,26 +426,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
   },
-  navBox: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "85%",
-    right: 20,
-    backgroundColor: "black",
-    padding: 15,
-    borderRadius: 12,
-    zIndex: 999,
-  },
-  distanceText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "white",
-  },
-  streetText: {
-    fontSize: 18,
-    color: "#00aaff",
-  },
+
   actionBar: {
     position: "absolute",
     bottom: 10,
@@ -397,6 +462,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  directionsContainer: {
+    position: "absolute",
+    bottom: 80,
+    left: 10,
+    right: 10,
+    zIndex: 1000,
   },
 });
 

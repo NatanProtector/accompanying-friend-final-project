@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 
-
-const SERVER_URL = "http://192.168.1.228:3001";
+import { SERVER_URL } from "@env";
 
 const splitFullName = (fullName) => {
   fullName = fullName.trim();
@@ -44,13 +43,13 @@ export const SubmitRegisterForm = (formData) => {
     phone: formData.phone,
     idNumber: formData.idNumber,
     email: formData.email,
-    password: formData.password, // ✅ Add this
+    password: formData.password,
     idPhoto: formData.idPhoto,
     multiRole:
     formData.registerAs === "both"
       ? ["citizen", "security"]
       : [formData.registerAs || "citizen"],
-    securityCertificatePhoto: formData.securityCertificatePhoto || null, // optional
+    securityCertificatePhoto: formData.securityCertificatePhoto || null,
   };
 
   return new Promise(async (resolve, reject) => {
@@ -86,6 +85,16 @@ export const SubmitRegisterForm = (formData) => {
 export const SubmitLoginForm = async (formData) => {
   return new Promise(async (resolve, reject) => {
     try {
+
+      // For testing, new input will be accepted always after one second =============
+      if (formData.idNumber === "" || formData.password === "") {
+        resolve({
+          multiRole: ["citizen", "security"],
+        });
+        return;
+      }
+      // =============================================================
+
       const response = await fetch(`${SERVER_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -182,3 +191,4 @@ export const SearchLocation = async (formData) => {
       }
     });
 }
+

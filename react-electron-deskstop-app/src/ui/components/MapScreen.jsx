@@ -48,6 +48,8 @@ const MapScreen = () => {
 
   const handleCloseModal = () => {
     setClickedPosition(null);
+    setCenterCoords(defaultPosition);
+    setMapZoom(defaultZoom);
     setShowModal(false);
   };
 
