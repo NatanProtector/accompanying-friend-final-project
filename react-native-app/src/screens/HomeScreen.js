@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity, Modal } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Modal,Button } from "react-native";
 import { useContext, useState } from "react";
 import { BlurView } from "expo-blur";
 import MyLanguageContext from "../utils/MyLanguageContext";
@@ -7,6 +7,8 @@ import NavButton from "../components/general_components/NavButton";
 import TextFieldPassword from "../components/general_components/TextFieldPassword";
 import TextFieldUsername from "../components/general_components/TextFieldUsername";
 import { SubmitLoginForm } from "../utils/Communication";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 /**
  * Bugs:
@@ -42,8 +44,10 @@ export default function HomeScreen({ navigation }) {
         password: password,
       });
 
-      const { multiRole } = response;
-
+      const { token, user } = response;
+      await AsyncStorage.setItem("authToken", token);
+      const { multiRole } = user;
+      
       if (multiRole.length === 1) {
         if (multiRole[0] === "citizen") {
           navigation.navigate("Dashboard/Citizen");
@@ -105,6 +109,14 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         <NavButton title={HomeText[language].login} onPress={handleLogin} />
+
+        <Button
+  title="Test API Routes"
+  onPress={() => navigation.navigate("TestRoutes")}
+  color="gold" // or "yellow"
+ />
+
+
 
         <View
           style={[
