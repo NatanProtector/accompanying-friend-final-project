@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authorizedFetch } from '../utils/Communication';
@@ -13,6 +13,10 @@ const TestRoutesScreen = () => {
   const [newStatus, setNewStatus] = useState("");
   const [allEvents, setAllEvents] = useState([]);
   const [expandedEventId, setExpandedEventId] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+  const [expandedUserId, setExpandedUserId] = useState(null);
+  const [showEvents, setShowEvents] = useState(false);
+  const [showUsers, setShowUsers] = useState(false);
 
   const testRoute = async (label, fetchFunction) => {
     try {
@@ -42,6 +46,28 @@ const TestRoutesScreen = () => {
       setAllEvents(json);
     } catch (err) {
       console.error("Failed to fetch events:", err);
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    try {
+      const res = await authorizedFetch(`${SERVER_URL}/api/auth/users`);
+      const json = await res.json();
+      setAllUsers(json);
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    }
+  };
+
+  const updateUserStatus = async (idNumber, newStatus) => {
+    try {
+      await authorizedFetch(`${SERVER_URL}/api/auth/update-status`, {
+        method: "PUT",
+        body: JSON.stringify({ idNumber, newStatus })
+      });
+      fetchAllUsers();
+    } catch (err) {
+      console.error("Failed to update user status:", err);
     }
   };
 
@@ -85,14 +111,6 @@ const TestRoutesScreen = () => {
     {
       label: "GET /events/status/ongoing",
       call: () => authorizedFetch(`${SERVER_URL}/api/events/status/ongoing`).then(res => res.json())
-    },
-    {
-      label: "PUT /auth/update-status/:idNumber",
-      call: () =>
-        authorizedFetch(`${SERVER_URL}/api/auth/update-status/${idNumber}`, {
-          method: "PUT",
-          body: JSON.stringify({ newStatus })
-        }).then(res => res.json())
     }
   ];
 
@@ -123,23 +141,47 @@ const TestRoutesScreen = () => {
         </View>
       ))}
 
-      <Button title="Load All Events" onPress={fetchAllEvents} color="purple" />
+      <Button title="Load All Events" onPress={() => { fetchAllEvents(); setShowEvents(true); }} color="purple" />
+      <Button title="Load All Users" onPress={() => { fetchAllUsers(); setShowUsers(true); }} color="teal" />
 
-      {allEvents.map((event) => (
-        <View key={event._id} style={styles.eventCard}>
-          <TouchableOpacity onPress={() => setExpandedEventId(expandedEventId === event._id ? null : event._id)}>
-            <Text style={styles.eventTitle}>{event.eventType} — {event.status}</Text>
-            <Text style={styles.eventMeta}>{new Date(event.timestamp).toLocaleString()}</Text>
-          </TouchableOpacity>
+      {showEvents && <>
+        <Text style={styles.header}>All Events</Text>
+        {allEvents.map((event) => (
+          <View key={event._id} style={styles.eventCard}>
+            <TouchableOpacity onPress={() => setExpandedEventId(expandedEventId === event._id ? null : event._id)}>
+              <Text style={styles.eventTitle}>{event.eventType} — {event.status}</Text>
+              <Text style={styles.eventMeta}>{new Date(event.timestamp).toLocaleString()}</Text>
+            </TouchableOpacity>
 
-          {expandedEventId === event._id && (
-            <View style={styles.buttonRow}>
-              <Button title="Set Ongoing" onPress={() => updateEventStatus(event._id, "ongoing")} color="orange" />
-              <Button title="Set Finished" onPress={() => updateEventStatus(event._id, "finished")} color="green" />
-            </View>
-          )}
-        </View>
-      ))}
+            {expandedEventId === event._id && (
+              <View style={styles.buttonRow}>
+                <Button title="Set Ongoing" onPress={() => updateEventStatus(event._id, "ongoing")} color="orange" />
+                <Button title="Set Finished" onPress={() => updateEventStatus(event._id, "finished")} color="green" />
+              </View>
+            )}
+          </View>
+        ))}
+      </>}
+
+      {showUsers && <>
+        <Text style={styles.header}>All Users</Text>
+        {allUsers.map((user) => (
+          <View key={user._id} style={styles.eventCard}>
+            <TouchableOpacity onPress={() => setExpandedUserId(expandedUserId === user._id ? null : user._id)}>
+              <Text style={styles.eventTitle}>{user.fullName} — {user.registrationStatus}</Text>
+              <Text style={styles.eventMeta}>ID Number: {user.idNumber}</Text>
+            </TouchableOpacity>
+
+            {expandedUserId === user._id && (
+              <View style={styles.buttonRow}>
+                <Button title="Set Approved" onPress={() => updateUserStatus(user.idNumber, "approved")} color="green" />
+                <Button title="Set Denied" onPress={() => updateUserStatus(user.idNumber, "denied")} color="red" />
+                <Button title="Set Pending" onPress={() => updateUserStatus(user.idNumber, "pending")} color="orange" />
+              </View>
+            )}
+          </View>
+        ))}
+      </>}
     </ScrollView>
   );
 };

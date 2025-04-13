@@ -40,12 +40,11 @@ router.post('/register', async (req, res) => {
 });
 
 // Update user registration status
-router.put("/update-status/:idNumber", async (req, res) => {
-  const { idNumber } = req.params;
-  const { newStatus } = req.body;
+router.put("/update-status", async (req, res) => {
+  const { idNumber, newStatus } = req.body;
 
-  if (!["pending", "approved", "denied"].includes(newStatus)) {
-    return res.status(400).json({ message: "Invalid status value" });
+  if (!idNumber || !["pending", "approved", "denied"].includes(newStatus)) {
+    return res.status(400).json({ message: "Invalid request" });
   }
 
   try {
@@ -56,7 +55,7 @@ router.put("/update-status/:idNumber", async (req, res) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found." });
     }
 
     res.status(200).json({
@@ -68,6 +67,7 @@ router.put("/update-status/:idNumber", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 
 // Login Route
@@ -237,4 +237,15 @@ router.put("/update-location/:idNumber", async (req, res) => {
     res.status(500).json({ message: "Error updating location", error });
   }
 });
+
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("Error fetching all users:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 module.exports = router;
