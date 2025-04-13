@@ -20,7 +20,7 @@ import { GOOGLE_MAPS_API_KEY } from "@env";
 import DriverDirections from "../general_components/DriverDirections";
 import io from "socket.io-client";
 
-const SERVER_URL = "http://192.168.1.228:3001";
+const SERVER_URL = "http://10.0.0.17:3001";
 const idNumber = "111111111";
 
 const MapScreen = ({
