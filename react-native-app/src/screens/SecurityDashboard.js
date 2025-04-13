@@ -6,10 +6,10 @@ import NavButton from "../components/general_components/NavButton";
 import * as Location from "expo-location";
 import { SERVER_URL } from "@env";
 import LocationTransmissionsToServer from "../utils/LocationTransmissionsToServer";
-import { v4 as uuidv4 } from 'uuid';
+
 
 const LOCATION_UPDATE_INTERVAL = 5000;
-const idNumber = uuidv4();;
+const idNumber = '123456789';
 
 export default function SecurityDashboard({ navigation }) {
   const { language } = useContext(MyLanguageContext);

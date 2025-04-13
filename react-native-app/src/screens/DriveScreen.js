@@ -38,16 +38,13 @@ import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
-import { v4 as uuidv4 } from 'uuid';
 
 // import MyLanguageContext from "../utils/MyLanguageContext";
 
 const MAP_UPDATE_INTERVAL = 2500;
 const LOCATION_UPDATE_INTERVAL = 5000;
 
-const idNumber = uuidv4();
-
-export default function DriveScreen({ initialDestination, userRole }) {
+export default function DriveScreen({ initialDestination, userRole, idNumber }) {
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
