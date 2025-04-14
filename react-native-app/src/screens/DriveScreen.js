@@ -49,6 +49,10 @@ export default function DriveScreen({
   userRole,
   idNumber,
 }) {
+
+  let mapIntervalId = null;
+  let locationIntervalId = null;
+
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -215,10 +219,10 @@ export default function DriveScreen({
         longitudeDelta: 0.01,
       };
 
+      // Set region only ONCE, during initial setup
       setRegion(newRegion);
 
       if (userRole === "citizen") {
-
         // Connect to the Socket.io server and register the user
         socketRef.current = io(SERVER_URL);
 
@@ -232,11 +236,12 @@ export default function DriveScreen({
             },
           });
 
-          // Start transmitting location
+          // Start transmitting location to server
           startLocationServerUpdates();
         });
       }
 
+      // Start transmitting location to map
       startLocationMapUpdates();
     };
 
@@ -252,21 +257,8 @@ export default function DriveScreen({
   // Send location updates to map every 5 seconds
   const startLocationMapUpdates = async () => {
     try {
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-        enableHighAccuracy: true,
-        heading: true,
-      });
-      const { latitude, longitude, heading } = location.coords;
 
-      // Set region only ONCE, during initial setup
-      setRegion((prevRegion) => ({
-        ...prevRegion,
-        latitude,
-        longitude,
-      }));
-
-      const intervalId = setInterval(async () => {
+      mapIntervalId = setInterval(async () => {
         const loc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
           enableHighAccuracy: true,
@@ -274,10 +266,16 @@ export default function DriveScreen({
         });
         const { latitude, longitude, heading } = loc.coords;
 
+        setRegion((prevRegion) => ({
+          ...prevRegion,
+          latitude,
+          longitude,
+        }));
+
         setUserHeading(heading);
       }, MAP_UPDATE_INTERVAL);
 
-      return () => clearInterval(intervalId);
+      return () => clearInterval(mapIntervalId);
     } catch (error) {
       console.error("Error updating location on map:", error);
     }
@@ -285,7 +283,7 @@ export default function DriveScreen({
 
   const startLocationServerUpdates = async () => {
     try {
-      const intervalId = setInterval(async () => {
+      locationIntervalId = setInterval(async () => {
         // Fetch the current location *inside* the interval
         const currentLoc = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
@@ -301,7 +299,7 @@ export default function DriveScreen({
         }
       }, LOCATION_UPDATE_INTERVAL);
 
-      return () => clearInterval(intervalId);
+      return () => clearInterval(locationIntervalId);
     } catch (error) {
       console.error("Error starting location server updates:", error);
     }

@@ -37,8 +37,6 @@ export default function SecurityDashboard({ navigation }) {
         // Connect to the Socket.io server and register the user
         socketRef.current = io(SERVER_URL);
 
-        console.log("Socket server connected");
-
         socketRef.current.on("connect", () => {
           socketRef.current.emit("register", {
             role: "security",
@@ -48,8 +46,6 @@ export default function SecurityDashboard({ navigation }) {
               longitude: currentLocation.coords.longitude,
             },
           });
-
-          console.log("User registered");
 
           // Start transmitting location
           startLocationServerUpdates();
@@ -62,15 +58,20 @@ export default function SecurityDashboard({ navigation }) {
 
     startLocationUpdates();
 
+    // Cleanup function
     return () => {
       if (locationIntervalId) {
         clearInterval(locationIntervalId);
+      }
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        console.log("Socket disconnected on component unmount");
       }
     };
   }, []);
 
   const startLocationServerUpdates = () => {
-    setInterval(async () => {
+    locationIntervalId = setInterval(async () => {
       try {
         const currentLocation = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
@@ -93,7 +94,6 @@ export default function SecurityDashboard({ navigation }) {
 
   return (
     <DashboardScreen navigation={navigation}>
-
       <NavButton
         title={text[language].startRide}
         onPress={() => navigation.navigate("StartRide/Security")}
