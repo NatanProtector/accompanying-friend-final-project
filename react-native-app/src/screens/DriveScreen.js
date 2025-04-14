@@ -38,16 +38,17 @@ import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
-import { v4 as uuidv4 } from 'uuid';
 
 // import MyLanguageContext from "../utils/MyLanguageContext";
 
 const MAP_UPDATE_INTERVAL = 2500;
 const LOCATION_UPDATE_INTERVAL = 5000;
 
-const idNumber = uuidv4();
-
-export default function DriveScreen({ initialDestination, userRole }) {
+export default function DriveScreen({
+  initialDestination,
+  userRole,
+  idNumber,
+}) {
   // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -83,7 +84,7 @@ export default function DriveScreen({ initialDestination, userRole }) {
       });
       return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error:", error);
       return "Unknown location";
     }
   };
@@ -134,7 +135,6 @@ export default function DriveScreen({ initialDestination, userRole }) {
       );
 
       const detailsData = await detailsResponse.json();
-      // console.log("Place Details Response:", detailsData);
 
       if (detailsData.result && detailsData.result.geometry) {
         const { lat, lng } = detailsData.result.geometry.location;
@@ -152,10 +152,10 @@ export default function DriveScreen({ initialDestination, userRole }) {
         setSearchText("");
         startDrive({ latitude: lat, longitude: lng });
       } else {
-        console.log("No geometry data in response");
+        console.error("No geometry data in response");
       }
     } catch (error) {
-      console.log("Error getting place details:", error);
+      console.error("Error getting place details:", error);
       Alert.alert("Error", "Could not get location details. Please try again.");
     }
   };
@@ -193,7 +193,7 @@ export default function DriveScreen({ initialDestination, userRole }) {
         setSearchResults([]);
       }
     } catch (error) {
-      console.log("Error searching locations:", error);
+      console.error("Error searching locations:", error);
       setSearchResults([]);
     }
   };
@@ -241,7 +241,7 @@ export default function DriveScreen({ initialDestination, userRole }) {
     };
 
     getLocationPermission();
-    
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -286,17 +286,24 @@ export default function DriveScreen({ initialDestination, userRole }) {
   const startLocationServerUpdates = async () => {
     try {
       const intervalId = setInterval(async () => {
-        if (region) {
+        // Fetch the current location *inside* the interval
+        const currentLoc = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+          enableHighAccuracy: true,
+        });
+        const { latitude, longitude } = currentLoc.coords;
+
+        if (socketRef.current && socketRef.current.connected) {
           socketRef.current.emit("update_location", {
-            latitude: region.latitude,
-            longitude: region.longitude,
+            latitude: latitude, // Use the fetched latitude
+            longitude: longitude, // Use the fetched longitude
           });
         }
       }, LOCATION_UPDATE_INTERVAL);
 
       return () => clearInterval(intervalId);
     } catch (error) {
-      console.error("Error updating location on server:", error);
+      console.error("Error starting location server updates:", error);
     }
   };
 
