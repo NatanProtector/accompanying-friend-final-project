@@ -16,12 +16,8 @@ import { getDistance } from "geolib";
 import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
 import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
 import * as Location from "expo-location";
-import { GOOGLE_MAPS_API_KEY } from "@env";
+import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 import DriverDirections from "../general_components/DriverDirections";
-import io from "socket.io-client";
-
-const SERVER_URL = "http://10.0.0.17:3001";
-const idNumber = "111111111";
 
 const MapScreen = ({
   markers,
@@ -46,7 +42,6 @@ const MapScreen = ({
   userHeading,
   onMapReady
 }) => {
-  const socketRef = useRef(null);
   const mapRef = useRef(null);
 
   // if (GOOGLE_MAPS_API_KEY == "")
@@ -70,72 +65,11 @@ const MapScreen = ({
 
       setRegion(newRegion);
 
-      // Connect to the Socket.io server and register the user
-      socketRef.current = io(SERVER_URL);
-
-      socketRef.current.emit("register", {
-        role: "user",
-        userId: idNumber,
-        location: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        },
-      });
-
-      // Start transmitting location every five seconds
-      startLocationTransmission();
     };
 
     getLocationPermission();
 
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect(); // Disconnect socket on unmount
-      }
-    };
   }, []);
-
-  const startLocationTransmission = async () => {
-    try {
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-        enableHighAccuracy: true,
-        heading: true,
-      });
-      const { latitude, longitude, heading } = location.coords;
-
-      // Set region only ONCE, during initial setup
-      setRegion((prevRegion) => ({
-        ...prevRegion,
-        latitude,
-        longitude,
-      }));
-
-      // Emit initial location
-      if (socketRef.current) {
-        socketRef.current.emit("update_location", { latitude, longitude });
-      }
-
-      // Start location updates every 5 seconds
-      const intervalId = setInterval(async () => {
-        const loc = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-          enableHighAccuracy: true,
-          heading: true,
-        });
-        const { latitude, longitude, heading } = loc.coords;
-
-        // Send location update
-        if (socketRef.current) {
-          socketRef.current.emit("update_location", { latitude, longitude });
-        }
-      }, 5000);
-
-      return () => clearInterval(intervalId);
-    } catch (error) {
-      console.error("Error transmitting location:", error);
-    }
-  };
 
   useEffect(() => {
     if (routeSteps.length === 0) return;

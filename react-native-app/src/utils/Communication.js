@@ -86,15 +86,6 @@ export const SubmitLoginForm = async (formData) => {
   return new Promise(async (resolve, reject) => {
     try {
 
-      // For testing, new input will be accepted always after one second =============
-      if (formData.idNumber === "" || formData.password === "") {
-        resolve({
-          multiRole: ["citizen", "security"],
-        });
-        return;
-      }
-      // =============================================================
-
       const response = await fetch(`${SERVER_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
