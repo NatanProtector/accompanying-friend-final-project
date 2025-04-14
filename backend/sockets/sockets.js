@@ -49,9 +49,10 @@ const registerSocketEvents = (socket) => {
 
 const updateLocation = (socket) => {
     socket.on('update_location', (location) => {
-        // console.log(location);
         
         if (users.has(socket.id)) {
+            console.log(`Updating location for ${users.get(socket.id).id}`);
+            console.log("New location: ", location);
             users.get(socket.id).location = location;
         }
     });
@@ -77,11 +78,14 @@ const startBroadcastingUserList = (io) => {
         admins.forEach((adminSocketId) => {
             const adminSocket = io.sockets.sockets.get(adminSocketId);
             if (adminSocket) {          
+                console.log("Sending user list to admin: ", userList);
                 adminSocket.emit('user_list_update', userList);
             }
         });
     }, updateIntervalTime);
 }
+
+
 module.exports = {
     addSocketsToServer
 }
