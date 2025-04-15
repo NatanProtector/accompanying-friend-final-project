@@ -38,17 +38,18 @@ import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
+import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
-
-// import MyLanguageContext from "../utils/MyLanguageContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MAP_UPDATE_INTERVAL = 2500;
 const LOCATION_UPDATE_INTERVAL = 5000;
 
-const idNumber = uuidv4();
+// const idNumber = uuidv4();
+// const stored = await AsyncStorage.getItem("userData");
+// const { idNumber } = JSON.parse(stored);
 
 export default function DriveScreen({ initialDestination, userRole }) {
-  // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -74,21 +75,16 @@ export default function DriveScreen({ initialDestination, userRole }) {
     }
   };
 
-  // Convert coordinates to human-readable address
   const getAddressFromCoords = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({
-        latitude: lat,
-        longitude: lng,
-      });
-      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
+      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      return `${place.street || ""} ${place.name || ""}, ${place.city || ""}`;
     } catch (error) {
       console.log("Error:", error);
       return "Unknown location";
     }
   };
 
-  // Handle map tap to place a marker
   const handleMapPress = async (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     const addr = await getAddressFromCoords(latitude, longitude);
@@ -104,7 +100,6 @@ export default function DriveScreen({ initialDestination, userRole }) {
     startDrive({ latitude, longitude });
   };
 
-  // Remove marker and reset route
   const handleRemoveMarker = () => {
     setMarker(null);
     setRouteSteps([]);
@@ -128,13 +123,10 @@ export default function DriveScreen({ initialDestination, userRole }) {
 
   const handleResultSelect = async (result) => {
     try {
-      // Get place details to get coordinates
       const detailsResponse = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}&language=en`
       );
-
       const detailsData = await detailsResponse.json();
-      // console.log("Place Details Response:", detailsData);
 
       if (detailsData.result && detailsData.result.geometry) {
         const { lat, lng } = detailsData.result.geometry.location;
@@ -151,35 +143,27 @@ export default function DriveScreen({ initialDestination, userRole }) {
         setSearchResults([]);
         setSearchText("");
         startDrive({ latitude: lat, longitude: lng });
-      } else {
-        console.log("No geometry data in response");
       }
     } catch (error) {
       console.log("Error getting place details:", error);
       Alert.alert("Error", "Could not get location details. Please try again.");
     }
   };
-  // Handle search input change and update results
+
   const handleSearchInputChange = async (text) => {
     setSearchText(text);
-
     if (text.trim().length < 2) {
       setSearchResults([]);
       return;
     }
-
     try {
-      // Use Google Places Autocomplete API
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
           text
         )}&key=${GOOGLE_MAPS_API_KEY}&language=en&components=country:il`
       );
-
       const data = await response.json();
-
       if (data.predictions && data.predictions.length > 0) {
-        // For now, just show the predictions without coordinates
         const results = data.predictions.map((prediction, index) => ({
           id: index.toString(),
           name: prediction.structured_formatting.main_text,
@@ -187,7 +171,6 @@ export default function DriveScreen({ initialDestination, userRole }) {
           address: prediction.description,
           placeId: prediction.place_id,
         }));
-
         setSearchResults(results);
       } else {
         setSearchResults([]);
@@ -198,58 +181,95 @@ export default function DriveScreen({ initialDestination, userRole }) {
     }
   };
 
-  // Initialize location permissions and socket connection
   useEffect(() => {
     const getLocationPermission = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission Denied", "You need to allow location access.");
-        return;
-      }
-
-      const location = await Location.getCurrentPositionAsync({});
-      const newRegion = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      };
-
-      setRegion(newRegion);
-
-      if (userRole === "citizen") {
-
-        // Connect to the Socket.io server and register the user
-        socketRef.current = io(SERVER_URL);
-
-        socketRef.current.on("connect", () => {
-          socketRef.current.emit("register", {
-            role: userRole,
-            userId: idNumber,
-            location: {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert("Permission Denied", "You need to allow location access.");
+          return;
+        }
+  
+        const location = await Location.getCurrentPositionAsync({});
+        if (!location || !location.coords) {
+          console.warn("[DRIVE] No valid location object");
+          return;
+        }
+  
+        const newRegion = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        };
+  
+        setRegion(newRegion);
+  
+        const stored = await AsyncStorage.getItem("userData");
+        if (!stored) {
+          console.warn("[DRIVE] No user data found in AsyncStorage");
+          return;
+        }
+        const { idNumber } = JSON.parse(stored);
+  
+        // ✅ Update location in DB
+        try {
+          const response = await fetch(`${SERVER_URL}/api/auth/update-location/${idNumber}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
               latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            },
+              longitude: location.coords.longitude
+            }),
+            
           });
-
-          // Start transmitting location
-          startLocationServerUpdates();
-        });
+          
+          const responseText = await response.text();
+          console.log("[DRIVE] Server response:", response.status, responseText);
+          
+          if (!response.ok) {
+            console.warn("[DRIVE] Location update failed");
+          }
+          else {
+            console.log("[DRIVE] Location sent to server");
+          }
+        } catch (error) {
+          console.error("[DRIVE] Error sending location to server:", error);
+        }
+  
+        // ✅ Socket (citizen only)
+        if (userRole === "citizen") {
+          socketRef.current = io(SERVER_URL);
+          socketRef.current.on("connect", () => {
+            socketRef.current.emit("register", {
+              role: userRole,
+              userId: idNumber,
+              location: {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+            });
+  
+            startLocationServerUpdates();
+          });
+        }
+  
+        startLocationMapUpdates();
+      } catch (err) {
+        console.error("[DRIVE] Unexpected error in location permission flow:", err);
       }
-
-      startLocationMapUpdates();
     };
-
+  
     getLocationPermission();
-    
+  
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
     };
   }, []);
+  
 
-  // Send location updates to map every 5 seconds
   const startLocationMapUpdates = async () => {
     try {
       const location = await Location.getCurrentPositionAsync({
@@ -258,13 +278,7 @@ export default function DriveScreen({ initialDestination, userRole }) {
         heading: true,
       });
       const { latitude, longitude, heading } = location.coords;
-
-      // Set region only ONCE, during initial setup
-      setRegion((prevRegion) => ({
-        ...prevRegion,
-        latitude,
-        longitude,
-      }));
+      setRegion((prevRegion) => ({ ...prevRegion, latitude, longitude }));
 
       const intervalId = setInterval(async () => {
         const loc = await Location.getCurrentPositionAsync({
@@ -272,9 +286,7 @@ export default function DriveScreen({ initialDestination, userRole }) {
           enableHighAccuracy: true,
           heading: true,
         });
-        const { latitude, longitude, heading } = loc.coords;
-
-        setUserHeading(heading);
+        setUserHeading(loc.coords.heading);
       }, MAP_UPDATE_INTERVAL);
 
       return () => clearInterval(intervalId);

@@ -6,12 +6,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 router.post('/register', async (req, res) => {
-  console.log('Incoming Request Body:', req.body); 
+  console.log('Incoming Request Body:', req.body);
   const { firstName, lastName, phone, password, idNumber, email, idPhoto, multiRole, securityCertificatePhoto } = req.body;
 
   const { error } = registrationSchema.validate(req.body);
   if (error) {
-    console.log('Validation Error:', error.details); 
+    console.log('Validation Error:', error.details);
     return res.status(400).json({ error: error.details[0].message });
   }
 
@@ -52,6 +52,10 @@ router.post('/login', async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
 
+    user.isOnline = true;
+    await user.save();
+
+
     if (!isMatch) {
       return res.status(401).json({ message: 'Password is incorrect.' });
     }
@@ -85,6 +89,27 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: 'Server error during login', error });
+  }
+});
+
+router.post("/logout", async (req, res) => {
+  const { idNumber } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { idNumber },
+      { isOnline: false },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ message: "Server error during logout", error });
   }
 });
 
@@ -183,27 +208,32 @@ router.get("/healthcheck", async (req, res) => {
 
 // Update user location using idNumber
 router.put("/update-location/:idNumber", async (req, res) => {
-  const { idNumber } = req.params;
   const { latitude, longitude } = req.body;
 
-  if (!latitude || !longitude) {
+  if (latitude == null || longitude == null) {
     return res.status(400).json({ message: "Latitude and longitude are required." });
   }
 
   try {
     const updatedUser = await User.findOneAndUpdate(
-      { idNumber }, // Find user by idNumber
-      { $set: { "location.coordinates": [longitude, latitude] } }, // Store as [longitude, latitude]
+      { idNumber: req.params.idNumber },
+      {
+        location: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+      },
       { new: true }
     );
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found." });
-    }
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
 
-    res.json({ message: "Location updated successfully", user: updatedUser });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating location", error });
+    res.json(updatedUser);
+  } catch (err) {
+    console.error("Location update failed:", err);
+    res.status(500).json({ message: "Failed to update location" });
   }
 });
+
+
 module.exports = router;

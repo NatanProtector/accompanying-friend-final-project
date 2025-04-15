@@ -46,6 +46,7 @@ export default function HomeScreen({ navigation }) {
 
       const { token, user } = response;
       await AsyncStorage.setItem("authToken", token);
+      await AsyncStorage.setItem("userData", JSON.stringify(user));
       const { multiRole } = user;
       
       if (multiRole.length === 1) {

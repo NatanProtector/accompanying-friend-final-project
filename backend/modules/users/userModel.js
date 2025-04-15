@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   idPhoto: { type: String, required: false }, // Temporarily stored
   multiRole: { type: [String], required: true },
+  isOnline: { type: Boolean, default: false },
   registrationStatus: { type: String, default: 'pending' }, // Default status
   location: {
     type: { type: String, enum: ["Point"], default: "Point" }, // Required for GeoJSON
@@ -35,6 +36,9 @@ userSchema.statics.validateFields = function (data) {
     throw new Error('Security certificate photo is required for security role.');
   }
 }
+
+userSchema.index({ location: "2dsphere" });
+
 
 const Users = mongoose.model('Users', userSchema, 'Users');
 module.exports = Users;
