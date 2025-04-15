@@ -74,3 +74,4 @@ Follow these steps to run the application locally:
 - `dev:react`: Starts the Vite development server for the React app.
 - `dev:electron`: Starts the Electron app and loads the React app.
 - `build`: Builds the production-ready version of the app.
+- `start`: Builds the production-ready version of the app, then Starts the Electron app.

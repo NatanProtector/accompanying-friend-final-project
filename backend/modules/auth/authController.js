@@ -1,17 +1,27 @@
-const express = require('express');
-const { registrationSchema } = require('./authValidation');
+const express = require("express");
+const { registrationSchema } = require("./authValidation");
 const router = express.Router();
-const User = require('../Users/userModel');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const User = require("../Users/userModel");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-router.post('/register', async (req, res) => {
-  console.log('Incoming Request Body:', req.body); 
-  const { firstName, lastName, phone, password, idNumber, email, idPhoto, multiRole, securityCertificatePhoto } = req.body;
+router.post("/register", async (req, res) => {
+  console.log("Incoming Request Body:", req.body);
+  const {
+    firstName,
+    lastName,
+    phone,
+    password,
+    idNumber,
+    email,
+    idPhoto,
+    multiRole,
+    securityCertificatePhoto,
+  } = req.body;
 
   const { error } = registrationSchema.validate(req.body);
   if (error) {
-    console.log('Validation Error:', error.details); 
+    console.log("Validation Error:", error.details);
     return res.status(400).json({ error: error.details[0].message });
   }
 
@@ -28,67 +38,78 @@ router.post('/register', async (req, res) => {
       idPhoto,
       multiRole,
       securityCertificatePhoto,
-      registrationStatus: 'pending',
+      registrationStatus: "pending",
     });
 
     await newUser.save();
-    res.status(201).json({ message: 'Registration successful', userId: newUser._id });
+    res
+      .status(201)
+      .json({ message: "Registration successful", userId: newUser._id });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'An error occurred while saving the user' });
+    res.status(500).json({ error: "An error occurred while saving the user" });
   }
 });
 
 // Update user registration status
 router.put("/update-status", async (req, res) => {
-  const { idNumber, newStatus } = req.body;
+  const { idNumbers, newStatus } = req.body;
 
-  if (!idNumber || !["pending", "approved", "denied"].includes(newStatus)) {
-    return res.status(400).json({ message: "Invalid request" });
+  if (
+    !Array.isArray(idNumbers) ||
+    idNumbers.length === 0 ||
+    !["pending", "approved", "denied"].includes(newStatus)
+  ) {
+    return res.status(400).json({
+      message:
+        "Invalid request body. 'idNumbers' must be a non-empty array and 'newStatus' must be 'pending', 'approved', or 'denied'.",
+    });
   }
 
   try {
-    const updatedUser = await User.findOneAndUpdate(
-      { idNumber },
-      { registrationStatus: newStatus },
-      { new: true }
+    const result = await User.updateMany(
+      { idNumber: { $in: idNumbers } },
+      { registrationStatus: newStatus }
     );
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found." });
+    if (result.matchedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "No users found with the provided ID numbers." });
     }
 
     res.status(200).json({
-      message: "User status updated successfully",
-      user: updatedUser,
+      message: `Successfully updated status to '${newStatus}' for ${result.modifiedCount} user(s).`,
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
     });
   } catch (error) {
-    console.error("Error updating user status:", error);
+    console.error("Error updating user statuses:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-
-
 // Login Route
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   const { idNumber, password } = req.body;
 
   try {
     const user = await User.findOne({ idNumber });
 
     if (!user) {
-      return res.status(401).json({ message: 'ID number is incorrect.' });
+      return res.status(401).json({ message: "ID number is incorrect." });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Password is incorrect.' });
+      return res.status(401).json({ message: "Password is incorrect." });
     }
 
-    if (user.registrationStatus !== 'approved') {
-      return res.status(403).json({ message: 'Your registration is still pending approval.' });
+    if (user.registrationStatus !== "approved") {
+      return res
+        .status(403)
+        .json({ message: "Your registration is still pending approval." });
     }
 
     // ✅ Create the JWT token
@@ -97,37 +118,38 @@ router.post('/login', async (req, res) => {
       idNumber: user.idNumber,
       email: user.email,
       multiRole: user.multiRole,
-      registrationStatus: user.registrationStatus
+      registrationStatus: user.registrationStatus,
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     res.json({
-      message: 'Login successful',
+      message: "Login successful",
       token,
       user: {
         _id: user._id,
         fullName: user.fullName,
         email: user.email,
         idNumber: user.idNumber,
-        multiRole: user.multiRole
-      }
+        multiRole: user.multiRole,
+      },
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ message: 'Server error during login', error });
+    res.status(500).json({ message: "Server error during login", error });
   }
 });
 
-
 // Get all users with registrationStatus 'pending'
-router.get('/pending-users', async (req, res) => {
+router.get("/pending-users", async (req, res) => {
   try {
-    const pendingUsers = await User.find({ registrationStatus: 'pending' });
+    const pendingUsers = await User.find({ registrationStatus: "pending" });
     res.json(pendingUsers);
   } catch (error) {
-    console.error('Error fetching pending users:', error);
-    res.status(500).json({ message: 'Failed to fetch pending users', error });
+    console.error("Error fetching pending users:", error);
+    res.status(500).json({ message: "Failed to fetch pending users", error });
   }
 });
 
@@ -152,7 +174,6 @@ router.get("/denied-users", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 // Fetch user by email to get idNumber and _id
 router.get("/get-user/:email", async (req, res) => {
@@ -204,7 +225,6 @@ router.get("/get-user-by-idNumber/:idNumber", async (req, res) => {
 
 // Healthcheck route to check if the server is running
 router.get("/healthcheck", async (req, res) => {
-
   try {
     res.json({ message: "Server is running" });
   } catch (error) {
@@ -218,7 +238,9 @@ router.put("/update-location/:idNumber", async (req, res) => {
   const { latitude, longitude } = req.body;
 
   if (!latitude || !longitude) {
-    return res.status(400).json({ message: "Latitude and longitude are required." });
+    return res
+      .status(400)
+      .json({ message: "Latitude and longitude are required." });
   }
 
   try {
