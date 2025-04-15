@@ -31,8 +31,6 @@ export const authorizedFetch = async (url, options = {}) => {
 
 export const SubmitRegisterForm = (formData) => {
 
-  console.log("Sending Form Data:", formData);
-
   // Reformat full name to first name and last name
   const { firstName, lastName } = splitFullName(formData.fullName);
 
@@ -54,7 +52,6 @@ export const SubmitRegisterForm = (formData) => {
 
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("Form Data:", `${SERVER_URL}/api/auth/register`);
       const response = await fetch(`${SERVER_URL}/api/auth/register`, {
         method: "POST",
         headers: {
@@ -62,8 +59,6 @@ export const SubmitRegisterForm = (formData) => {
         },
         body: JSON.stringify(formData),
       });
-
-      console.log("test");
       
 
       if (!response.ok) {
