@@ -1,3 +1,8 @@
+/** TODO:
+ * - Implement screen lock and cancel option when request is pending, or too many request will crash the app
+ * 
+ */
+
 import HomeScreen from "./src/screens/HomeScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import Register from "./src/screens/Register";

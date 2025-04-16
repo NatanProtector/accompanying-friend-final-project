@@ -52,6 +52,7 @@ export const SubmitRegisterForm = (formData) => {
 
   return new Promise(async (resolve, reject) => {
     try {
+
       const response = await fetch(`${SERVER_URL}/api/auth/register`, {
         method: "POST",
         headers: {
@@ -60,13 +61,18 @@ export const SubmitRegisterForm = (formData) => {
         body: JSON.stringify(formData),
       });
       
+      console.log("test 1");
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
+      console.log("test 2");
+
+
       const data = await response.json();
       console.log("Server Response:", data);
+
       resolve(data);
     } catch (error) {
       console.error("Submission failed:", error);
@@ -74,8 +80,6 @@ export const SubmitRegisterForm = (formData) => {
     }
   });
 };
-
-
 
 export const SubmitLoginForm = async (formData) => {
   return new Promise(async (resolve, reject) => {

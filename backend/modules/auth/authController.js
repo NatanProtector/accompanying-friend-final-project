@@ -3,6 +3,7 @@ const { registrationSchema } = require("./authValidation");
 const router = express.Router();
 const User = require("../Users/userModel");
 const bcrypt = require("bcrypt");
+const path = require("path");
 const jwt = require("jsonwebtoken");
 
 router.post("/register", async (req, res) => {
@@ -42,9 +43,11 @@ router.post("/register", async (req, res) => {
     });
 
     await newUser.save();
-    res
-      .status(201)
-      .json({ message: "Registration successful", userId: newUser._id });
+    res.status(201).json({
+      message: "Registration successful",
+      userId: newUser._id,
+      verificationToken: newUser.verificationToken,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An error occurred while saving the user" });
@@ -266,6 +269,27 @@ router.get("/users", async (req, res) => {
     res.status(200).json(users);
   } catch (err) {
     console.error("Error fetching all users:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/verify/:verificationToken", async (req, res) => {
+  const { verificationToken } = req.params;
+
+  try {
+    const user = await User.findOne({ verificationToken });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.emailVerified = true;
+    await user.save();
+
+    // Return page notifying the user of successful verification
+    res.status(200).sendFile(path.join(__dirname, "../../public/verification.html"));
+  } catch (error) {
+    console.error("Error verifying user:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
