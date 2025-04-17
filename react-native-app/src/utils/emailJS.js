@@ -26,7 +26,7 @@ export const sendVerificationEmail = async (destination_email, name, verificatio
           console.log('SUCCESS!', response.status, response.text);
         },
         (error) => {
-            throw error;
+            console.log("ERROR!", error);
         },
       );
 

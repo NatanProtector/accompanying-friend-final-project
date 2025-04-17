@@ -5,6 +5,7 @@ const User = require("../Users/userModel");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 router.post("/register", async (req, res) => {
   console.log("Incoming Request Body:", req.body);
@@ -329,10 +330,23 @@ router.post("/recover-account", async (req, res) => {
         .json({ message: "Account registration not approved." });
     }
 
-    // If all checks pass, respond with success
-    // As requested, no email is sent or password reset is performed here.
+    // Generate the password reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash the token and set expiration time
+    user.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    user.passwordResetExpires = Date.now() + 3600000; // 1 hour in milliseconds
+
+    await user.save();
+
+    // Respond with success and the unhashed token
     res.status(200).json({
-      message: "Account verified successfully.",
+      message:
+        "Account verified successfully. Use this token to reset your password.",
+      passwordResetToken: resetToken, // Send the unhashed token to the user
     });
   } catch (error) {
     console.error("Account recovery error:", error);

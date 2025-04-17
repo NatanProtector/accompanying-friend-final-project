@@ -17,11 +17,6 @@ import TextFieldUsername from "../components/general_components/TextFieldUsernam
 import { SubmitLoginForm } from "../utils/Communication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-/**
- * Bugs:
-    - Multiple clickes on login at once will cause the app to crash.
- */
-
 const navigateToRecovery = (navigation, setShowError) => {
   return () => {
     setShowError(false);
@@ -89,11 +84,14 @@ export default function HomeScreen({ navigation }) {
 
       // Translate based on known server messages
       if (rawMessage.includes("ID number is incorrect")) {
-        displayMessage(HomeText[language].wrongId);
+        displayMessage(HomeText[language].wrongCredentials);
       } else if (rawMessage.includes("Password is incorrect")) {
-        displayMessage(HomeText[language].wrongPassword);
+        displayMessage(HomeText[language].wrongCredentials);
       } else if (rawMessage.includes("pending approval")) {
-        displayMessage(HomeText[language].pendingApproval);
+        Alert.alert(
+          HomeText[language].pendingApprovalTitle,
+          HomeText[language].pendingApproval
+        );
       } else if (rawMessage.includes("Email not verified")) {
         Alert.alert(
           HomeText[language].emailNotVerifiedTitle,
@@ -268,9 +266,8 @@ const HomeText = {
     forgotPassword: "Forgot password?",
     notRegistered: "Not registered?",
     registerHere: "Register here",
-    wrongCredentials: "Wrong username or password, please try again",
-    wrongId: "ID number is incorrect.",
-    wrongPassword: "Password is incorrect.",
+    wrongCredentials: "Wrong username or password.",
+    pendingApprovalTitle: "Pending Approval",
     pendingApproval: "Your request is still pending approval.",
     emailNotVerified:
       "Email not verified. verification link not recieved? please contact support",
@@ -286,10 +283,9 @@ const HomeText = {
     forgotPassword: "שכחתם סיסמה?",
     notRegistered: "לא רשום?",
     registerHere: "הרשם כאן",
-    wrongCredentials: "שם משתמש או סיסמא לא נכונים, נא לנסות שנית",
-    wrongId: "תעודת זהות שגויה.",
-    wrongPassword: "סיסמה שגויה.",
+    wrongCredentials: "שם משתמש או סיסמא לא נכונים.",
     pendingApproval: "הבקשה שלך עדיין ממתינה לאישור.",
+    pendingApprovalTitle: "ממתין לאישור",
     emailNotVerified: "אימייל לא מאומת. קישור לאימות לא התקבל? נא לפנות לתמיכה",
     emailNotVerifiedTitle: "אימות אימייל נדרש",
     close: "סגור",

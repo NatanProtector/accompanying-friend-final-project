@@ -142,7 +142,7 @@ export default function RegistrationForm({ route, navigation }) {
         ]
       );
     } catch (error) {
-      console.log("Form submission failed:", error);
+      console.log("Form submission failed:", error.message);
       // show an error later
       Alert.alert(
         RegistrationText[language].failureTitle,
