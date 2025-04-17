@@ -100,7 +100,7 @@ export const SubmitLoginForm = async (formData) => {
       console.log("Login Success:", data);
       resolve(data);
     } catch (error) {
-      console.error("Login Error:", error);
+      console.log("Login Error:", error);
       reject(error);
     }
   });
