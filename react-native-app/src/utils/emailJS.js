@@ -1,6 +1,6 @@
 import { send, EmailJSResponseStatus } from '@emailjs/react-native';
 
-import { SERVER_URL, EMAILJS_PUBLIC_KEY, EMAILJS_PRIVATE_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID as EMAILJS_VERIFICATION_TEMPLATE_ID } from "@env";
+import { SERVER_URL, EMAILJS_PUBLIC_KEY, EMAILJS_PRIVATE_KEY, EMAILJS_SERVICE_ID, EMAILJS_VERIFICATION_TEMPLATE_ID } from "@env";
 
 export const sendVerificationEmail = async (destination_email, name, verificationToken) => {
     
