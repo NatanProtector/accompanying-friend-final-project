@@ -85,6 +85,8 @@ export default function HomeScreen({ navigation }) {
         setErrorMessage(HomeText[language].wrongPassword);
       } else if (rawMessage.includes("pending approval")) {
         setErrorMessage(HomeText[language].pendingApproval);
+      } else if (rawMessage.includes("Email not verified")) {
+        setErrorMessage(HomeText[language].emailNotVerified);
       } else {
         setErrorMessage(HomeText[language].wrongCredentials);
       }
@@ -264,6 +266,7 @@ const HomeText = {
     wrongId: "ID number is incorrect.",
     wrongPassword: "Password is incorrect.",
     pendingApproval: "Your request is still pending approval.",
+    emailNotVerified: "Email not verified. verification link not recieved? please contact support",
     close: "Close",
   },
   he: {
@@ -279,6 +282,7 @@ const HomeText = {
     wrongId: "תעודת זהות שגויה.",
     wrongPassword: "סיסמה שגויה.",
     pendingApproval: "הבקשה שלך עדיין ממתינה לאישור.",
+    emailNotVerified: "אימייל לא מאומת. קישור לאימות לא התקבל? נא לפנות לתמיכה",
     close: "סגור",
   },
 };

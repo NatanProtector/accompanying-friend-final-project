@@ -109,6 +109,11 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Password is incorrect." });
     }
 
+
+    if (user.emailVerified === false) {
+      return res.status(403).json({ message: "Email not verified." });
+    }
+
     if (user.registrationStatus !== "approved") {
       return res
         .status(403)
