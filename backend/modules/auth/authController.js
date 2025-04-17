@@ -109,7 +109,6 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Password is incorrect." });
     }
 
-
     if (user.emailVerified === false) {
       return res.status(403).json({ message: "Email not verified." });
     }
@@ -292,10 +291,54 @@ router.get("/verify/:verificationToken", async (req, res) => {
     await user.save();
 
     // Return page notifying the user of successful verification
-    res.status(200).sendFile(path.join(__dirname, "../../public/verification.html"));
+    res
+      .status(200)
+      .sendFile(path.join(__dirname, "../../public/verification.html"));
   } catch (error) {
     console.error("Error verifying user:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Account Recovery Route
+router.post("/recover-account", async (req, res) => {
+  const { idNumber, phone, email } = req.body;
+  console.log("Received request body:", req.body);
+
+  // Basic validation for incoming data
+  if (!idNumber || !phone || !email) {
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: idNumber, phone, email." });
+  }
+
+  try {
+    const user = await User.findOne({ idNumber, phone, email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Account not found." });
+    }
+
+    if (!user.emailVerified) {
+      return res.status(403).json({ message: "Email not verified." });
+    }
+
+    if (user.registrationStatus !== "approved") {
+      return res
+        .status(403)
+        .json({ message: "Account registration not approved." });
+    }
+
+    // If all checks pass, respond with success
+    // As requested, no email is sent or password reset is performed here.
+    res.status(200).json({
+      message: "Account verified successfully.",
+    });
+  } catch (error) {
+    console.error("Account recovery error:", error);
+    res
+      .status(500)
+      .json({ message: "Server error during account recovery", error });
   }
 });
 
