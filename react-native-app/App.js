@@ -30,18 +30,6 @@ import AccountRecoveryScreen from "./src/screens/AccountRecoveryScreen";
 
 const Stack = createStackNavigator();
 
-// test get request to server
-const testGetRequest = async () => {
-  console.log("testGetRequest");
-  const response = await fetch("http://localhost:3001");
-  const data = await response.json();
-  console.log(data);
-}
-
-testGetRequest();
-
-
-
 export default function App() {
   const [language, setLanguage] = useState("he");
 
