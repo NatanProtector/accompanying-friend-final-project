@@ -1,6 +1,6 @@
 import { send, EmailJSResponseStatus } from '@emailjs/react-native';
 
-import { SERVER_URL, EMAILJS_PUBLIC_KEY, EMAILJS_PRIVATE_KEY, EMAILJS_SERVICE_ID, EMAILJS_VERIFICATION_TEMPLATE_ID } from "@env";
+import { SERVER_URL, EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_VERIFICATION_TEMPLATE_ID , EMAILJS_PASSWORD_RESET_TEMPLATE_ID} from "@env";
 
 export const sendVerificationEmail = async (destination_email, name, verificationToken) => {
     
@@ -14,7 +14,7 @@ export const sendVerificationEmail = async (destination_email, name, verificatio
         verification_link: verificationLink,
     }
 
-    const result = await send(
+    await send(
         EMAILJS_SERVICE_ID,
         EMAILJS_VERIFICATION_TEMPLATE_ID,
         templateParams,
@@ -29,5 +29,33 @@ export const sendVerificationEmail = async (destination_email, name, verificatio
             console.log("ERROR!", error);
         },
       );
+
+}
+
+export const sendPasswordResetEmail = async (destination_email, name, verificationToken) => {
+    
+    const reset_link = `${SERVER_URL}/api/auth/reset-password/${verificationToken}`;
+
+    const templateParams = {
+        destination_email: destination_email,
+        name: name,
+        reset_link: reset_link,
+    }
+
+    await send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_PASSWORD_RESET_TEMPLATE_ID,
+        templateParams,
+        {
+            publicKey: EMAILJS_PUBLIC_KEY,
+        }
+    ).then(
+        (response) => {
+            console.log('SUCCESS!', response.status, response.text);
+        },
+        (error) => {
+            console.log("ERROR!", error);
+        },
+    );
 
 }

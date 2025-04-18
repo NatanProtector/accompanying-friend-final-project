@@ -2,13 +2,14 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import React, { useContext } from "react";
 import { View, StyleSheet, Alert } from "react-native";
-import axios from "axios";
 import BasicScreen from "../components/screen_components/BasicScreen";
 import TextField from "../components/general_components/TextField";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import NavButton from "../components/general_components/NavButton";
+import { sendPasswordResetEmail } from "../utils/emailJS";
 import { CommonActions } from "@react-navigation/native";
 import { SERVER_URL } from "@env";
+import { SubmitAccountRecovery } from "../utils/Communication";
 
 export default function AccountRecoveryScreen({ navigation }) {
   const { language } = useContext(MyLanguageContext);
@@ -32,7 +33,11 @@ export default function AccountRecoveryScreen({ navigation }) {
       <Formik
         initialValues={
           // { id: "", phone: "", email: "" }
-          { id: "123456789", phone: "0501234567", email: "natanprotector50@gmail.com" }
+          {
+            id: "123456789",
+            phone: "0501234567",
+            email: "natanprotector50@gmail.com",
+          }
         }
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
@@ -42,12 +47,20 @@ export default function AccountRecoveryScreen({ navigation }) {
             email: values.email,
           };
 
-          const API_URL = `${SERVER_URL}/api/auth`;
-
+          const API_URL = `${SERVER_URL}/api/auth/recover-account`;
           try {
-            const response = await axios.post(
-              `${API_URL}/recover-account`,
-              payload
+            const response = await SubmitAccountRecovery(payload);
+
+            console.log("response", response.data);
+
+            const passwordResetToken = response.passwordResetToken;
+            const name = response.name;
+            const destination_email = response.email;
+
+            await sendPasswordResetEmail(
+              destination_email,
+              name,
+              passwordResetToken
             );
 
             Alert.alert(
@@ -68,23 +81,11 @@ export default function AccountRecoveryScreen({ navigation }) {
               ]
             );
           } catch (error) {
-            let errorMessage =
-              text[language].alert.genericError ||
-              "Recovery failed. Please check your details and try again.";
-            if (
-              error.response &&
-              error.response.data &&
-              error.response.data.message
-            ) {
-              errorMessage = error.response.data.message;
-            }
-            console.log(
-              "Account recovery failed:",
-              error.response ? error.response.data : error.message
-            );
+            let errorMessage = error.message;
+            console.log("Account recovery failed:", error.message);
             Alert.alert(
               text[language].alert.errorTitle || "Error",
-              text[language].alert.genericError,
+              errorMessage,
               [{ text: text[language].alert.ok }]
             );
           } finally {

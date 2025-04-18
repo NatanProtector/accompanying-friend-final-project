@@ -301,6 +301,8 @@ router.get("/verify/:verificationToken", async (req, res) => {
   }
 });
 
+const hour = 3600000; // 1 hour in milliseconds
+
 // Account Recovery Route
 router.post("/recover-account", async (req, res) => {
   const { idNumber, phone, email } = req.body;
@@ -330,23 +332,29 @@ router.post("/recover-account", async (req, res) => {
         .json({ message: "Account registration not approved." });
     }
 
-    // Generate the password reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    // Check if a password reset is already in progress
+    if (
+      user.passwordResetToken &&
+      user.passwordResetExpires &&
+      user.passwordResetExpires > Date.now()
+    ) {
+      return res.status(403).json({
+        message: "Password recovery process already initiated.",
+      });
+    }
 
-    // Hash the token and set expiration time
-    user.passwordResetToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-    user.passwordResetExpires = Date.now() + 3600000; // 1 hour in milliseconds
+    // Generate the password reset token
+    user.passwordResetToken = crypto.randomBytes(32).toString("hex");
+    user.passwordResetExpires = Date.now() + hour;
 
     await user.save();
 
     // Respond with success and the unhashed token
     res.status(200).json({
-      message:
-        "Account verified successfully. Use this token to reset your password.",
-      passwordResetToken: resetToken, // Send the unhashed token to the user
+      message: "Account verified successfully.",
+      passwordResetToken: user.passwordResetToken,
+      name: user.fullName,
+      email: user.email,
     });
   } catch (error) {
     console.error("Account recovery error:", error);
@@ -354,6 +362,50 @@ router.post("/recover-account", async (req, res) => {
       .status(500)
       .json({ message: "Server error during account recovery", error });
   }
+});
+
+// GET route to serve the reset password page
+router.get("/reset-password/:resetToken", async (req, res) => {
+  const { resetToken } = req.params;
+
+  try {
+    const user = await User.findOne({
+      passwordResetToken: resetToken,
+      passwordResetExpires: { $gt: Date.now() }, // Check if token is not expired
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .send("Password reset token is invalid or has expired.");
+    }
+
+    // Serve the reset password page
+    res.sendFile(path.join(__dirname, "../../public/reset-password.html"));
+  } catch (error) {
+    console.error("Error serving reset password page:", error);
+    res.status(500).send("Internal server error");
+  }
+});
+
+// POST route to handle the password reset form submission
+router.post("/reset-password", async (req, res) => {
+  const { resetToken, newPassword } = req.body;
+
+  if (!resetToken || !newPassword) {
+    return res
+      .status(400)
+      .json({ message: "Reset token and new password are required." });
+  }
+
+  // Log the new password
+  console.log(
+    `Received new password for reset token ${resetToken}: ${newPassword}`
+  );
+
+  // Do not save the password or interact with the database
+
+  res.status(200).json({ message: "New password received and logged." });
 });
 
 module.exports = router;

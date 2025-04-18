@@ -1,24 +1,3 @@
-/** TODO:
- * - Implement screen lock and cancel option when request is pending, or too many request will crash the app
- * - (DriveScreen.js) seperate server updates on location adn display updates on map. they dont have to match.
- * - (DriveScreen.js) Getting location by cllicking map is handled completely differently then getting location
- *   by searching for and clicking an address, or by clicking the search button. standardize this.
- * - (DriveScreen.js) Clean the spaghetti code. sepreate to Map component to handle display (Done?) and MapController
- *   for handeling the maps functionality.
- * - (DriveScreen.js) Right now it will only center on the user, make center and drag listener to center on the camera without
- *   preventing the user from dragging the map.
- * - (DriveScreen.js) Sucurity needs to transmit location even when not in ride. (sepereate to securityDriveScreen and cityDriveScreen)
- *
- * BUGS:
- * - security user disconnects from sockets when navigating to settings screen (maybe ok? to reapply settings?)
- * - (HomeScreen.js) Multiple clickes on login at once will cause the app to crash.
- * - (DriveScreen.js) when title is too long, it does not look good, its behind the search button
- * - (DriveScreen.js) heading and location updated on map, every 5 seconds, which leads to choppy movement.
- * - (DriveScreen.js) many style issues
- * - (DriveScreen.js) The cancel in the search modal is canceling the ride.
- * - (DriveScreen.js) suggestion: make single state for inRide, and change other state via useEffect
- */
-
 import HomeScreen from "./src/screens/HomeScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import Register from "./src/screens/Register";
