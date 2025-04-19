@@ -153,7 +153,10 @@ router.post("/login", async (req, res) => {
 // Get all users with registrationStatus 'pending'
 router.get("/pending-users", async (req, res) => {
   try {
-    const pendingUsers = await User.find({ registrationStatus: "pending" });
+    const pendingUsers = await User.find({
+      registrationStatus: "pending",
+      emailVerified: true,
+    });
     res.json(pendingUsers);
   } catch (error) {
     console.error("Error fetching pending users:", error);
