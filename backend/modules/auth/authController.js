@@ -401,14 +401,50 @@ router.post("/reset-password", async (req, res) => {
       .json({ message: "Reset token and new password are required." });
   }
 
-  // Log the new password
-  console.log(
-    `Received new password for reset token ${resetToken}: ${newPassword}`
-  );
+  // Basic password validation (can be expanded based on requirements)
+  if (newPassword.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters long." });
+  }
+  // Add more validation rules here if needed (uppercase, lowercase, number, special char)
 
-  // Do not save the password or interact with the database
+  try {
+    // Find the user by the reset token and check expiry
+    const user = await User.findOne({
+      passwordResetToken: resetToken,
+      passwordResetExpires: { $gt: Date.now() }, // Check if token is not expired
+    });
 
-  res.status(200).json({ message: "New password received and logged." });
+    if (!user) {
+      // If no user is found, the token is invalid or expired
+      return res
+        .status(400)
+        .json({ message: "Password reset token is invalid or has expired." });
+    }
+
+    // Update the password and clear the reset token fields
+    user.password = newPassword; // The pre-save hook in userModel will hash it
+    user.passwordResetToken = undefined; // Clear the token
+    user.passwordResetExpires = undefined; // Clear the expiry date
+
+    await user.save(); // Save the updated user document
+
+    console.log(`Password changed successfully`);
+    res.status(200).json({ message: "Password has been successfully reset." });
+  } catch (error) {
+    console.error("Error during password reset:", error);
+    // Check if the error is due to validation (e.g., from pre-save hook if you add more validation)
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        message: "Password validation failed.",
+        details: error.errors,
+      });
+    }
+    res
+      .status(500)
+      .json({ message: "Internal server error during password reset." });
+  }
 });
 
 module.exports = router;
