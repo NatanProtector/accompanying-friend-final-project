@@ -6,6 +6,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { SERVER_URL } from "@env";
 
+/**  BUGS:
+ * 1. event not registered in notifications, and notification not poping up
+ * 2. redirect to location is not working
+ * 3. security is constantly getting connected and disconnected during
+ */
+
 export default function NotificationWrapper({ children }) {
   const navigation = useNavigation();
 

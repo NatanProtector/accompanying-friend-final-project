@@ -1,8 +1,8 @@
-import Notification from "./notificationModel.js";
-import { v4 as uuidv4 } from "uuid";
-import User from "../Users/userModel.js"; 
+const Notification = require("./notificationModel.js");
+const { v4: uuidv4 } = require("uuid");
+const User = require("../Users/userModel.js");
 
-export async function sendNearbyEventNotifications(event) {
+async function sendNearbyEventNotifications(event) {
   const { location, eventType, _id: eventId } = event;
 
   const nearbySecurityUsers = await User.find({
@@ -11,9 +11,9 @@ export async function sendNearbyEventNotifications(event) {
     location: {
       $nearSphere: {
         $geometry: location,
-        $maxDistance: 3000 // 3km
-      }
-    }
+        $maxDistance: 3000, // 3km
+      },
+    },
   });
 
   const notifications = nearbySecurityUsers.map((user) => ({
@@ -22,7 +22,7 @@ export async function sendNearbyEventNotifications(event) {
     message: `Nearby alert: ${eventType}`,
     eventRef: eventId,
     sentAt: new Date(),
-    readStatus: false
+    readStatus: false,
   }));
 
   if (notifications.length > 0) {
@@ -32,3 +32,5 @@ export async function sendNearbyEventNotifications(event) {
     console.log("[NOTIFY] No nearby users found");
   }
 }
+
+module.exports = { sendNearbyEventNotifications };
