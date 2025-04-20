@@ -3,7 +3,7 @@ import { View, Text, Button, ScrollView, StyleSheet, TextInput } from 'react-nat
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authorizedFetch } from '../utils/Communication';
 
-const SERVER_URL = "http://10.0.0.17:3001";
+const SERVER_URL = "http://192.168.1.228:3001";
 
 const TestRoutesScreen = () => {
   const [results, setResults] = useState({});

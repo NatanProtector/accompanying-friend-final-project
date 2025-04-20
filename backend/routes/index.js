@@ -3,6 +3,7 @@ const authRoutes = require('../modules/auth/authController');
 const router = express.Router();
 const eventController = require("../modules/events/eventController");
 const authMiddleware = require("../middleware/authMiddleware");
+const notificationRoutes = require("../modules/notifications/notificationController");
 
 
 router.post("/events/report", authMiddleware, eventController.reportEvent);
@@ -14,5 +15,6 @@ router.get("/events/status/:status", eventController.getEventsByStatus);
 
 
 router.use('/auth', authRoutes);
+router.use('/auth', notificationRoutes);
 
 module.exports = router;
