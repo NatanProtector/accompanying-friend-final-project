@@ -149,8 +149,8 @@ export default function NotificationWrapper({ children }) {
 const styles = StyleSheet.create({
   bellContainer: {
     position: "absolute",
-    top: 45,
-    right: 20,
+    top: 60,
+    right: 30,
     zIndex: 9999,
   },
   bellIcon: {

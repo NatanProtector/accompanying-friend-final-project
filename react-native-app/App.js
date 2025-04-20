@@ -135,7 +135,9 @@ export default function App() {
           />
           <Stack.Screen
             name="StartRide/Security"
-            component={wrapScreenWithBackButton(SecurityDriveScreen)}
+            component={wrapScreenWithNotification(
+              wrapScreenWithBackButton(SecurityDriveScreen)
+  )}
             options={options}
           />
           <Stack.Screen
