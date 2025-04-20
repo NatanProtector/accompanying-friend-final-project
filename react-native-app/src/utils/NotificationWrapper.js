@@ -28,45 +28,45 @@ export default function NotificationWrapper({ children }) {
     fetchUnreadCount();
   }, []);
 
-  // 📍 Redirect on first load if any new event is nearby
-  useEffect(() => {
-    const fetchAndRedirect = async () => {
-      try {
-        const stored = await AsyncStorage.getItem("userData");
-        if (!stored) return;
-        const { _id, multiRole } = JSON.parse(stored);
+  // // 📍 Redirect on first load if any new event is nearby
+  // useEffect(() => {
+  //   const fetchAndRedirect = async () => {
+  //     try {
+  //       const stored = await AsyncStorage.getItem("userData");
+  //       if (!stored) return;
+  //       const { _id, multiRole } = JSON.parse(stored);
 
-        const res = await fetch(`${SERVER_URL}/api/auth/notifications/${_id}`);
-        const data = await res.json();
-        setNotifications(data);
+  //       const res = await fetch(`${SERVER_URL}/api/auth/notifications/${_id}`);
+  //       const data = await res.json();
+  //       setNotifications(data);
 
-        const unreadEvent = data.find(n =>
-          !n.readStatus && n.eventRef?.location?.coordinates
-        );
+  //       const unreadEvent = data.find(n =>
+  //         !n.readStatus && n.eventRef?.location?.coordinates
+  //       );
 
-        if (unreadEvent && multiRole.includes("security")) {
-          const [lng, lat] = unreadEvent.eventRef.location.coordinates;
-          navigation.navigate("Drive", {
-            initialDestination: {
-              latitude: lat,
-              longitude: lng,
-            },
-          });
-        }
+  //       if (unreadEvent && multiRole.includes("security")) {
+  //         const [lng, lat] = unreadEvent.eventRef.location.coordinates;
+  //         navigation.navigate("Drive", {
+  //           initialDestination: {
+  //             latitude: lat,
+  //             longitude: lng,
+  //           },
+  //         });
+  //       }
 
-        // ✅ Mark as read after redirect
-        await fetch(`${SERVER_URL}/api/auth/notifications/mark-read/${_id}`, {
-          method: "PATCH",
-        });
+  //       // ✅ Mark as read after redirect
+  //       await fetch(`${SERVER_URL}/api/auth/notifications/mark-read/${_id}`, {
+  //         method: "PATCH",
+  //       });
 
-        setUnreadCount(0);
-      } catch (err) {
-        console.error("[NOTIFICATIONS] Auto-redirect failed:", err);
-      }
-    };
+  //       setUnreadCount(0);
+  //     } catch (err) {
+  //       console.error("[NOTIFICATIONS] Auto-redirect failed:", err);
+  //     }
+  //   };
 
-    fetchAndRedirect();
-  }, []);
+  //   fetchAndRedirect();
+  // }, []);
 
   // 📩 On bell click: fetch & show modal
   const openModal = async () => {
@@ -117,7 +117,7 @@ export default function NotificationWrapper({ children }) {
                     if (item.eventRef?.location?.coordinates) {
                       const [lng, lat] = item.eventRef.location.coordinates;
                       setModalVisible(false);
-                      navigation.navigate("Drive", {
+                      navigation.navigate("StartRide/Security", {
                         initialDestination: {
                           latitude: lat,
                           longitude: lng,

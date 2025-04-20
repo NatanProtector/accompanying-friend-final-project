@@ -268,6 +268,21 @@ export default function DriveScreen({ initialDestination, userRole }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (initialDestination) {
+      console.log("[DRIVE] New initialDestination received:", initialDestination);
+      startDrive(initialDestination);
+  
+      // Optionally center map immediately:
+      setRegion((prevRegion) => ({
+        ...prevRegion,
+        latitude: initialDestination.latitude,
+        longitude: initialDestination.longitude,
+      }));
+    }
+  }, [initialDestination]);
+  
   
 
   const startLocationMapUpdates = async () => {

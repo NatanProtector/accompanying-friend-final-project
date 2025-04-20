@@ -6,13 +6,23 @@ const Notification = require("../notifications/notificationModel");
 router.get("/notifications/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    const notifications = await Notification.find({ targetUserId: userId }).sort({ sentAt: -1 });
-    res.json(notifications);
+
+    const allNotifications = await Notification.find({ targetUserId: userId })
+      .populate("eventRef")
+      .sort({ sentAt: -1 });
+
+    // Filter: only notifications for ongoing events
+    const filtered = allNotifications.filter(
+      (n) => n.eventRef && n.eventRef.status === "ongoing"
+    );
+
+    res.json(filtered);
   } catch (err) {
     console.error("Failed to fetch notifications:", err);
     res.status(500).json({ message: "Error fetching notifications", err });
   }
 });
+
 
 // Get unread count
 router.get("/notifications/unread/:userId", async (req, res) => {
