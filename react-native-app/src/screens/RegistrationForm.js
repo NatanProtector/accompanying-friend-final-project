@@ -18,6 +18,7 @@ import { CommonActions } from "@react-navigation/native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { SubmitRegisterForm } from "../utils/Communication";
+import { sendVerificationEmail } from "../utils/emailJS";
 
 export default function RegistrationForm({ route, navigation }) {
   const { language } = useContext(MyLanguageContext);
@@ -114,7 +115,17 @@ export default function RegistrationForm({ route, navigation }) {
         values.multiRole = [registerAs];
       }
 
-      await SubmitRegisterForm(values);
+      const response = await SubmitRegisterForm(values);
+
+      if (response) {
+        try {
+          const token = response.verificationToken;
+
+          await sendVerificationEmail(values.email, values.fullName, token);
+        } catch (error) {
+          console.log("Error sending verification email:",`Status: ${error.status}` ,`${error.text}`);
+        }
+      }
 
       Alert.alert(
         RegistrationText[language].successTitle,
@@ -131,7 +142,7 @@ export default function RegistrationForm({ route, navigation }) {
         ]
       );
     } catch (error) {
-      console.error("Form submission failed:", error);
+      console.log("Form submission failed:", error.message);
       // show an error later
       Alert.alert(
         RegistrationText[language].failureTitle,
@@ -145,11 +156,11 @@ export default function RegistrationForm({ route, navigation }) {
     <BasicScreen title={RegistrationText[language].title} language={language}>
       <Formik
         initialValues={{
-          fullName: "",
-          idNumber: "",
-          phone: "",
-          email: "",
-          password: "",
+          fullName: "default defaultson",
+          idNumber: "123456789",
+          phone: "0501234567",
+          email: "natanprotector50@gmail.com",
+          password: "Default123!",
           idPhoto: "",
           securityCertificatePhoto: "",
           // fullName: '',
@@ -365,6 +376,7 @@ const RegistrationText = {
       "Password must be at least 8 characters long, contain an uppercase letter, lowercase letter, a number, and a special character.",
     failureTitle: "Error",
     failureMessage: "Registration failed. Please try again.",
+    failureButtonEmail: "OK",
   },
   he: {
     IDInfo: "מספר תעודת זהות ישמש כשם המשתמש",
@@ -386,6 +398,7 @@ const RegistrationText = {
       "הסיסמה חייבת להכיל לפחות 8 תווים, להכיל אותיות גדולות, אותיות קטנות, מספרים ותווים מיוחדים.",
     failureTitle: "שגיאה",
     failureMessage: "ההרשמה נכשלה. אנא נסה שוב.",
+    failureButtonEmail: "אישור",
   },
 };
 

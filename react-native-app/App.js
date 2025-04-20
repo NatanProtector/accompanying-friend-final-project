@@ -8,7 +8,7 @@ import SettingsDisplay from "./src/screens/SettingsDisplay";
 import CitizenDriveScreen from "./src/screens/CitizenDriveScreen";
 import SecurityDriveScreen from "./src/screens/SecurityDriveScreen";
 import SafeLocationScreen from "./src/screens/SafeLocationScreen";
-import TestRoutesScreen from './src/screens/TestRoutesScreen';
+import TestRoutesScreen from "./src/screens/TestRoutesScreen";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -86,9 +86,9 @@ export default function App() {
     <MyLanguageContext.Provider value={{ language }}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen}
+          <Stack.Screen
+            name="Home"
+            component={wrapScreenLanguageButton(HomeScreen)}
             options={options}
           />
           <Stack.Screen
@@ -144,12 +144,11 @@ export default function App() {
             options={options}
           />
 
-<Stack.Screen
-  name="TestRoutes"
-  component={wrapScreenLanguageButton(TestRoutesScreen)}
-  options={options}
-/>
-
+          <Stack.Screen
+            name="TestRoutes"
+            component={wrapScreenLanguageButton(TestRoutesScreen)}
+            options={options}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </MyLanguageContext.Provider>

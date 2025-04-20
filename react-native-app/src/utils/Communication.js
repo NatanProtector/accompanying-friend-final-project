@@ -1,16 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Location from 'expo-location';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Location from "expo-location";
 
 import { SERVER_URL } from "@env";
 
 const splitFullName = (fullName) => {
   fullName = fullName.trim();
   const [firstName, ...lastNameParts] = fullName.split(/\s+/);
-  const lastName = lastNameParts.join(' ');
-  
+  const lastName = lastNameParts.join(" ");
+
   return { firstName, lastName };
 };
-
 
 export const authorizedFetch = async (url, options = {}) => {
   const token = await AsyncStorage.getItem("authToken");
@@ -28,9 +27,7 @@ export const authorizedFetch = async (url, options = {}) => {
   return fetch(url, { ...options, headers });
 };
 
-
 export const SubmitRegisterForm = (formData) => {
-
   // Reformat full name to first name and last name
   const { firstName, lastName } = splitFullName(formData.fullName);
 
@@ -44,9 +41,9 @@ export const SubmitRegisterForm = (formData) => {
     password: formData.password,
     idPhoto: formData.idPhoto,
     multiRole:
-    formData.registerAs === "both"
-      ? ["citizen", "security"]
-      : [formData.registerAs || "citizen"],
+      formData.registerAs === "both"
+        ? ["citizen", "security"]
+        : [formData.registerAs || "citizen"],
     securityCertificatePhoto: formData.securityCertificatePhoto || null,
   };
 
@@ -59,14 +56,18 @@ export const SubmitRegisterForm = (formData) => {
         },
         body: JSON.stringify(formData),
       });
-      
+
+      console.log("test 1");
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
+      console.log("test 2");
+
       const data = await response.json();
       console.log("Server Response:", data);
+
       resolve(data);
     } catch (error) {
       console.error("Submission failed:", error);
@@ -75,12 +76,9 @@ export const SubmitRegisterForm = (formData) => {
   });
 };
 
-
-
 export const SubmitLoginForm = async (formData) => {
   return new Promise(async (resolve, reject) => {
     try {
-
       const response = await fetch(`${SERVER_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -89,19 +87,16 @@ export const SubmitLoginForm = async (formData) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+        throw new Error(errorData.message || "Login failed");
       }
 
       const data = await response.json();
-      console.log("Login Success:", data);
       resolve(data);
     } catch (error) {
-      console.error("Login Error:", error);
       reject(error);
     }
   });
 };
-
 
 export const ReportEmergency = async (selectedOption) => {
   const token = await AsyncStorage.getItem("authToken");
@@ -119,14 +114,13 @@ export const ReportEmergency = async (selectedOption) => {
   };
 
   // Get real GPS location
-const { status } = await Location.requestForegroundPermissionsAsync();
-if (status !== 'granted') {
-  throw new Error("Location permission not granted");
-}
+  const { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== "granted") {
+    throw new Error("Location permission not granted");
+  }
 
-const currentLocation = await Location.getCurrentPositionAsync({});
-const { latitude, longitude } = currentLocation.coords;
-
+  const currentLocation = await Location.getCurrentPositionAsync({});
+  const { latitude, longitude } = currentLocation.coords;
 
   const payload = {
     eventType: eventTypeMap[selectedOption] || "Unknown",
@@ -146,7 +140,6 @@ const { latitude, longitude } = currentLocation.coords;
       method: "POST",
       body: JSON.stringify(payload),
     });
-    
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -162,19 +155,24 @@ const { latitude, longitude } = currentLocation.coords;
   }
 };
 
+export const SubmitAccountRecovery = async (payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(`${SERVER_URL}/api/auth/recover-account`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-export const SearchLocation = async (formData) => {
-    return new Promise((resolve, reject) => {
-      console.log('Form Data:', formData);
-      
-      // Simulate success or failure:
-      const shouldFail = true; // Change to true to simulate failure
-  
-      if (shouldFail) {
-        reject(new Error('Submission failed'));
-      } else {
-        resolve('Form submitted successfully');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Account recovery failed");
       }
-    });
-}
 
+      const data = await response.json();
+      resolve(data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};

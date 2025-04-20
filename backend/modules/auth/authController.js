@@ -3,7 +3,9 @@ const { registrationSchema } = require("./authValidation");
 const router = express.Router();
 const User = require("../Users/userModel");
 const bcrypt = require("bcrypt");
+const path = require("path");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 router.post("/register", async (req, res) => {
   console.log("Incoming Request Body:", req.body);
@@ -42,9 +44,11 @@ router.post("/register", async (req, res) => {
     });
 
     await newUser.save();
-    res
-      .status(201)
-      .json({ message: "Registration successful", userId: newUser._id });
+    res.status(201).json({
+      message: "Registration successful",
+      userId: newUser._id,
+      verificationToken: newUser.verificationToken,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An error occurred while saving the user" });
@@ -106,6 +110,10 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Password is incorrect." });
     }
 
+    if (user.emailVerified === false) {
+      return res.status(403).json({ message: "Email not verified." });
+    }
+
     if (user.registrationStatus !== "approved") {
       return res
         .status(403)
@@ -145,7 +153,10 @@ router.post("/login", async (req, res) => {
 // Get all users with registrationStatus 'pending'
 router.get("/pending-users", async (req, res) => {
   try {
-    const pendingUsers = await User.find({ registrationStatus: "pending" });
+    const pendingUsers = await User.find({
+      registrationStatus: "pending",
+      emailVerified: true,
+    });
     res.json(pendingUsers);
   } catch (error) {
     console.error("Error fetching pending users:", error);
@@ -267,6 +278,172 @@ router.get("/users", async (req, res) => {
   } catch (err) {
     console.error("Error fetching all users:", err);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/verify/:verificationToken", async (req, res) => {
+  const { verificationToken } = req.params;
+
+  try {
+    const user = await User.findOne({ verificationToken });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.emailVerified = true;
+    await user.save();
+
+    // Return page notifying the user of successful verification
+    res
+      .status(200)
+      .sendFile(path.join(__dirname, "../../public/verification.html"));
+  } catch (error) {
+    console.error("Error verifying user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+const hour = 3600000; // 1 hour in milliseconds
+
+// Account Recovery Route
+router.post("/recover-account", async (req, res) => {
+  const { idNumber, phone, email } = req.body;
+  console.log("Received request body:", req.body);
+
+  // Basic validation for incoming data
+  if (!idNumber || !phone || !email) {
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: idNumber, phone, email." });
+  }
+
+  try {
+    const user = await User.findOne({ idNumber, phone, email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Account not found." });
+    }
+
+    if (!user.emailVerified) {
+      return res.status(403).json({ message: "Email not verified." });
+    }
+
+    if (user.registrationStatus !== "approved") {
+      return res
+        .status(403)
+        .json({ message: "Account registration not approved." });
+    }
+
+    // Check if a password reset is already in progress
+    if (
+      user.passwordResetToken &&
+      user.passwordResetExpires &&
+      user.passwordResetExpires > Date.now()
+    ) {
+      return res.status(403).json({
+        message: "Password recovery process already initiated.",
+      });
+    }
+
+    // Generate the password reset token
+    user.passwordResetToken = crypto.randomBytes(32).toString("hex");
+    user.passwordResetExpires = Date.now() + hour;
+
+    await user.save();
+
+    // Respond with success and the unhashed token
+    res.status(200).json({
+      message: "Account verified successfully.",
+      passwordResetToken: user.passwordResetToken,
+      name: user.fullName,
+      email: user.email,
+    });
+  } catch (error) {
+    console.error("Account recovery error:", error);
+    res
+      .status(500)
+      .json({ message: "Server error during account recovery", error });
+  }
+});
+
+// GET route to serve the reset password page
+router.get("/reset-password/:resetToken", async (req, res) => {
+  const { resetToken } = req.params;
+
+  try {
+    const user = await User.findOne({
+      passwordResetToken: resetToken,
+      passwordResetExpires: { $gt: Date.now() }, // Check if token is not expired
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .send("Password reset token is invalid or has expired.");
+    }
+
+    // Serve the reset password page
+    res.sendFile(path.join(__dirname, "../../public/reset-password.html"));
+  } catch (error) {
+    console.error("Error serving reset password page:", error);
+    res.status(500).send("Internal server error");
+  }
+});
+
+// POST route to handle the password reset form submission
+router.post("/reset-password", async (req, res) => {
+  const { resetToken, newPassword } = req.body;
+
+  if (!resetToken || !newPassword) {
+    return res
+      .status(400)
+      .json({ message: "Reset token and new password are required." });
+  }
+
+  // Basic password validation (can be expanded based on requirements)
+  if (newPassword.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters long." });
+  }
+  // Add more validation rules here if needed (uppercase, lowercase, number, special char)
+
+  try {
+    // Find the user by the reset token and check expiry
+    const user = await User.findOne({
+      passwordResetToken: resetToken,
+      passwordResetExpires: { $gt: Date.now() }, // Check if token is not expired
+    });
+
+    if (!user) {
+      // If no user is found, the token is invalid or expired
+      return res
+        .status(400)
+        .json({ message: "Password reset token is invalid or has expired." });
+    }
+
+    // Update the password and clear the reset token fields
+    user.password = newPassword; // The pre-save hook in userModel will hash it
+    user.passwordResetToken = undefined; // Clear the token
+    user.passwordResetExpires = undefined; // Clear the expiry date
+
+    await user.save(); // Save the updated user document
+
+    console.log(`Password changed successfully`);
+    res.status(200).json({ message: "Password has been successfully reset." });
+  } catch (error) {
+    console.error("Error during password reset:", error);
+    // Check if the error is due to validation (e.g., from pre-save hook if you add more validation)
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        message: "Password validation failed.",
+        details: error.errors,
+      });
+    }
+    res
+      .status(500)
+      .json({ message: "Internal server error during password reset." });
   }
 });
 

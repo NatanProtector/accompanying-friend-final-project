@@ -1,4 +1,12 @@
-import { StyleSheet, View, Text, TouchableOpacity, Modal,Button } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Button,
+  Alert,
+} from "react-native";
 import { useContext, useState } from "react";
 import { BlurView } from "expo-blur";
 import MyLanguageContext from "../utils/MyLanguageContext";
@@ -7,13 +15,7 @@ import NavButton from "../components/general_components/NavButton";
 import TextFieldPassword from "../components/general_components/TextFieldPassword";
 import TextFieldUsername from "../components/general_components/TextFieldUsername";
 import { SubmitLoginForm } from "../utils/Communication";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-/**
- * Bugs:
-    - Multiple clickes on login at once will cause the app to crash.
- */
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const navigateToRecovery = (navigation, setShowError) => {
   return () => {
@@ -37,9 +39,13 @@ export default function HomeScreen({ navigation }) {
 
   const iconPosition = language === "en" ? "left" : "right";
 
+  const displayMessage = (message) => {
+    setErrorMessage(message);
+    setShowError(true);
+  };
+
   const handleLogin = async () => {
     try {
-
       // Bypass login for testing when fields are empty
       if (username === "" && password === "") {
         console.log(
@@ -51,7 +57,6 @@ export default function HomeScreen({ navigation }) {
         return;
       }
 
-
       const response = await SubmitLoginForm({
         idNumber: username,
         password: password,
@@ -60,7 +65,7 @@ export default function HomeScreen({ navigation }) {
       const { token, user } = response;
       await AsyncStorage.setItem("authToken", token);
       const { multiRole } = user;
-      
+
       if (multiRole.length === 1) {
         if (multiRole[0] === "citizen") {
           navigation.navigate("Dashboard/Citizen");
@@ -72,24 +77,29 @@ export default function HomeScreen({ navigation }) {
       } else {
         throw new Error("Invalid multiRole at HomeScreen");
       }
-
     } catch (error) {
-      console.log("Login failed:", error);
+      console.log("Login failed");
 
       const rawMessage = error.message || "Login failed";
-    
+
       // Translate based on known server messages
       if (rawMessage.includes("ID number is incorrect")) {
-        setErrorMessage(HomeText[language].wrongId);
+        displayMessage(HomeText[language].wrongCredentials);
       } else if (rawMessage.includes("Password is incorrect")) {
-        setErrorMessage(HomeText[language].wrongPassword);
+        displayMessage(HomeText[language].wrongCredentials);
       } else if (rawMessage.includes("pending approval")) {
-        setErrorMessage(HomeText[language].pendingApproval);
+        Alert.alert(
+          HomeText[language].pendingApprovalTitle,
+          HomeText[language].pendingApproval
+        );
+      } else if (rawMessage.includes("Email not verified")) {
+        Alert.alert(
+          HomeText[language].emailNotVerifiedTitle,
+          HomeText[language].emailNotVerified
+        );
       } else {
-        setErrorMessage(HomeText[language].wrongCredentials);
+        displayMessage(HomeText[language].wrongCredentials);
       }
-    
-      setShowError(true);
     }
   };
 
@@ -124,12 +134,10 @@ export default function HomeScreen({ navigation }) {
         <NavButton title={HomeText[language].login} onPress={handleLogin} />
 
         <Button
-  title="Test API Routes"
-  onPress={() => navigation.navigate("TestRoutes")}
-  color="gold" // or "yellow"
- />
-
-
+          title="Test API Routes"
+          onPress={() => navigation.navigate("TestRoutes")}
+          color="gold" // or "yellow"
+        />
 
         <View
           style={[
@@ -158,9 +166,7 @@ export default function HomeScreen({ navigation }) {
         <BlurView intensity={50} tint="light" style={StyleSheet.absoluteFill}>
           <View style={style.modalContainer}>
             <View style={style.errorBox}>
-              <Text style={style.modalText}>
-                {errorMessage}
-              </Text>
+              <Text style={style.modalText}>{errorMessage}</Text>
               <TouchableOpacity
                 style={style.closeButton}
                 onPress={() => setShowError(false)}
@@ -260,10 +266,12 @@ const HomeText = {
     forgotPassword: "Forgot password?",
     notRegistered: "Not registered?",
     registerHere: "Register here",
-    wrongCredentials: "Wrong username or password, please try again",
-    wrongId: "ID number is incorrect.",
-    wrongPassword: "Password is incorrect.",
+    wrongCredentials: "Wrong username or password.",
+    pendingApprovalTitle: "Pending Approval",
     pendingApproval: "Your request is still pending approval.",
+    emailNotVerified:
+      "Email not verified. verification link not recieved? please contact support",
+    emailNotVerifiedTitle: "Email Verification Required",
     close: "Close",
   },
   he: {
@@ -275,10 +283,11 @@ const HomeText = {
     forgotPassword: "שכחתם סיסמה?",
     notRegistered: "לא רשום?",
     registerHere: "הרשם כאן",
-    wrongCredentials: "שם משתמש או סיסמא לא נכונים, נא לנסות שנית",
-    wrongId: "תעודת זהות שגויה.",
-    wrongPassword: "סיסמה שגויה.",
+    wrongCredentials: "שם משתמש או סיסמא לא נכונים.",
     pendingApproval: "הבקשה שלך עדיין ממתינה לאישור.",
+    pendingApprovalTitle: "ממתין לאישור",
+    emailNotVerified: "אימייל לא מאומת. קישור לאימות לא התקבל? נא לפנות לתמיכה",
+    emailNotVerifiedTitle: "אימות אימייל נדרש",
     close: "סגור",
   },
 };

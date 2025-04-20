@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -31,7 +31,7 @@ userSchema.pre("save", async function (next) {
   }
 
   if (this.isNew) {
-    this.verificationToken = uuidv4();
+    this.verificationToken = crypto.randomUUID();
   }
 
   next();

@@ -1,25 +1,3 @@
-/**
- * BUG:
- * - when title is too long, it does not look good, its behind the search button
- * - heading and location updated on map, every 5 seconds, which leads to choppy movement.
- * - many style issues
- * - The cancel in the search modal is canceling the ride.
- * - suggestion: make single state for inRide, and change other state via useEffect
- *
- * TODO:
- * - seperate server updates on location adn display updates on map. they dont have to match.
- * - Getting location by cllicking map is handled completely differently then getting location
- *   by searching for and clicking an address, or by clicking the search button. standardize this.
- * - Clean the spaghetti code. sepreate to Map component to handle display (Done?) and MapController
- *   for handeling the maps functionality.
- * - Right now it will only center on the user, make center and drag listener to center on the camera without
- *   preventing the user from dragging the map.
- * - Sucurity needs to transmit location even when not in ride. (sepereate to securityDriveScreen and cityDriveScreen)
- *
- * NOTE:
- * - Remeber to change server url based on wifi connection.
- * */
-
 import {
   StyleSheet,
   Text,

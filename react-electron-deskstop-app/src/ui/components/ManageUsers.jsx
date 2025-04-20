@@ -16,16 +16,15 @@ const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]); // State to track selected users
 
+  const getAndDisplayAllPendingUsers = async () => {
+    const response = await getAllPendingUsers();
+    setUsers(response);
+  }
+
   // Fetch pending users on mount
   useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await getAllPendingUsers();
-        console.log("Response:", response);
-        setUsers(response);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
+      handleShowAllPendingUsers();
     };
     fetchUsers();
   }, []);
@@ -54,11 +53,10 @@ const ManageUsers = () => {
   // Handler for the "Show All Pending Users" button
   const handleShowAllPendingUsers = async () => {
     try {
-      const pendingUsers = await getAllPendingUsers();
-      console.log("Pending Users:", pendingUsers);
-      setUsers(pendingUsers);
+      getAndDisplayAllPendingUsers();
     } catch (error) {
-      console.error("Error fetching pending users:", error);
+      console.error(error);
+      alert(`Error fetching users`);
     }
   };
 
