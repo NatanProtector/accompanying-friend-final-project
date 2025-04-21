@@ -135,7 +135,9 @@ export default function App() {
           />
           <Stack.Screen
             name="StartRide/Security"
-            component={wrapScreenWithBackButton(SecurityDriveScreen)}
+            component={wrapScreenWithNotification(
+              wrapScreenWithBackButton(SecurityDriveScreen)
+  )}
             options={options}
           />
           <Stack.Screen
@@ -144,11 +146,12 @@ export default function App() {
             options={options}
           />
 
-          <Stack.Screen
-            name="TestRoutes"
-            component={wrapScreenWithBackButton(wrapScreenLanguageButton(TestRoutesScreen))}
-            options={options}
-          />
+<Stack.Screen
+  name="TestRoutes"
+  component={wrapScreenWithBackButton(wrapScreenLanguageButton(TestRoutesScreen))}
+  options={options}
+/>
+
         </Stack.Navigator>
       </NavigationContainer>
     </MyLanguageContext.Provider>

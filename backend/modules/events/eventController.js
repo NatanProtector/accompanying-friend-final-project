@@ -1,6 +1,8 @@
 const { reportEventSchema } = require("./eventValidation");
 const eventService = require("./eventService");
 const Event = require("./eventModel");
+const { sendNearbyEventNotifications } = require("../notifications/notificationService");
+
 
 
 exports.reportEvent = async (req, res) => {
@@ -12,6 +14,10 @@ exports.reportEvent = async (req, res) => {
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
     const newEvent = await eventService.createEvent(req.body, userId);
+
+       // ✅ Notify nearby security users (non-blocking optional)
+       await sendNearbyEventNotifications(newEvent);
+
     res.status(201).json(newEvent);
   } catch (err) {
     console.error("Event reporting failed:", err);

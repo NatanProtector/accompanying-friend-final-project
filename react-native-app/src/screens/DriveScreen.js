@@ -17,7 +17,7 @@ import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 
-// import MyLanguageContext from "../utils/MyLanguageContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MAP_UPDATE_INTERVAL = 2500;
 const LOCATION_UPDATE_INTERVAL = 5000;
@@ -31,7 +31,6 @@ export default function DriveScreen({
   let mapIntervalId = null;
   let locationIntervalId = null;
 
-  // screen ui
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -57,21 +56,16 @@ export default function DriveScreen({
     }
   };
 
-  // Convert coordinates to human-readable address
   const getAddressFromCoords = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({
-        latitude: lat,
-        longitude: lng,
-      });
-      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
+      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      return `${place.street || ""} ${place.name || ""}, ${place.city || ""}`;
     } catch (error) {
       console.error("Error:", error);
       return "Unknown location";
     }
   };
 
-  // Handle map tap to place a marker
   const handleMapPress = async (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     const addr = await getAddressFromCoords(latitude, longitude);
@@ -87,7 +81,6 @@ export default function DriveScreen({
     startDrive({ latitude, longitude });
   };
 
-  // Remove marker and reset route
   const handleRemoveMarker = () => {
     setMarker(null);
     setRouteSteps([]);
@@ -111,11 +104,9 @@ export default function DriveScreen({
 
   const handleResultSelect = async (result) => {
     try {
-      // Get place details to get coordinates
       const detailsResponse = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${result.placeId}&key=${GOOGLE_MAPS_API_KEY}&language=en`
       );
-
       const detailsData = await detailsResponse.json();
 
       if (detailsData.result && detailsData.result.geometry) {
@@ -141,27 +132,21 @@ export default function DriveScreen({
       Alert.alert("Error", "Could not get location details. Please try again.");
     }
   };
-  // Handle search input change and update results
+
   const handleSearchInputChange = async (text) => {
     setSearchText(text);
-
     if (text.trim().length < 2) {
       setSearchResults([]);
       return;
     }
-
     try {
-      // Use Google Places Autocomplete API
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
           text
         )}&key=${GOOGLE_MAPS_API_KEY}&language=en&components=country:il`
       );
-
       const data = await response.json();
-
       if (data.predictions && data.predictions.length > 0) {
-        // For now, just show the predictions without coordinates
         const results = data.predictions.map((prediction, index) => ({
           id: index.toString(),
           name: prediction.structured_formatting.main_text,
@@ -169,7 +154,6 @@ export default function DriveScreen({
           address: prediction.description,
           placeId: prediction.place_id,
         }));
-
         setSearchResults(results);
       } else {
         setSearchResults([]);
@@ -180,9 +164,43 @@ export default function DriveScreen({
     }
   };
 
-  // Initialize location permissions and socket connection
   useEffect(() => {
     const getLocationPermission = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert("Permission Denied", "You need to allow location access.");
+          return;
+        }
+  
+        const location = await Location.getCurrentPositionAsync({});
+        if (!location || !location.coords) {
+          console.warn("[DRIVE] No valid location object");
+          return;
+        }
+  
+        const newRegion = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        };
+  
+        setRegion(newRegion);
+  
+        const stored = await AsyncStorage.getItem("userData");
+        if (!stored) {
+          console.warn("[DRIVE] No user data found in AsyncStorage");
+          return;
+        }
+        const { idNumber } = JSON.parse(stored);
+  
+        // ✅ Update location in DB
+        try {
+          const response = await fetch(`${SERVER_URL}/api/auth/update-location/${idNumber}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission Denied", "You need to allow location access.");
@@ -210,9 +228,45 @@ export default function DriveScreen({
             userId: idNumber,
             location: {
               latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            },
+              longitude: location.coords.longitude
+            }),
+            
           });
+          
+          const responseText = await response.text();
+          console.log("[DRIVE] Server response:", response.status, responseText);
+          
+          if (!response.ok) {
+            console.warn("[DRIVE] Location update failed");
+          }
+          else {
+            console.log("[DRIVE] Location sent to server");
+          }
+        } catch (error) {
+          console.error("[DRIVE] Error sending location to server:", error);
+        }
+  
+        // ✅ Socket (citizen only)
+        if (userRole === "citizen") {
+          socketRef.current = io(SERVER_URL);
+          socketRef.current.on("connect", () => {
+            socketRef.current.emit("register", {
+              role: userRole,
+              userId: idNumber,
+              location: {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+            });
+  
+            startLocationServerUpdates();
+          });
+        }
+  
+        startLocationMapUpdates();
+      } catch (err) {
+        console.error("[DRIVE] Unexpected error in location permission flow:", err);
+      }
 
           // Start transmitting location to server
           startLocationServerUpdates();
@@ -222,9 +276,9 @@ export default function DriveScreen({
       // Start transmitting location to map
       startLocationMapUpdates();
     };
-
+  
     getLocationPermission();
-
+  
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -232,9 +286,32 @@ export default function DriveScreen({
     };
   }, []);
 
-  // Send location updates to map every 5 seconds
+  useEffect(() => {
+    if (initialDestination) {
+      console.log("[DRIVE] New initialDestination received:", initialDestination);
+      startDrive(initialDestination);
+  
+      // Optionally center map immediately:
+      setRegion((prevRegion) => ({
+        ...prevRegion,
+        latitude: initialDestination.latitude,
+        longitude: initialDestination.longitude,
+      }));
+    }
+  }, [initialDestination]);
+  
+  
+
   const startLocationMapUpdates = async () => {
     try {
+
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+        enableHighAccuracy: true,
+        heading: true,
+      });
+      const { latitude, longitude, heading } = location.coords;
+      setRegion((prevRegion) => ({ ...prevRegion, latitude, longitude }));
 
       mapIntervalId = setInterval(async () => {
         const loc = await Location.getCurrentPositionAsync({
@@ -242,7 +319,8 @@ export default function DriveScreen({
           enableHighAccuracy: true,
           heading: true,
         });
-        const { latitude, longitude, heading } = loc.coords;
+        
+         const { latitude, longitude, heading } = loc.coords;
 
         setRegion((prevRegion) => ({
           ...prevRegion,
@@ -250,7 +328,8 @@ export default function DriveScreen({
           longitude,
         }));
 
-        setUserHeading(heading);
+       setUserHeading(heading);
+        
       }, MAP_UPDATE_INTERVAL);
 
       return () => clearInterval(mapIntervalId);

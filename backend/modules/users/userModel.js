@@ -16,7 +16,9 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: { type: Date },
   idPhoto: { type: String, required: false }, // Temporarily stored
   multiRole: { type: [String], required: true },
-  registrationStatus: { type: String, default: "pending" }, // Default status
+  isOnline: { type: Boolean, default: false },
+  registrationStatus: { type: String, default: 'pending' }, // Default status
+
   location: {
     type: { type: String, enum: ["Point"], default: "Point" }, // Required for GeoJSON
     coordinates: { type: [Number], default: [0, 0] }, // [longitude, latitude]
@@ -46,5 +48,7 @@ userSchema.statics.validateFields = function (data) {
   }
 };
 
-const Users = mongoose.model("Users", userSchema, "Users");
+userSchema.index({ location: "2dsphere" });
+
+const Users = mongoose.model('Users', userSchema, 'Users');
 module.exports = Users;
