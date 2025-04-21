@@ -13,7 +13,7 @@ router.get("/notifications/:userId", async (req, res) => {
 
     // Filter: only notifications for ongoing events
     const filtered = allNotifications.filter(
-      (n) => n.eventRef && n.eventRef.status === "ongoing"
+      (n) => n.eventRef && (n.eventRef.status === "ongoing"|| n.eventRef.status === "pending")
     );
 
     res.json(filtered);

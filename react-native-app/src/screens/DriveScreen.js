@@ -38,8 +38,8 @@ import Map from "../components/map_components/Map";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+// import 'react-native-get-random-values';
+// import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MAP_UPDATE_INTERVAL = 2500;
