@@ -148,7 +148,7 @@ export default function App() {
 
 <Stack.Screen
   name="TestRoutes"
-  component={wrapScreenLanguageButton(TestRoutesScreen)}
+  component={wrapScreenWithBackButton(wrapScreenLanguageButton(TestRoutesScreen))}
   options={options}
 />
 
