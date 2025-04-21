@@ -26,6 +26,33 @@ exports.reportEvent = async (req, res) => {
 };
 
 
+exports.updateEventStatus = async (req, res) => {
+  const { eventId } = req.params;
+  const { newStatus } = req.body;
+
+  if (!["pending", "ongoing", "finished"].includes(newStatus)) {
+    return res.status(400).json({ message: "Invalid status value" });
+  }
+
+  try {
+    const updatedEvent = await Event.findByIdAndUpdate(
+      eventId,
+      { status: newStatus },
+      { new: true }
+    );
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json(updatedEvent);
+  } catch (err) {
+    console.error("Error updating event:", err);
+    res.status(500).json({ message: "Failed to update status" });
+  }
+};
+
+
 exports.getEventsByStatus = async (req, res) => {
     const { status } = req.params;
     try {

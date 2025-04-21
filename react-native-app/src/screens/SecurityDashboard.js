@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { Alert } from "react-native";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import DashboardScreen from "../components/screen_components/DashboardScreen";
@@ -6,16 +6,17 @@ import NavButton from "../components/general_components/NavButton";
 import * as Location from "expo-location";
 import { SERVER_URL } from "@env";
 import LocationTransmissionsToServer from "../utils/LocationTransmissionsToServer";
-import 'react-native-get-random-values'; // ✅ must come first
-import { v4 as uuidv4 } from 'uuid';
+// import 'react-native-get-random-values'; // ✅ must come first
+// import { v4 as uuidv4 } from 'uuid';
+import io from "socket.io-client";
 
 
 const LOCATION_UPDATE_INTERVAL = 5000;
-const idNumber = uuidv4();;
+const idNumber = "123456789";
 
 export default function SecurityDashboard({ navigation }) {
   const { language } = useContext(MyLanguageContext);
-  const [currentLocation, setCurrentLocation] = useState(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
     let locationIntervalId;
@@ -31,23 +32,28 @@ export default function SecurityDashboard({ navigation }) {
       }
 
       try {
-        const location = await Location.getCurrentPositionAsync({});
-        setCurrentLocation({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
+        const currentLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+          enableHighAccuracy: true,
+          heading: true,
         });
 
-        locationIntervalId = setInterval(async () => {
-          try {
-            const loc = await Location.getCurrentPositionAsync({});
-            setCurrentLocation({
-              latitude: loc.coords.latitude,
-              longitude: loc.coords.longitude,
-            });
-          } catch (updateError) {
-            console.error("Error getting location update:", updateError);
-          }
-        }, LOCATION_UPDATE_INTERVAL);
+        // Connect to the Socket.io server and register the user
+        socketRef.current = io(SERVER_URL);
+
+        socketRef.current.on("connect", () => {
+          socketRef.current.emit("register", {
+            role: "security",
+            userId: idNumber,
+            location: {
+              latitude: currentLocation.coords.latitude,
+              longitude: currentLocation.coords.longitude,
+            },
+          });
+
+          // Start transmitting location
+          startLocationServerUpdates();
+        });
       } catch (initialError) {
         console.error("Error getting initial location:", initialError);
         Alert.alert("Location Error", "Could not fetch initial location.");
@@ -56,12 +62,35 @@ export default function SecurityDashboard({ navigation }) {
 
     startLocationUpdates();
 
+    // Cleanup function
     return () => {
       if (locationIntervalId) {
         clearInterval(locationIntervalId);
       }
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        console.log("Socket disconnected on component unmount");
+      }
     };
   }, []);
+
+  const startLocationServerUpdates = () => {
+    locationIntervalId = setInterval(async () => {
+      try {
+        const currentLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+          enableHighAccuracy: true,
+          heading: true,
+        });
+        socketRef.current.emit("update_location", {
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        });
+      } catch (updateError) {
+        console.error("Error getting location update:", updateError);
+      }
+    }, LOCATION_UPDATE_INTERVAL);
+  };
 
   const handleBackgroundPress = () => {
     console.log("Background pressed");
@@ -69,15 +98,6 @@ export default function SecurityDashboard({ navigation }) {
 
   return (
     <DashboardScreen navigation={navigation}>
-      <LocationTransmissionsToServer
-        userRole="security"
-        userId={idNumber}
-        location={currentLocation}
-        serverUrl={SERVER_URL}
-        updateInterval={LOCATION_UPDATE_INTERVAL}
-        isEnabled={!!currentLocation}
-      />
-
       <NavButton
         title={text[language].startRide}
         onPress={() => navigation.navigate("StartRide/Security")}

@@ -13,6 +13,8 @@ router.get("/events", eventController.getAllEvents); // or add authMiddleware if
 
 router.get("/events/status/:status", eventController.getEventsByStatus);
 
+router.put("/events/:eventId/status", authMiddleware, eventController.updateEventStatus);
+
 
 router.use('/auth', authRoutes);
 router.use('/auth', notificationRoutes);

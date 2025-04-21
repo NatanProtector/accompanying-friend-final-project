@@ -7,7 +7,7 @@ import * as Location from "expo-location";
 import { getDistance } from "geolib";
 import io from "socket.io-client";
 
-const SERVER_URL = "http://192.168.1.228:3001";
+const SERVER_URL = "http://10.0.0.17:3001";
 const idNumber = "111111111";
 
 export default function SafeLocationScreen() {

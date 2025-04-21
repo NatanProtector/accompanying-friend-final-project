@@ -10,6 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@emailjs/react-native": "^4.2.2",
     "@expo/metro-runtime": "~4.0.0",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-community/geolocation": "^3.4.0",
@@ -17,7 +18,7 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
     "axios": "^1.7.9",
-    "expo": "~52.0.23",
+    "expo": "^52.0.46",
     "expo-blur": "~14.0.3",
     "expo-image-picker": "~16.0.3",
     "expo-location": "~18.0.8",
@@ -39,7 +40,6 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
     "socket.io-client": "^4.8.1",
-    "uuid": "^11.1.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {

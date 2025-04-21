@@ -1,12 +1,15 @@
-import { Formik } from 'formik';
-import * as Yup from 'yup';
+import { Formik } from "formik";
+import * as Yup from "yup";
 import React, { useContext } from "react";
 import { View, StyleSheet, Alert } from "react-native";
-import BasicScreen from '../components/screen_components/BasicScreen';
+import BasicScreen from "../components/screen_components/BasicScreen";
 import TextField from "../components/general_components/TextField";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import NavButton from "../components/general_components/NavButton";
+import { sendPasswordResetEmail } from "../utils/emailJS";
 import { CommonActions } from "@react-navigation/native";
+import { SERVER_URL } from "@env";
+import { SubmitAccountRecovery } from "../utils/Communication";
 
 export default function AccountRecoveryScreen({ navigation }) {
   const { language } = useContext(MyLanguageContext);
@@ -23,41 +26,87 @@ export default function AccountRecoveryScreen({ navigation }) {
       .required(text[language].validation.emailRequired),
   });
 
-  const iconPosition = language === 'en' ? 'left' : 'right';
+  const iconPosition = language === "en" ? "left" : "right";
 
   return (
     <BasicScreen title={text[language].title} language={language}>
       <Formik
-        initialValues={{ id: '', phone: '', email: '' }}
+        initialValues={
+          // { id: "", phone: "", email: "" }
+          {
+            id: "123456789",
+            phone: "0501234567",
+            email: "natanprotector50@gmail.com",
+          }
+        }
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          console.log("Recovering account with:", values);
-          Alert.alert(
-            text[language].alert.success,
-            text[language].alert.recoveryMessage,
-            [
-              {
-                text: text[language].alert.ok,
-                onPress: () => {
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [{ name: 'Home' }],
-                    })
-                  );
+        onSubmit={async (values, { setSubmitting }) => {
+          const payload = {
+            idNumber: values.id,
+            phone: values.phone,
+            email: values.email,
+          };
+
+          const API_URL = `${SERVER_URL}/api/auth/recover-account`;
+          try {
+            const response = await SubmitAccountRecovery(payload);
+
+            console.log("response", response.data);
+
+            const passwordResetToken = response.passwordResetToken;
+            const name = response.name;
+            const destination_email = response.email;
+
+            await sendPasswordResetEmail(
+              destination_email,
+              name,
+              passwordResetToken
+            );
+
+            Alert.alert(
+              text[language].alert.success,
+              text[language].alert.recoveryMessage,
+              [
+                {
+                  text: text[language].alert.ok,
+                  onPress: () => {
+                    navigation.dispatch(
+                      CommonActions.reset({
+                        index: 0,
+                        routes: [{ name: "Home" }],
+                      })
+                    );
+                  },
                 },
-              },
-            ]
-          );
+              ]
+            );
+          } catch (error) {
+            let errorMessage = error.message;
+            console.log("Account recovery failed:", error.message);
+            Alert.alert(
+              text[language].alert.errorTitle || "Error",
+              errorMessage,
+              [{ text: text[language].alert.ok }]
+            );
+          } finally {
+            setSubmitting(false);
+          }
         }}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
           <View style={styles.form}>
             <TextField
               placeholder={text[language].idPlaceholder}
               value={values.id}
-              onChangeText={handleChange('id')}
-              onBlur={handleBlur('id')}
+              onChangeText={handleChange("id")}
+              onBlur={handleBlur("id")}
               icon="user"
               iconPosition={iconPosition}
               language={language}
@@ -66,8 +115,8 @@ export default function AccountRecoveryScreen({ navigation }) {
             <TextField
               placeholder={text[language].phonePlaceholder}
               value={values.phone}
-              onChangeText={handleChange('phone')}
-              onBlur={handleBlur('phone')}
+              onChangeText={handleChange("phone")}
+              onBlur={handleBlur("phone")}
               icon="phone"
               iconPosition={iconPosition}
               language={language}
@@ -76,15 +125,18 @@ export default function AccountRecoveryScreen({ navigation }) {
             <TextField
               placeholder={text[language].emailPlaceholder}
               value={values.email}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
               icon="letter"
               iconPosition={iconPosition}
               language={language}
               errorMessage={touched.email && errors.email}
             />
             <View style={styles.buttonContainer}>
-              <NavButton title={text[language].buttonText} onPress={handleSubmit} />
+              <NavButton
+                title={text[language].buttonText}
+                onPress={handleSubmit}
+              />
             </View>
           </View>
         )}
@@ -117,6 +169,8 @@ const text = {
       success: "Success",
       recoveryMessage: "Password has been sent to your email",
       ok: "OK",
+      errorTitle: "Recovery Failed",
+      genericError: "Could not recover password.",
     },
     validation: {
       idMin: "ID must be at least 5 characters",
@@ -137,6 +191,8 @@ const text = {
       success: "הצלחה",
       recoveryMessage: "הסיסמה נשלחה לאימייל שלך",
       ok: "אישור",
+      errorTitle: "שחזור נכשל",
+      genericError: "לא ניתן לשחזר סיסמא.",
     },
     validation: {
       idMin: "תעודת הזהות חייבת להכיל לפחות 5 תווים",
