@@ -195,97 +195,61 @@ export default function DriveScreen({
         }
         const { idNumber } = JSON.parse(stored);
   
-        // ✅ Update location in DB
-        try {
-          const response = await fetch(`${SERVER_URL}/api/auth/update-location/${idNumber}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission Denied", "You need to allow location access.");
-        return;
+     // ✅ Update location in DB
+     try {
+      const response = await fetch(`${SERVER_URL}/api/auth/update-location/${idNumber}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        }),
+      });
+
+      const responseText = await response.text();
+      console.log("[DRIVE] Server response:", response.status, responseText);
+
+      if (!response.ok) {
+        console.warn("[DRIVE] Location update failed");
+      } else {
+        console.log("[DRIVE] Location sent to server");
       }
+    } catch (error) {
+      console.error("[DRIVE] Error sending location to server:", error);
+    }
 
-      const location = await Location.getCurrentPositionAsync({});
-      const newRegion = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      };
-
-      // Set region only ONCE, during initial setup
-      setRegion(newRegion);
-
-      if (userRole === "citizen") {
-        // Connect to the Socket.io server and register the user
-        socketRef.current = io(SERVER_URL);
-
-        socketRef.current.on("connect", () => {
-          socketRef.current.emit("register", {
-            role: userRole,
-            userId: idNumber,
-            location: {
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude
-            }),
-            
-          });
-          
-          const responseText = await response.text();
-          console.log("[DRIVE] Server response:", response.status, responseText);
-          
-          if (!response.ok) {
-            console.warn("[DRIVE] Location update failed");
-          }
-          else {
-            console.log("[DRIVE] Location sent to server");
-          }
-        } catch (error) {
-          console.error("[DRIVE] Error sending location to server:", error);
-        }
-  
-        // ✅ Socket (citizen only)
-        if (userRole === "citizen") {
-          socketRef.current = io(SERVER_URL);
-          socketRef.current.on("connect", () => {
-            socketRef.current.emit("register", {
-              role: userRole,
-              userId: idNumber,
-              location: {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              },
-            });
-  
-            startLocationServerUpdates();
-          });
-        }
-  
-        startLocationMapUpdates();
-      } catch (err) {
-        console.error("[DRIVE] Unexpected error in location permission flow:", err);
-      }
-
-          // Start transmitting location to server
-          startLocationServerUpdates();
+    // ✅ Socket (citizen only)
+    if (userRole === "citizen") {
+      socketRef.current = io(SERVER_URL);
+      socketRef.current.on("connect", () => {
+        socketRef.current.emit("register", {
+          role: userRole,
+          userId: idNumber,
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
         });
-      }
 
-      // Start transmitting location to map
-      startLocationMapUpdates();
-    };
-  
-    getLocationPermission();
-  
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
-  }, []);
+        startLocationServerUpdates();
+      });
+    }
 
+    // ✅ Start location updates for map regardless of role
+    startLocationMapUpdates();
+  } catch (err) {
+    console.error("[DRIVE] Unexpected error in location permission flow:", err);
+  }
+};
+
+getLocationPermission();
+
+return () => {
+  if (socketRef.current) {
+    socketRef.current.disconnect();
+  }
+};
+}, []);
   useEffect(() => {
     if (initialDestination) {
       console.log("[DRIVE] New initialDestination received:", initialDestination);

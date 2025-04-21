@@ -5,7 +5,7 @@ import DashboardScreen from "../components/screen_components/DashboardScreen";
 import NavButton from "../components/general_components/NavButton";
 import * as Location from "expo-location";
 import { SERVER_URL } from "@env";
-import LocationTransmissionsToServer from "../utils/LocationTransmissionsToServer";
+// import LocationTransmissionsToServer from "../utils/LocationTransmissionsToServer";
 // import 'react-native-get-random-values'; // ✅ must come first
 // import { v4 as uuidv4 } from 'uuid';
 import io from "socket.io-client";
