@@ -7,8 +7,14 @@ account creation process, add an error like "Account registered but verification
 - `DriveScreen.js`: Getting location by clicking the map is handled completely differently than getting location by searching for and clicking an address, or by clicking the search button. Standardize this.
 - `DriveScreen.js`: Right now it will only center on the user. Make a center and drag listener to center on the camera without preventing the user from dragging the map.
 
-# BUGS
+## Desktop App
+- add event markers to the map
+- Search through users by email,name, etc, not implemented in desktop app
+- implement event reporting in the desktop app
 
+
+# BUGS
+- During drive. heading is not being updated
 - Security user disconnects from sockets when navigating to the settings screen (maybe okay? to reapply settings?).
 - `HomeScreen.js`: Multiple clicks on login at once will cause the app to crash.
 - `DriveScreen.js`: When the title is too long, it overlaps with the search button.
