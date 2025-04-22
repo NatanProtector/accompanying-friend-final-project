@@ -156,11 +156,11 @@ export default function RegistrationForm({ route, navigation }) {
     <BasicScreen title={RegistrationText[language].title} language={language}>
       <Formik
         initialValues={{
-          fullName: "default defaultson",
+          fullName: "test testy",
           idNumber: "123456789",
           phone: "0501234567",
           email: "natanprotector50@gmail.com",
-          password: "Default123!",
+          password: "Password!234",
           idPhoto: "",
           securityCertificatePhoto: "",
           // fullName: '',
