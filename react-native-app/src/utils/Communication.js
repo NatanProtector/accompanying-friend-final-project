@@ -70,7 +70,7 @@ export const SubmitRegisterForm = (formData) => {
 
       resolve(data);
     } catch (error) {
-      console.error("Submission failed:", error);
+      console.log("Submission failed:", error);
       reject(error);
     }
   });
@@ -150,8 +150,7 @@ export const ReportEmergency = async (selectedOption) => {
     console.log("[ReportEmergency] Server response:", data);
     return data;
   } catch (err) {
-    console.error("[ReportEmergency] Error:", err.message);
-    throw err;
+    console.log("[ReportEmergency] Error:", err.message);
   }
 };
 

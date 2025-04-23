@@ -6,6 +6,7 @@ import {
   denyUsers,
 } from "../../utils/communication";
 import UserDisplay from "./UserDisplay";
+import sendConfirmationEmails from "../../utils/emailJS";
 
 const ManageUsers = () => {
   // State for search input and selected search criteria
@@ -70,8 +71,15 @@ const ManageUsers = () => {
       // Refresh the user list and clear selection
       handleShowAllPendingUsers(); // Re-fetch pending users
       setSelectedUsers([]);
-      // Optionally show a success message to the user
+
+      // Make list of user emails
+      const userEmails = selectedUsers.map((user) => user.email);
+
+      // Send confirmation emails to all the users
+      await sendConfirmationEmails(userEmails);
+
       alert(result.message);
+
     } catch (error) {
       console.error("Error approving users:", error);
       // Optionally show an error message to the user

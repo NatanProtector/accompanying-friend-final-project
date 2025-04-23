@@ -13,6 +13,7 @@
     "start": "npm run build && npm run dev:electron"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@vis.gl/react-google-maps": "^1.5.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
