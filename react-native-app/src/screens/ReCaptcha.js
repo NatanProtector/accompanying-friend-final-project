@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { WebView } from "react-native-webview";
 import { SERVER_URL } from "@env";
 import { verifyRecaptchaToken } from "../utils/Communication";
@@ -9,9 +9,12 @@ import { useContext } from "react";
 const ReCaptchaText = {
   en: {
     title: "Accompanying Friend",
+    prompt:
+      "Before you get started, we just need to confirm you're not a robot.",
   },
   he: {
     title: "חבר מלווה",
+    prompt: "לפני שנתחיל, אנחנו רק צריכים לוודא שאתם לא רובוט.",
   },
 };
 
@@ -34,6 +37,9 @@ export default function ReCaptcha({ navigation }) {
   return (
     <BasicScreen title={ReCaptchaText[language].title} language={language}>
       <View style={styles.screen}>
+        {/* <View style={styles.promptContainer}> */}
+          <Text style={styles.prompt}>{ReCaptchaText[language].prompt}</Text>
+        {/* </View> */}
         <View style={styles.webViewContainer}>
           <WebView
             style={styles.webView}
@@ -52,17 +58,28 @@ export default function ReCaptcha({ navigation }) {
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
     width: "100%",
     alignItems: "center",
-    paddingVertical: 20,
   },
   webViewContainer: {
     width: "90%",
-    height: 400,
+    height: 500,
     borderRadius: 10,
-    overflow: "hidden",
   },
   webView: {
     flex: 1,
   },
+  prompt: {
+    fontSize: 20,
+    textAlign: "center",
+    margin: 20,
+  },
+  // promptContainer: {
+  //   width: "100%",
+  //   height: 200,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: "red",
+  // },
 });

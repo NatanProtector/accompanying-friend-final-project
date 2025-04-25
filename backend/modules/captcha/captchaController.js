@@ -30,7 +30,6 @@ router.get("/recaptcha-render", (req, res) => {
           overflow: hidden;
         }
         .g-recaptcha {
-          transform: scale(1.2); /* Adjust scale as needed */
           transform-origin: center;
         }
       </style>
