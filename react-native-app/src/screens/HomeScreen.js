@@ -259,7 +259,7 @@ const style = StyleSheet.create({
 });
 const HomeText = {
   en: {
-    title: "Login",
+    title: "Accompanying Friend",
     login: "Login",
     register: "Register",
     passwordPlaceholder: "Password",
@@ -276,7 +276,7 @@ const HomeText = {
     close: "Close",
   },
   he: {
-    title: "כניסה",
+    title: "חבר מלווה",
     login: "כניסה",
     register: "הרשם",
     passwordPlaceholder: "סיסמה",

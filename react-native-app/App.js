@@ -90,7 +90,7 @@ export default function App() {
 
           <Stack.Screen
             name="ReCaptcha"
-            component={ReCaptcha}
+            component={wrapScreenLanguageButton(ReCaptcha)}
             options={options}
           />
           

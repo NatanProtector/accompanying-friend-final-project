@@ -1,42 +1,68 @@
+import { View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import { SERVER_URL } from "@env";
-import { StyleSheet } from "react-native";
 import { verifyRecaptchaToken } from "../utils/Communication";
+import BasicScreen from "../components/screen_components/BasicScreen";
+import MyLanguageContext from "../utils/MyLanguageContext";
+import { useContext } from "react";
+
+const ReCaptchaText = {
+  en: {
+    title: "Accompanying Friend",
+  },
+  he: {
+    title: "חבר מלווה",
+  },
+};
 
 export default function ReCaptcha({ navigation }) {
+  const { language } = useContext(MyLanguageContext);
+
   const handleMessage = async (event) => {
     const token = event.nativeEvent.data;
 
     try {
       await verifyRecaptchaToken(token);
-      // TODO: Handle successful verification (e.g., navigate or update state)
       navigation.navigate("Home");
     } catch (error) {
       console.error("reCAPTCHA verification failed:", error);
-      // TODO: Handle verification failure (e.g., show an error message)
     }
   };
 
   const recaptchaUrl = `${SERVER_URL}/api/recaptcha/recaptcha-render`;
 
   return (
-    <WebView
-      style={styles.container}
-      source={{ uri: recaptchaUrl }} // Load from server URL
-      onMessage={handleMessage}
-      originWhitelist={["*"]} // Allow all origins, adjust if needed for security
-      javaScriptEnabled={true}
-      domStorageEnabled={true}
-      startInLoadingState={true}
-      // Optional: Render a loading indicator
-      // renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
-    />
+    <BasicScreen title={ReCaptchaText[language].title} language={language}>
+      <View style={styles.screen}>
+        <View style={styles.webViewContainer}>
+          <WebView
+            style={styles.webView}
+            source={{ uri: recaptchaUrl }}
+            onMessage={handleMessage}
+            originWhitelist={["*"]}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            startInLoadingState={true}
+          />
+        </View>
+      </View>
+    </BasicScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Use flex: 1 to fill the available space
-    // Removed fixed height/width and other styles potentially conflicting with WebView rendering
+  screen: {
+    width: "100%",
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  webViewContainer: {
+    width: "90%",
+    height: 400,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  webView: {
+    flex: 1,
   },
 });
