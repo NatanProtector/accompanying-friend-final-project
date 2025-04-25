@@ -175,3 +175,24 @@ export const SubmitAccountRecovery = async (payload) => {
     }
   });
 };
+
+export const verifyRecaptchaToken = async (token) => {
+  try {
+    const response = await fetch(`${SERVER_URL}/recaptcha/verify-recaptcha`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "reCAPTCHA verification failed");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error verifying reCAPTCHA token:", error);
+    throw error;
+  }
+};

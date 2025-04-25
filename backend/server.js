@@ -21,8 +21,7 @@ app.use(bodyParser.json());
 // http://127.0.0.1:3001/recaptcha
 // http://localhost:3001/recaptcha
 
-app.get("/recaptcha", (req, res) => {
-  console.log("recaptcha");
+app.get("/recaptcha/recaptcha-render", (req, res) => {
   const siteKey = process.env.RECAPTCHA_SITE_KEY;
   if (!siteKey) {
     console.error("RECAPTCHA_SITE_KEY not found in environment variables.");
@@ -61,11 +60,19 @@ app.get("/recaptcha", (req, res) => {
         }
       </script>
     </body>
-  </html>
-  `;
+  </html>`;
 
   res.setHeader("Content-Type", "text/html");
   res.send(recaptchaHtmlContent);
+});
+
+// Route to verify reCAPTCHA token
+app.post("/recaptcha/verify-recaptcha", (req, res) => {
+  const { token } = req.body;
+  // TODO: Implement actual verification logic here
+  res
+    .status(200)
+    .json({ success: true, message: "Token received for verification." });
 });
 
 app.use("/api", routes);

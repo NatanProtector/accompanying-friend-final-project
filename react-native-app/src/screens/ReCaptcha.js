@@ -1,15 +1,23 @@
 import { WebView } from "react-native-webview";
 import { SERVER_URL } from "@env";
 import { StyleSheet } from "react-native";
+import { verifyRecaptchaToken } from "../utils/Communication";
 
 export default function ReCaptcha({ navigation }) {
-  const handleMessage = (event) => {
+  const handleMessage = async (event) => {
     const token = event.nativeEvent.data;
     console.log("reCAPTCHA Token:", token);
-    // TODO: Send this token to your backend for verification
+    try {
+      await verifyRecaptchaToken(token);
+      // TODO: Handle successful verification (e.g., navigate or update state)
+      navigation.navigate("Home");
+    } catch (error) {
+      console.error("reCAPTCHA verification failed:", error);
+      // TODO: Handle verification failure (e.g., show an error message)
+    }
   };
 
-  const recaptchaUrl = `${SERVER_URL}/recaptcha`;
+  const recaptchaUrl = `${SERVER_URL}/recaptcha/recaptcha-render`;
 
   return (
     <WebView
@@ -24,7 +32,7 @@ export default function ReCaptcha({ navigation }) {
       // renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
