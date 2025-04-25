@@ -9,6 +9,7 @@ import CitizenDriveScreen from "./src/screens/CitizenDriveScreen";
 import SecurityDriveScreen from "./src/screens/SecurityDriveScreen";
 import SafeLocationScreen from "./src/screens/SafeLocationScreen";
 import TestRoutesScreen from "./src/screens/TestRoutesScreen";
+import ReCaptcha from "./src/screens/ReCaptcha";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -85,7 +86,14 @@ export default function App() {
   return (
     <MyLanguageContext.Provider value={{ language }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="ReCaptcha">
+
+          <Stack.Screen
+            name="ReCaptcha"
+            component={ReCaptcha}
+            options={options}
+          />
+          
           <Stack.Screen
             name="Home"
             component={wrapScreenLanguageButton(HomeScreen)}
