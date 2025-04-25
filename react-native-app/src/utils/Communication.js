@@ -178,7 +178,7 @@ export const SubmitAccountRecovery = async (payload) => {
 
 export const verifyRecaptchaToken = async (token) => {
   try {
-    const response = await fetch(`${SERVER_URL}/recaptcha/verify-recaptcha`, {
+    const response = await fetch(`${SERVER_URL}/api/recaptcha/verify-recaptcha`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),

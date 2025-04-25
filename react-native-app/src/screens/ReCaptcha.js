@@ -17,7 +17,7 @@ export default function ReCaptcha({ navigation }) {
     }
   };
 
-  const recaptchaUrl = `${SERVER_URL}/recaptcha/recaptcha-render`;
+  const recaptchaUrl = `${SERVER_URL}/api/recaptcha/recaptcha-render`;
 
   return (
     <WebView
