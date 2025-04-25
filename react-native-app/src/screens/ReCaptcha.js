@@ -6,7 +6,7 @@ import { verifyRecaptchaToken } from "../utils/Communication";
 export default function ReCaptcha({ navigation }) {
   const handleMessage = async (event) => {
     const token = event.nativeEvent.data;
-    console.log("reCAPTCHA Token:", token);
+
     try {
       await verifyRecaptchaToken(token);
       // TODO: Handle successful verification (e.g., navigate or update state)
