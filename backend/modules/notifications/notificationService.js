@@ -1,6 +1,7 @@
 const Notification = require("./notificationModel.js");
 const { v4: uuidv4 } = require("uuid");
 const User = require("../Users/userModel.js");
+const { sendNotificationToUser } = require("../../sockets/sockets.js"); // <-- import!
 
 async function sendNearbyEventNotifications(event) {
   const { location, eventType, _id: eventId } = event;
@@ -26,8 +27,15 @@ async function sendNearbyEventNotifications(event) {
   }));
 
   if (notifications.length > 0) {
-    await Notification.insertMany(notifications);
-    console.log(`[NOTIFY] Sent to ${notifications.length} security users`);
+    const createdNotifications = await Notification.insertMany(notifications);
+    console.log(`[NOTIFY] Sent to ${createdNotifications.length} security users`);
+
+    // ✨ Emit in real-time ✨
+    for (const notification of createdNotifications) {
+      await notification.populate('eventRef'); // populate event data before sending
+      sendNotificationToUser(notification.targetUserId, notification);
+    }
+
   } else {
     console.log("[NOTIFY] No nearby users found");
   }
