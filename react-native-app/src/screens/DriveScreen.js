@@ -27,7 +27,6 @@ export default function DriveScreen({
   userRole,
   idNumber,
 }) {
-
   let mapIntervalId = null;
   let locationIntervalId = null;
 
@@ -51,14 +50,22 @@ export default function DriveScreen({
   const [userHeading, setUserHeading] = useState(null);
 
   const onMapReady = () => {
+    console.log("[DRIVE] Map is ready");
     if (initialDestination) {
+      console.log(
+        "[DRIVE] New initialDestination received:",
+        initialDestination
+      );
       startDrive(initialDestination);
     }
   };
 
   const getAddressFromCoords = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      const [place] = await Location.reverseGeocodeAsync({
+        latitude: lat,
+        longitude: lng,
+      });
       return `${place.street || ""} ${place.name || ""}, ${place.city || ""}`;
     } catch (error) {
       console.error("Error:", error);
@@ -169,106 +176,104 @@ export default function DriveScreen({
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
-          Alert.alert("Permission Denied", "You need to allow location access.");
+          Alert.alert(
+            "Permission Denied",
+            "You need to allow location access."
+          );
           return;
         }
-  
+
         const location = await Location.getCurrentPositionAsync({});
         if (!location || !location.coords) {
           console.warn("[DRIVE] No valid location object");
           return;
         }
-  
+
         const newRegion = {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         };
-  
+
         setRegion(newRegion);
-  
+
         const stored = await AsyncStorage.getItem("userData");
         if (!stored) {
           console.warn("[DRIVE] No user data found in AsyncStorage");
           return;
         }
         const { idNumber } = JSON.parse(stored);
-  
-     // ✅ Update location in DB
-     try {
-      const response = await fetch(`${SERVER_URL}/api/auth/update-location/${idNumber}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        }),
-      });
 
-      const responseText = await response.text();
-      console.log("[DRIVE] Server response:", response.status, responseText);
+        // ✅ Update location in DB
+        try {
+          const response = await fetch(
+            `${SERVER_URL}/api/auth/update-location/${idNumber}`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              }),
+            }
+          );
 
-      if (!response.ok) {
-        console.warn("[DRIVE] Location update failed");
-      } else {
-        console.log("[DRIVE] Location sent to server");
+          const responseText = await response.text();
+          console.log(
+            "[DRIVE] Server response:",
+            response.status,
+            responseText
+          );
+
+          if (!response.ok) {
+            console.warn("[DRIVE] Location update failed");
+          } else {
+            console.log("[DRIVE] Location sent to server");
+          }
+        } catch (error) {
+          console.error("[DRIVE] Error sending location to server:", error);
+        }
+
+        // ✅ Socket (citizen only)
+        if (userRole === "citizen") {
+          socketRef.current = io(SERVER_URL);
+          socketRef.current.on("connect", () => {
+            socketRef.current.emit("register", {
+              role: userRole,
+              userId: idNumber,
+              location: {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+            });
+
+            startLocationServerUpdates();
+          });
+        }
+
+        // ✅ Start location updates for map regardless of role
+        startLocationMapUpdates();
+      } catch (err) {
+        console.error(
+          "[DRIVE] Unexpected error in location permission flow:",
+          err
+        );
       }
-    } catch (error) {
-      console.error("[DRIVE] Error sending location to server:", error);
-    }
+    };
 
-    // ✅ Socket (citizen only)
-    if (userRole === "citizen") {
-      socketRef.current = io(SERVER_URL);
-      socketRef.current.on("connect", () => {
-        socketRef.current.emit("register", {
-          role: userRole,
-          userId: idNumber,
-          location: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
-        });
+    getLocationPermission();
 
-        startLocationServerUpdates();
-      });
-    }
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, []);
 
-    // ✅ Start location updates for map regardless of role
-    startLocationMapUpdates();
-  } catch (err) {
-    console.error("[DRIVE] Unexpected error in location permission flow:", err);
-  }
-};
-
-getLocationPermission();
-
-return () => {
-  if (socketRef.current) {
-    socketRef.current.disconnect();
-  }
-};
-}, []);
-  useEffect(() => {
-    if (initialDestination) {
-      console.log("[DRIVE] New initialDestination received:", initialDestination);
-      startDrive(initialDestination);
-  
-      // Optionally center map immediately:
-      setRegion((prevRegion) => ({
-        ...prevRegion,
-        latitude: initialDestination.latitude,
-        longitude: initialDestination.longitude,
-      }));
-    }
-  }, [initialDestination]);
-  
-  
 
   const startLocationMapUpdates = async () => {
     try {
-
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
         enableHighAccuracy: true,
@@ -283,8 +288,8 @@ return () => {
           enableHighAccuracy: true,
           heading: true,
         });
-        
-         const { latitude, longitude, heading } = loc.coords;
+
+        const { latitude, longitude, heading } = loc.coords;
 
         setRegion((prevRegion) => ({
           ...prevRegion,
@@ -292,8 +297,7 @@ return () => {
           longitude,
         }));
 
-       setUserHeading(heading);
-        
+        setUserHeading(heading);
       }, MAP_UPDATE_INTERVAL);
 
       return () => clearInterval(mapIntervalId);
