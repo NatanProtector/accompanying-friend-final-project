@@ -20,7 +20,26 @@ export default function Register({ navigation }) {
                 // buttonStyle={styles.button}
             />
             
+            {
+            /**
+             * Hot fix to register
+             * Roger told us that the option for registering as both is not relevant, and that we should remove it
+             * and have the security have the features of the citizen by default, so instead of removing the functioanlity
+             * we implemented, we will just grant the security the privileges of both.
+             */
+            }
+
             <NavButton
+                title={RegisterText[language].security}
+                onPress={() => navigation.navigate('RegisterForm', { registerAs: 'both' })}
+                // buttonStyle={styles.button}
+            />
+
+            {/**
+             * Previous code
+             */
+            }
+            {/* <NavButton
                 title={RegisterText[language].security}
                 onPress={() => navigation.navigate('RegisterForm', { registerAs: 'security' })}
                 // buttonStyle={styles.button}
@@ -29,7 +48,7 @@ export default function Register({ navigation }) {
                 title={RegisterText[language].both}
                 onPress={() => navigation.navigate('RegisterForm', { registerAs: 'both' })}
                 // buttonStyle={styles.button}
-            />
+            /> */}
         </BasicScreen>
     );
 }

@@ -86,7 +86,7 @@ export default function App() {
   return (
     <MyLanguageContext.Provider value={{ language }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="ReCaptcha">
+        <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="ReCaptcha"
             component={wrapScreenLanguageButton(ReCaptcha)}
@@ -143,7 +143,7 @@ export default function App() {
             name="StartRide/Security"
             component={wrapScreenWithNotification(
               wrapScreenWithBackButton(SecurityDriveScreen)
-  )}
+            )}
             options={options}
           />
           <Stack.Screen
@@ -152,12 +152,13 @@ export default function App() {
             options={options}
           />
 
-<Stack.Screen
-  name="TestRoutes"
-  component={wrapScreenWithBackButton(wrapScreenLanguageButton(TestRoutesScreen))}
-  options={options}
-/>
-
+          <Stack.Screen
+            name="TestRoutes"
+            component={wrapScreenWithBackButton(
+              wrapScreenLanguageButton(TestRoutesScreen)
+            )}
+            options={options}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </MyLanguageContext.Provider>

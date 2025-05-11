@@ -19,6 +19,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { SubmitRegisterForm } from "../utils/Communication";
 import { sendVerificationEmail } from "../utils/emailJS";
+import LoadModalController from "../utils/LoadModalController";
 
 export default function RegistrationForm({ route, navigation }) {
   const { language } = useContext(MyLanguageContext);
@@ -31,6 +32,9 @@ export default function RegistrationForm({ route, navigation }) {
 
   const [showPasswordInfo, setShowPasswordInfo] = useState(true);
   const [showIDInfo, setShowIDInfo] = useState(true);
+
+  // Load Modal Controllers
+  const { startLoad, endLoad, LoadModal } = LoadModalController();
 
   useEffect(() => {
     I18nManager.forceRTL(language === "he");
@@ -106,6 +110,7 @@ export default function RegistrationForm({ route, navigation }) {
   };
 
   const handleFormSubmit = async (values) => {
+    startLoad();
     try {
       values.registerAs = registerAs;
 
@@ -149,11 +154,14 @@ export default function RegistrationForm({ route, navigation }) {
         RegistrationText[language].failureMessage,
         [{ text: RegistrationText[language].okButton }]
       );
+    } finally {
+      endLoad();
     }
   };
 
   return (
     <BasicScreen title={RegistrationText[language].title} language={language}>
+      <LoadModal />
       <Formik
         initialValues={{
           fullName: "test testy",
