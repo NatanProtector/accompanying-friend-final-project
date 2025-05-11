@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
+import { ReportEmergency } from "../../utils/communication";
 import io from "socket.io-client";
 
 import MapComponent from "./Map/MapComponent";
@@ -15,7 +16,7 @@ const MapScreen = () => {
   const [userLocations, setUserLocations] = useState([]);
   const [clickedPosition, setClickedPosition] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [formDescription, setFormDescription] = useState("");
+  // const [formDescription, setFormDescription] = useState("");
   const [eventType, setEventType] = useState("");
   const [mapZoom, setMapZoom] = useState(defaultZoom);
   const [centerCoords, setCenterCoords] = useState(defaultPosition);
@@ -24,9 +25,9 @@ const MapScreen = () => {
     setEventType(event.target.value);
   };
 
-  const handleInputChange = (event) => {
-    setFormDescription(event.target.value);
-  };
+  // const handleInputChange = (event) => {
+  //   setFormDescription(event.target.value);
+  // };
 
   const handleMapClick = (event) => {
     const { lat, lng } = event.detail.latLng;
@@ -36,15 +37,20 @@ const MapScreen = () => {
     setShowModal(true);
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     const formData = {
       type: eventType,
       description: formDescription,
     };
     console.log(formData);
+
+    await ReportEmergency(eventType, clickedPosition);
+
     handleCloseModal();
   };
+
+
 
   const handleCloseModal = () => {
     setClickedPosition(null);
@@ -68,6 +74,8 @@ const MapScreen = () => {
   useEffect(() => {
     try {
       socket.on("user_list_update", (userList) => {
+        console.log();
+        
         setUserLocations(userList);
       });
     } catch (error) {
@@ -99,18 +107,22 @@ const MapScreen = () => {
             <h3>Create Event</h3>
             <label>Type:</label>
             <select name="type" onChange={handleTypeChange} required>
-              <option value="fire">Fire</option>
-              <option value="medical">Medical</option>
-              <option value="other">Other</option>
+              <option value="Shooting">Shooting</option>
+              <option value="Riot">Riot</option>
+              <option value="Rock throwing">Rock throwing</option>
+              <option value="Vehicle theft">Vehicle theft</option>
+              <option value="Molotov">Molotov</option>
             </select>
-            <label>Description:</label>
+            {/* <label>Description:</label>
             <textarea
               name="description"
               onChange={handleInputChange}
               required
-            />
+            /> */}
             <div>
-              <button type="submit">Submit</button>
+              <button type="submit">
+                Submit
+                </button>
               <button type="button" onClick={handleCloseModal}>
                 Cancel
               </button>
@@ -129,7 +141,7 @@ const style = {
   modal: {
     position: "absolute",
     top: "30%",
-    left: "80%",
+    left: "30%",
     transform: "translate(-50%, -50%)",
     color: "black",
     borderRadius: "8px",

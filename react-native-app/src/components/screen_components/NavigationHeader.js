@@ -23,6 +23,7 @@ export default function NavigationHeader({DisplayComponent}) {
 
     setShowReportModal(false);
   };
+
   const handleCancel = () => {
     console.log("Cancelled. Selected option:", selectedOption);
     setShowReportModal(false);
@@ -197,7 +198,7 @@ const labels_text = {
     title: "Select Report Reason:",
     option1: "Attempted Vihicle Theft",
     option2: "shooting",
-    option3: "Other",
+    option3: "Rock throwing",
     report: "Report",
     cancel: "Cancel",
   },
@@ -205,7 +206,7 @@ const labels_text = {
     title: "בחר סיבה לדיווח:",
     option1: "ניסיון גניבת רכב",
     option2: "ירי",
-    option3: "זריקת בקבוקי תבערה",
+    option3: "זריקת אבנים",
     report: "דווח",
     cancel: "ביטול",
   },

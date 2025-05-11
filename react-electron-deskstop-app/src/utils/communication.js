@@ -103,3 +103,15 @@ export const denyUsers = (idNumbers) => {
       });
   });
 };
+
+export const ReportEmergency = async (eventType, clickedPosition) => {
+  const { lat, lng } = clickedPosition;
+
+  const payload = {
+    eventType: eventType || "Unknown",
+    location: { type: "Point", coordinates: [lng, lat] },
+  };
+
+  console.log("[ReportEmergency] Payload:", payload);
+  
+}
