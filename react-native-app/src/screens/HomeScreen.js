@@ -7,7 +7,7 @@ import {
   Button,
   Alert,
 } from "react-native";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { BlurView } from "expo-blur";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import BasicScreen from "../components/screen_components/BasicScreen";
@@ -16,6 +16,7 @@ import TextFieldPassword from "../components/general_components/TextFieldPasswor
 import TextFieldUsername from "../components/general_components/TextFieldUsername";
 import { SubmitLoginForm } from "../utils/Communication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadModalController from "../utils/LoadModalController";
 
 const navigateToRecovery = (navigation, setShowError) => {
   return () => {
@@ -36,8 +37,10 @@ export default function HomeScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
   const iconPosition = language === "en" ? "left" : "right";
+
+  // Load Modal Controllers
+  const { startLoad, endLoad, LoadModal } = LoadModalController();
 
   const displayMessage = (message) => {
     setErrorMessage(message);
@@ -45,6 +48,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleLogin = async () => {
+    startLoad();
     try {
       // Bypass login for testing when fields are empty
       if (username === "" && password === "") {
@@ -101,11 +105,14 @@ export default function HomeScreen({ navigation }) {
       } else {
         displayMessage(HomeText[language].wrongCredentials);
       }
+    } finally {
+      endLoad();
     }
   };
 
   return (
     <BasicScreen title={HomeText[language].title} language={language}>
+      <LoadModal language={language} />
       <View style={style.container}>
         <View style={style.inputContainer}>
           <TextFieldUsername
