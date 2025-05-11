@@ -10,9 +10,13 @@ import { sendPasswordResetEmail } from "../utils/emailJS";
 import { CommonActions } from "@react-navigation/native";
 import { SERVER_URL } from "@env";
 import { SubmitAccountRecovery } from "../utils/Communication";
+import LoadModalController from "../utils/LoadModalController";
 
 export default function AccountRecoveryScreen({ navigation }) {
   const { language } = useContext(MyLanguageContext);
+
+  // Load Modal Controllers
+  const { startLoad, endLoad, LoadModal } = LoadModalController();
 
   const validationSchema = Yup.object().shape({
     id: Yup.string()
@@ -30,6 +34,7 @@ export default function AccountRecoveryScreen({ navigation }) {
 
   return (
     <BasicScreen title={text[language].title} language={language}>
+      <LoadModal />
       <Formik
         initialValues={
           // { id: "", phone: "", email: "" }
@@ -41,13 +46,13 @@ export default function AccountRecoveryScreen({ navigation }) {
         }
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
+          startLoad();
           const payload = {
             idNumber: values.id,
             phone: values.phone,
             email: values.email,
           };
 
-          const API_URL = `${SERVER_URL}/api/auth/recover-account`;
           try {
             const response = await SubmitAccountRecovery(payload);
 
@@ -90,6 +95,7 @@ export default function AccountRecoveryScreen({ navigation }) {
             );
           } finally {
             setSubmitting(false);
+            endLoad();
           }
         }}
       >
