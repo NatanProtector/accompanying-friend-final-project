@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef } from "react";
-import { Alert } from "react-native";
+import { Alert, BackHandler } from "react-native";
 import MyLanguageContext from "../utils/MyLanguageContext";
 import DashboardScreen from "../components/screen_components/DashboardScreen";
 import NavButton from "../components/general_components/NavButton";
@@ -9,7 +9,6 @@ import { SERVER_URL } from "@env";
 // import 'react-native-get-random-values'; // ✅ must come first
 // import { v4 as uuidv4 } from 'uuid';
 import io from "socket.io-client";
-
 
 const LOCATION_UPDATE_INTERVAL = 5000;
 const idNumber = "123456789";
@@ -87,13 +86,13 @@ export default function SecurityDashboard({ navigation }) {
           longitude: currentLocation.coords.longitude,
         });
       } catch (updateError) {
-        console.error("Error getting location update:", updateError);
+        console.log("Error getting location update:", updateError);
       }
     }, LOCATION_UPDATE_INTERVAL);
   };
 
   const handleBackgroundPress = () => {
-    console.log("Background pressed");
+    BackHandler.exitApp();
   };
 
   return (
