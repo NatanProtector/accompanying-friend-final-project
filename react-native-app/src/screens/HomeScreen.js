@@ -103,7 +103,7 @@ export default function HomeScreen({ navigation }) {
           HomeText[language].emailNotVerified
         );
       } else {
-        displayMessage(HomeText[language].wrongCredentials);
+        displayMessage(HomeText[language].couldNotLogin);
       }
     } finally {
       endLoad();
@@ -277,6 +277,7 @@ const HomeText = {
     wrongCredentials: "Wrong username or password.",
     pendingApprovalTitle: "Pending Approval",
     pendingApproval: "Your request is still pending approval.",
+    couldNotLogin: "Could not login.",
     emailNotVerified:
       "Email not verified. verification link not recieved? please contact support",
     emailNotVerifiedTitle: "Email Verification Required",
@@ -296,6 +297,7 @@ const HomeText = {
     pendingApprovalTitle: "ממתין לאישור",
     emailNotVerified: "אימייל לא מאומת. קישור לאימות לא התקבל? נא לפנות לתמיכה",
     emailNotVerifiedTitle: "אימות אימייל נדרש",
+    couldNotLogin: "לא ניתן להתחברות.",
     close: "סגור",
   },
 };
