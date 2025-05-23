@@ -86,6 +86,8 @@ export default function NavigationHeader({DisplayComponent}) {
                 {renderRadioButton(labels_text[language].option1, "option1")}
                 {renderRadioButton(labels_text[language].option2, "option2")}
                 {renderRadioButton(labels_text[language].option3, "option3")}
+                {renderRadioButton(labels_text[language].option4, "option4")}
+                {renderRadioButton(labels_text[language].option5, "option5")}
               </View>
 
               <View style={styles.buttonRow}>
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
-    width: "85%",
+    width: "100%",
     alignItems: "center",
   },
   modalText: {
@@ -147,7 +149,8 @@ const styles = StyleSheet.create({
   radioGroup: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
+    width: 450,
+    height: 100,
     marginBottom: 30,
   },
   radioButton: {
@@ -198,7 +201,9 @@ const labels_text = {
     title: "Select Report Reason:",
     option1: "Attempted Vihicle Theft",
     option2: "shooting",
-    option3: "Rock throwing",
+    option3: "Molotov",
+    option4: "Roadblock",
+    option5: "Stone Throwing",
     report: "Report",
     cancel: "Cancel",
   },
@@ -206,7 +211,9 @@ const labels_text = {
     title: "בחר סיבה לדיווח:",
     option1: "ניסיון גניבת רכב",
     option2: "ירי",
-    option3: "זריקת אבנים",
+    option3: "בקבוק תבעירה",
+    option4: "מחסום",
+    option5: "יידוי אבנים",
     report: "דווח",
     cancel: "ביטול",
   },

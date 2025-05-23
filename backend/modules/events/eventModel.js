@@ -7,7 +7,7 @@ const eventSchema = new mongoose.Schema({
     type: { type: String, enum: ["Point"], required: true },
     coordinates: { type: [Number], required: true }, // [longitude, latitude]
   },
-  status: { type: String, default: "pending" },
+  status: { type: String, default: "ongoing" },
   reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   relatedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   voiceCommands: { type: String },
