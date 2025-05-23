@@ -2,9 +2,9 @@ const express = require("express");
 const { registrationSchema } = require("./authValidation");
 const router = express.Router();
 
-const User = require('../Users/userModel');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const User = require("../users/userModel");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const path = require("path");
 const crypto = require("crypto");
 
@@ -110,7 +110,6 @@ router.post("/login", async (req, res) => {
 
     user.isOnline = true;
     await user.save();
-
 
     if (!isMatch) {
       return res.status(401).json({ message: "Password is incorrect." });
@@ -275,8 +274,9 @@ router.put("/update-location/:idNumber", async (req, res) => {
   const { latitude, longitude } = req.body;
 
   if (latitude == null || longitude == null) {
-    return res.status(400).json({ message: "Latitude and longitude are required." });
-
+    return res
+      .status(400)
+      .json({ message: "Latitude and longitude are required." });
   }
 
   try {
@@ -291,7 +291,8 @@ router.put("/update-location/:idNumber", async (req, res) => {
       { new: true }
     );
 
-    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+    if (!updatedUser)
+      return res.status(404).json({ message: "User not found" });
 
     res.json(updatedUser);
   } catch (err) {
