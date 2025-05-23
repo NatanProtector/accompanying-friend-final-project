@@ -111,6 +111,8 @@ export const ReportEmergency = async (selectedOption) => {
     option1: "Vehicle Theft Attempt",
     option2: "Shooting",
     option3: "Molotov",
+    option4: "Roadblock",
+    option5: "Stone Throwing",
   };
 
   // Get real GPS location
