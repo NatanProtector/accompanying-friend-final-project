@@ -24,7 +24,7 @@ export default function NotificationWrapper({ children }) {
       const stored = await AsyncStorage.getItem("userData");
       if (!stored) return;
       const { _id } = JSON.parse(stored);
-
+        
       const res = await fetch(`${SERVER_URL}/api/auth/notifications/unread/${_id}`);
       const data = await res.json();
       setUnreadCount(data.unreadCount);
@@ -41,12 +41,13 @@ export default function NotificationWrapper({ children }) {
   
       const stored = await AsyncStorage.getItem("userData");
       if (stored) {
-        const { _id, multiRole } = JSON.parse(stored);
+        const { _id, multiRole, idNumber } = JSON.parse(stored);
         console.log("[SOCKET] Registering user", _id, "with role", multiRole);
   
         newSocket.emit("register", {
           role: multiRole.includes("security") ? "security" : "citizen",
           userId: _id,
+          idNumber: idNumber,
           location: { type: "Point", coordinates: [0, 0] },
         });
       }

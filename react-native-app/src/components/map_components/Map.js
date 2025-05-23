@@ -16,7 +16,7 @@ import { getDistance } from "geolib";
 import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
 import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
 import * as Location from "expo-location";
-import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
+import { GOOGLE_MAPS_API_KEY } from "@env";
 import DriverDirections from "../general_components/DriverDirections";
 
 const MapScreen = ({
@@ -40,7 +40,7 @@ const MapScreen = ({
   handleRemoveMarker,
   followUser,
   userHeading,
-  onMapReady
+  onMapReady,
 }) => {
   const mapRef = useRef(null);
 
@@ -64,11 +64,9 @@ const MapScreen = ({
       };
 
       setRegion(newRegion);
-
     };
 
     getLocationPermission();
-
   }, []);
 
   useEffect(() => {

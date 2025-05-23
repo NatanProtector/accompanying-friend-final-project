@@ -74,7 +74,7 @@ const MapScreen = () => {
   useEffect(() => {
     try {
       socket.on("user_list_update", (userList) => {
-        console.log();
+        console.log(userList);
         
         setUserLocations(userList);
       });

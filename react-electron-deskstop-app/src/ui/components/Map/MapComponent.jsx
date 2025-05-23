@@ -28,31 +28,33 @@ const MapComponent = ({
       {/* Users now have red circle markers */}
       {userLocations &&
         userLocations.length > 0 &&
-        userLocations.map((user, index) => (
-          <Marker
-            key={`user-${index}`}
-            position={{
-              lat: user.location.latitude,
-              lng: user.location.longitude,
-            }}
-            title={`User: ${user.id}`}
-            icon={{
-              path: window.google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: user.role === "citizen" ? "green" : "blue",
-              fillOpacity: 1,
-              strokeWeight: 2,
-              strokeColor: "white",
-            }}
-          />
-        ))}
+        userLocations.map((user, index) => {
+          // Check if location data exists
+          if (user.location?.latitude && user.location?.longitude) {
+            return (
+              <Marker
+                key={`user-${index}`}
+                position={{
+                  lat: user.location.latitude,
+                  lng: user.location.longitude,
+                }}
+                title={`User: ${user.id}`}
+                icon={{
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  scale: 8,
+                  fillColor: user.role === "citizen" ? "green" : "blue",
+                  fillOpacity: 1,
+                  strokeWeight: 2,
+                  strokeColor: "white",
+                }}
+              />
+            );
+          }
+        })}
 
       {/* Clicked position now has a normal default marker */}
       {clickedPosition && (
-        <Marker
-          position={clickedPosition}
-          title={"Clicked Location"}
-        />
+        <Marker position={clickedPosition} title={"Clicked Location"} />
       )}
     </Map>
   );
