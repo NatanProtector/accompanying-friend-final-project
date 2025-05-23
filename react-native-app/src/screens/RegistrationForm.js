@@ -20,6 +20,8 @@ import * as Yup from "yup";
 import { SubmitRegisterForm } from "../utils/Communication";
 import { sendVerificationEmail } from "../utils/emailJS";
 import LoadModalController from "../utils/LoadModalController";
+import * as FileSystem from "expo-file-system";
+
 
 export default function RegistrationForm({ route, navigation }) {
   const { language } = useContext(MyLanguageContext);
@@ -84,30 +86,44 @@ export default function RegistrationForm({ route, navigation }) {
   });
 
   // Image picker logic
-  const pickImage = async (setPhoto) => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert(
-        "Permission required",
-        "Permission to access media library is required!"
-      );
+const pickImage = async (setPhoto, setFieldValue, fieldName) => {
+  const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  if (!permissionResult.granted) {
+    Alert.alert("Permission required", "Permission to access media library is required!");
+    return;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+
+  if (result && !result.canceled && result.assets.length > 0) {
+    const asset = result.assets[0];
+
+    // 🔍 Check file size (in bytes), limit is 2MB = 2 * 1024 * 1024
+    const fileInfo = await FileSystem.getInfoAsync(asset.uri);
+    if (fileInfo.size > 2 * 1024 * 1024) {
+      Alert.alert("File too large", "Please choose an image under 2MB.");
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+    const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+      encoding: FileSystem.EncodingType.Base64,
     });
 
-    if (result && !result.canceled && result.assets.length > 0) {
-      setPhoto(result.assets[0].uri);
-    } else {
-      console.log("No image selected");
-    }
-  };
+    const base64Uri = `data:image/jpeg;base64,${base64}`;
+
+    setPhoto(base64Uri); // update state for preview
+    setFieldValue(fieldName, base64Uri); // update Formik field
+  } else {
+    console.log("No image selected");
+  }
+};
+
 
   const handleFormSubmit = async (values) => {
     startLoad();
@@ -260,12 +276,10 @@ export default function RegistrationForm({ route, navigation }) {
 
             <TouchableOpacity
               style={styles.uploadButton}
-              onPress={async () => {
-                await pickImage((uri) => {
-                  setIdPhoto(uri);
-                  setFieldValue("idPhoto", uri);
-                });
-              }}
+onPress={async () => {
+  await pickImage(setIdPhoto, setFieldValue, "idPhoto");
+}}
+
             >
               <Text style={styles.uploadButtonText}>
                 {idPhoto
