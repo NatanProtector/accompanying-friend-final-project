@@ -106,10 +106,10 @@ export default function RegistrationForm({ route, navigation }) {
 
       // 🔍 Check file size (in bytes), limit is 2MB = 2 * 1024 * 1024
       const fileInfo = await FileSystem.getInfoAsync(asset.uri);
-      if (fileInfo.size > 2 * 1024 * 1024) {
-        Alert.alert("File too large", "Please choose an image under 2MB.");
-        return;
-      }
+      // if (fileInfo.size > 2 * 1024 * 1024) {
+      //   Alert.alert("File too large", "Please choose an image under 2MB.");
+      //   return;
+      // }
 
       const base64 = await FileSystem.readAsStringAsync(asset.uri, {
         encoding: FileSystem.EncodingType.Base64,
