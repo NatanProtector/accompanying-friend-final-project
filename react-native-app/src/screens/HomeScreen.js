@@ -141,11 +141,11 @@ export default function HomeScreen({ navigation }) {
 
         <NavButton title={HomeText[language].login} onPress={handleLogin} />
 
-        <Button
+        {/* <Button
           title="Test API Routes"
           onPress={() => navigation.navigate("TestRoutes")}
           color="gold" // or "yellow"
-        />
+        /> */}
 
         <View
           style={[
