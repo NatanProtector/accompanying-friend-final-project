@@ -86,7 +86,7 @@ export default function App() {
   return (
     <MyLanguageContext.Provider value={{ language }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="ReCaptcha">
+        <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="ReCaptcha"
             component={wrapScreenLanguageButton(ReCaptcha)}

@@ -7,6 +7,7 @@ const router = express.Router();
 
 // GET /recaptcha/recaptcha-render - Renders the reCAPTCHA HTML page
 router.get("/recaptcha-render", (req, res) => {
+  console.log("🔵 Recaptcha render route activated");
   const siteKey = process.env.RECAPTCHA_SITE_KEY;
   if (!siteKey) {
     console.error("RECAPTCHA_SITE_KEY not found in environment variables.");
@@ -55,6 +56,7 @@ router.post("/verify-recaptcha", async (req, res) => {
   const { token } = req.body;
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
 
+  console.log("🔵 Verify recaptcha route activated");
   if (!token) {
     return res
       .status(400)

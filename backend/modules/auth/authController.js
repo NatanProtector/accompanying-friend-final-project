@@ -9,7 +9,7 @@ const path = require("path");
 const crypto = require("crypto");
 
 router.post("/register", async (req, res) => {
-  console.log("Incoming Request Body:", req.body);
+  console.log("🔵 Register route activated");
   const {
     firstName,
     lastName,
@@ -59,6 +59,7 @@ router.post("/register", async (req, res) => {
 
 // Update user registration status
 router.put("/update-status", async (req, res) => {
+  console.log("🔵 Update status route activated");
   const { idNumbers, newStatus } = req.body;
 
   if (
@@ -97,6 +98,7 @@ router.put("/update-status", async (req, res) => {
 
 // Login Route
 router.post("/login", async (req, res) => {
+  console.log("🔵 Login route activated");
   const { idNumber, password } = req.body;
 
   try {
@@ -156,6 +158,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", async (req, res) => {
+  console.log("🔵 Logout route activated");
   const { idNumber } = req.body;
 
   try {
@@ -178,6 +181,7 @@ router.post("/logout", async (req, res) => {
 
 // Get all users with registrationStatus 'pending'
 router.get("/pending-users", async (req, res) => {
+  console.log("🔵 Pending users route activated");
   try {
     const pendingUsers = await User.find({
       registrationStatus: "pending",
@@ -192,6 +196,7 @@ router.get("/pending-users", async (req, res) => {
 
 // Get approved users
 router.get("/approved-users", async (req, res) => {
+  console.log("🔵 Approved users route activated");
   try {
     const users = await User.find({ registrationStatus: "approved" });
     res.status(200).json(users);
@@ -203,6 +208,7 @@ router.get("/approved-users", async (req, res) => {
 
 // Get denied users
 router.get("/denied-users", async (req, res) => {
+  console.log("🔵 Denied users route activated");
   try {
     const users = await User.find({ registrationStatus: "denied" });
     res.status(200).json(users);
@@ -214,6 +220,7 @@ router.get("/denied-users", async (req, res) => {
 
 // Fetch user by email to get idNumber and _id
 router.get("/get-user/:email", async (req, res) => {
+  console.log("🔵 Get user by email route activated");
   const { email } = req.params;
 
   try {
@@ -230,6 +237,7 @@ router.get("/get-user/:email", async (req, res) => {
 
 // Fetch user by _id (MongoDB ObjectId)
 router.get("/get-user-by-id/:userId", async (req, res) => {
+  console.log("🔵 Get user by ID route activated");
   const { userId } = req.params;
 
   try {
@@ -246,6 +254,7 @@ router.get("/get-user-by-id/:userId", async (req, res) => {
 
 // Fetch user by idNumber
 router.get("/get-user-by-idNumber/:idNumber", async (req, res) => {
+  console.log("🔵 Get user by ID number route activated");
   const { idNumber } = req.params;
 
   try {
@@ -262,6 +271,7 @@ router.get("/get-user-by-idNumber/:idNumber", async (req, res) => {
 
 // Healthcheck route to check if the server is running
 router.get("/healthcheck", async (req, res) => {
+  console.log("🔵 Healthcheck route activated");
   try {
     res.json({ message: "Server is running" });
   } catch (error) {
@@ -271,6 +281,7 @@ router.get("/healthcheck", async (req, res) => {
 
 // Update user location using idNumber
 router.put("/update-location/:idNumber", async (req, res) => {
+  console.log("🔵 Update location route activated");
   const { latitude, longitude } = req.body;
 
   if (latitude == null || longitude == null) {
@@ -302,6 +313,7 @@ router.put("/update-location/:idNumber", async (req, res) => {
 });
 
 router.get("/users", async (req, res) => {
+  console.log("🔵 Get all users route activated");
   try {
     const users = await User.find({});
     res.status(200).json(users);
@@ -312,6 +324,7 @@ router.get("/users", async (req, res) => {
 });
 
 router.get("/verify/:verificationToken", async (req, res) => {
+  console.log("🔵 Verify email route activated");
   const { verificationToken } = req.params;
 
   try {
@@ -338,6 +351,7 @@ const hour = 3600000; // 1 hour in milliseconds
 
 // Account Recovery Route
 router.post("/recover-account", async (req, res) => {
+  console.log("🔵 Recover account route activated");
   const { idNumber, phone, email } = req.body;
   console.log("Received request body:", req.body);
 
@@ -399,6 +413,7 @@ router.post("/recover-account", async (req, res) => {
 
 // GET route to serve the reset password page
 router.get("/reset-password/:resetToken", async (req, res) => {
+  console.log("🔵 Reset password page route activated");
   const { resetToken } = req.params;
 
   try {
@@ -423,6 +438,7 @@ router.get("/reset-password/:resetToken", async (req, res) => {
 
 // POST route to handle the password reset form submission
 router.post("/reset-password", async (req, res) => {
+  console.log("🔵 Reset password route activated");
   const { resetToken, newPassword } = req.body;
 
   if (!resetToken || !newPassword) {
