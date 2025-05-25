@@ -30,7 +30,7 @@ exports.updateEventStatus = async (req, res) => {
   const { eventId } = req.params;
   const { newStatus } = req.body;
 
-  if (!["pending", "ongoing", "finished"].includes(newStatus)) {
+  if (!["pending" , "ongoing", "finished"].includes(newStatus)) {
     return res.status(400).json({ message: "Invalid status value" });
   }
 

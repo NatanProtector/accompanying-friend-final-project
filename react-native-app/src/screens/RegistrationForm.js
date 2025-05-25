@@ -80,49 +80,49 @@ export default function RegistrationForm({ route, navigation }) {
     securityCertificatePhoto:
       registerAs === "security" || registerAs === "both"
         ? Yup.string().required(
-            validationMessages[language].requiredCertificate
-          )
+          validationMessages[language].requiredCertificate
+        )
         : Yup.string().nullable(),
   });
 
   // Image picker logic
-const pickImage = async (setPhoto, setFieldValue, fieldName) => {
-  const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const pickImage = async (setPhoto, setFieldValue, fieldName) => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  if (!permissionResult.granted) {
-    Alert.alert("Permission required", "Permission to access media library is required!");
-    return;
-  }
-
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [4, 3],
-    quality: 1,
-  });
-
-  if (result && !result.canceled && result.assets.length > 0) {
-    const asset = result.assets[0];
-
-    // 🔍 Check file size (in bytes), limit is 2MB = 2 * 1024 * 1024
-    const fileInfo = await FileSystem.getInfoAsync(asset.uri);
-    if (fileInfo.size > 2 * 1024 * 1024) {
-      Alert.alert("File too large", "Please choose an image under 2MB.");
+    if (!permissionResult.granted) {
+      Alert.alert("Permission required", "Permission to access media library is required!");
       return;
     }
 
-    const base64 = await FileSystem.readAsStringAsync(asset.uri, {
-      encoding: FileSystem.EncodingType.Base64,
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
     });
 
-    const base64Uri = `data:image/jpeg;base64,${base64}`;
+    if (result && !result.canceled && result.assets.length > 0) {
+      const asset = result.assets[0];
 
-    setPhoto(base64Uri); // update state for preview
-    setFieldValue(fieldName, base64Uri); // update Formik field
-  } else {
-    console.log("No image selected");
-  }
-};
+      // 🔍 Check file size (in bytes), limit is 2MB = 2 * 1024 * 1024
+      const fileInfo = await FileSystem.getInfoAsync(asset.uri);
+      // if (fileInfo.size > 2 * 1024 * 1024) {
+      //   Alert.alert("File too large", "Please choose an image under 2MB.");
+      //   return;
+      // }
+
+      const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const base64Uri = `data:image/jpeg;base64,${base64}`;
+
+      setPhoto(base64Uri); // update state for preview
+      setFieldValue(fieldName, base64Uri); // update Formik field
+    } else {
+      console.log("No image selected");
+    }
+  };
 
 
   const handleFormSubmit = async (values) => {
@@ -144,7 +144,7 @@ const pickImage = async (setPhoto, setFieldValue, fieldName) => {
 
           await sendVerificationEmail(values.email, values.fullName, token);
         } catch (error) {
-          console.log("Error sending verification email:",`Status: ${error.status}` ,`${error.text}`);
+          console.log("Error sending verification email:", `Status: ${error.status}`, `${error.text}`);
         }
       }
 
@@ -180,11 +180,11 @@ const pickImage = async (setPhoto, setFieldValue, fieldName) => {
       <LoadModal />
       <Formik
         initialValues={{
-          fullName: "test testy",
-          idNumber: "123456789",
-          phone: "0501234567",
-          email: "natanprotector50@gmail.com",
-          password: "Password!234",
+          fullName: "משה כהן",
+          idNumber: "222333444",
+          phone: "0504563217",
+          email: "chop4p4@gmail.com",
+          password: "Qwerty1!",
           idPhoto: "",
           securityCertificatePhoto: "",
           // fullName: '',
@@ -276,9 +276,9 @@ const pickImage = async (setPhoto, setFieldValue, fieldName) => {
 
             <TouchableOpacity
               style={styles.uploadButton}
-onPress={async () => {
-  await pickImage(setIdPhoto, setFieldValue, "idPhoto");
-}}
+              onPress={async () => {
+                await pickImage(setIdPhoto, setFieldValue, "idPhoto");
+              }}
 
             >
               <Text style={styles.uploadButtonText}>
