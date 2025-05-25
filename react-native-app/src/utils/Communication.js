@@ -47,6 +47,9 @@ export const SubmitRegisterForm = (formData) => {
     securityCertificatePhoto: formData.securityCertificatePhoto || null,
   };
 
+  // console.log("Form Data:", formData);
+  console.log("SERVER_URL:", SERVER_URL);
+
   return new Promise(async (resolve, reject) => {
     try {
       const response = await fetch(`${SERVER_URL}/api/auth/register`, {

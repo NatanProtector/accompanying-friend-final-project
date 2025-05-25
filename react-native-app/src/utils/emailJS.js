@@ -2,8 +2,12 @@ import { send, EmailJSResponseStatus } from '@emailjs/react-native';
 
 import { SERVER_URL, EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_VERIFICATION_TEMPLATE_ID , EMAILJS_PASSWORD_RESET_TEMPLATE_ID} from "@env";
 
+const turnedOffEmails = true;
+
 export const sendVerificationEmail = async (destination_email, name, verificationToken) => {
     
+    console.log("SERVER_URL for email verification:", SERVER_URL);
+
     const verificationLink = `${SERVER_URL}/api/auth/verify/${verificationToken}`;
 
     console.log("verificationLink", verificationLink);
@@ -14,6 +18,10 @@ export const sendVerificationEmail = async (destination_email, name, verificatio
         verification_link: verificationLink,
     }
 
+    if (turnedOffEmails) {
+        console.log("Email sending turned off temporarily to prevent abuse, verify manually");
+        return;
+    }
     await send(
         EMAILJS_SERVICE_ID,
         EMAILJS_VERIFICATION_TEMPLATE_ID,
@@ -42,6 +50,11 @@ export const sendPasswordResetEmail = async (destination_email, name, verificati
         reset_link: reset_link,
     }
 
+
+    if (turnedOffEmails) {
+        console.log("Email sending turned off temporarily to prevent abuse, verify manually");
+        return;
+    }
     await send(
         EMAILJS_SERVICE_ID,
         EMAILJS_PASSWORD_RESET_TEMPLATE_ID,
