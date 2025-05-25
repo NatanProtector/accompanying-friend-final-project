@@ -180,11 +180,11 @@ export default function RegistrationForm({ route, navigation }) {
       <LoadModal />
       <Formik
         initialValues={{
-          fullName: "משה כהן",
-          idNumber: "222333444",
-          phone: "0504563217",
-          email: "chop4p4@gmail.com",
-          password: "Qwerty1!",
+          fullName: "",
+          idNumber: "",
+          phone: "",
+          email: "",
+          password: "",
           idPhoto: "",
           securityCertificatePhoto: "",
           // fullName: '',

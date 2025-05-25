@@ -33,12 +33,13 @@ export default function ReCaptcha({ navigation }) {
   };
 
   const recaptchaUrl = `${SERVER_URL}/api/recaptcha/recaptcha-render`;
+  console.log("🔵 Recaptcha URL:", recaptchaUrl);
 
   return (
     <BasicScreen title={ReCaptchaText[language].title} language={language}>
       <View style={styles.screen}>
         {/* <View style={styles.promptContainer}> */}
-          <Text style={styles.prompt}>{ReCaptchaText[language].prompt}</Text>
+        <Text style={styles.prompt}>{ReCaptchaText[language].prompt}</Text>
         {/* </View> */}
         <View style={styles.webViewContainer}>
           <WebView
