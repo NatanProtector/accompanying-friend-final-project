@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Button,
@@ -15,8 +15,9 @@ import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
 import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
 import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
+import eventMarker from "../../../assets/markers/warning-svgrepo-com.png";
 import * as Location from "expo-location";
-import { GOOGLE_MAPS_API_KEY } from "@env";
+import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 import DriverDirections from "../general_components/DriverDirections";
 
 const MapScreen = ({
@@ -43,9 +44,7 @@ const MapScreen = ({
   onMapReady,
 }) => {
   const mapRef = useRef(null);
-
-  // if (GOOGLE_MAPS_API_KEY == "")
-  //   throw new Error ("Missing Google Maps API key");
+  const [nearbyEvents, setNearbyEvents] = useState([]);
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -64,6 +63,7 @@ const MapScreen = ({
       };
 
       setRegion(newRegion);
+      fetchNearbyEvents(newRegion.latitude, newRegion.longitude);
     };
 
     getLocationPermission();
@@ -78,7 +78,7 @@ const MapScreen = ({
         timeInterval: 1000,
         distanceInterval: 3,
         enableHighAccuracy: true,
-        heading: true, // Enable heading tracking
+        heading: true,
       },
       (location) => {
         const { latitude, longitude, heading } = location.coords;
@@ -111,27 +111,15 @@ const MapScreen = ({
     }
   }, [followUser]);
 
-  // const updateUserLocation = async (latitude, longitude) => {
-  //   try {
-  //     const response = await axios.put(
-  //       `${SERVER_URL}/api/auth/update-location/${idNumber}`,
-  //       { latitude, longitude }
-  //     );
-  //     console.log("Location updated:", response.data);
-  //   } catch (error) {
-  //     console.error("Error updating location:", error);
-  //   }
-  // };
-
-  const getAddressFromCoords = async (lat, lng) => {
+  const fetchNearbyEvents = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({
-        latitude: lat,
-        longitude: lng,
-      });
-      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
-    } catch (error) {
-      return "Unknown location";
+      const res = await fetch(
+        `${SERVER_URL}/api/events/nearby?lat=${lat}&lng=${lng}`
+      );
+      const data = await res.json();
+      setNearbyEvents(data);
+    } catch (err) {
+      console.error("Failed to fetch nearby events", err);
     }
   };
 
@@ -175,8 +163,8 @@ const MapScreen = ({
                 longitude: coordinate.longitude,
               };
               setRegion(newRegion);
+              fetchNearbyEvents(coordinate.latitude, coordinate.longitude);
 
-              // Animate camera to new location with heading
               if (mapRef.current) {
                 mapRef.current.animateCamera({
                   center: {
@@ -199,39 +187,10 @@ const MapScreen = ({
               apikey={GOOGLE_MAPS_API_KEY}
               strokeWidth={4}
               strokeColor="blue"
-              language="en"
-              mode="DRIVING"
-              region="il"
-              units="metric"
               onReady={(result) => {
                 const steps = result.legs[0].steps;
                 setRouteSteps(steps);
                 setCurrentStepIndex(0);
-              }}
-              optimizeWaypoints={true}
-              resetOnChange={false}
-              precision="high"
-              waypoints={[]}
-              splitWaypoints={false}
-              timePrecision="now"
-              directionsServiceBaseUrl="https://maps.googleapis.com/maps/api/directions/json"
-              directionsServiceOptions={{
-                alternatives: false,
-                avoid: [],
-                language: "en",
-                region: "il",
-                units: "metric",
-                mode: "driving",
-                traffic_model: "best_guess",
-                departure_time: "now",
-                arrival_time: null,
-                waypoints: [],
-                optimize: false,
-                avoid_ferries: false,
-                avoid_highways: false,
-                avoid_tolls: false,
-                transit_mode: [],
-                transit_routing_preference: null,
               }}
             />
           )}
@@ -254,6 +213,20 @@ const MapScreen = ({
               }}
             />
           ))}
+
+          {nearbyEvents.map((event) => (
+            <Marker
+              key={`event-${event._id}`}
+              coordinate={{
+                latitude: event.location.coordinates[1],
+                longitude: event.location.coordinates[0],
+              }}
+              image={eventMarker} // 👈 this makes it a custom icon
+              title={`Event: ${event.eventType}`}
+              description={`Status: ${event.status}`}
+            />
+          ))}
+
         </MapView>
       ) : (
         <ActivityIndicator size="large" color="teal" />
@@ -325,40 +298,6 @@ const MapScreen = ({
 const styles = StyleSheet.create({
   container: { flex: 1, width: "100%", height: 630 },
   map: { flex: 1, width: "100%", height: "100%" },
-  searchToggleContainer: {
-    position: "absolute",
-    top: 60,
-    right: 10,
-    zIndex: 1000,
-    backgroundColor: "white",
-    padding: 8,
-    borderRadius: 50,
-    elevation: 4,
-  },
-  magnifyIcon: { fontSize: 22 },
-  inputContainer: {
-    position: "absolute",
-    top: 120,
-    left: 0,
-    right: 10,
-    flexDirection: "row",
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    elevation: 5,
-    zIndex: 999,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginRight: 10,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-
   actionBar: {
     position: "absolute",
     bottom: 10,
