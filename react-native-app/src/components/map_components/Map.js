@@ -10,12 +10,13 @@ import {
   Linking,
   Modal,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Polygon } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
 import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
 import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
 import eventMarker from "../../../assets/markers/warning-svgrepo-com.png";
+import { abcZones } from '../../../assets/A_B Zones';
 import * as Location from "expo-location";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 import DriverDirections from "../general_components/DriverDirections";
@@ -45,6 +46,8 @@ const MapScreen = ({
 }) => {
   const mapRef = useRef(null);
   const [nearbyEvents, setNearbyEvents] = useState([]);
+  const [nearbyZones, setNearbyZones] = useState([]);
+
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -123,6 +126,30 @@ const MapScreen = ({
     }
   };
 
+  const filterNearbyZones = (lat, lng) => {
+    const filtered = abcZones.filter((zone) => {
+      if (!zone.coordinates || zone.coordinates.length === 0) return false;
+
+      const center = zone.coordinates[Math.floor(zone.coordinates.length / 2)];
+      const dist = getDistance(
+        { latitude: lat, longitude: lng },
+        { latitude: center.latitude, longitude: center.longitude }
+      );
+      return dist <= 10000; // 10 km
+    });
+
+    setNearbyZones(filtered);
+  };
+
+
+
+  const getZoneColor = (type) => {
+    return type === 'A'
+      ? 'rgba(255, 0, 0, 0.3)'    // red
+      : 'rgba(0, 0, 255, 0.3)';   // Yellow
+  };
+
+
   return (
     <View style={styles.container}>
       {showDirections && routeSteps.length > 0 && (
@@ -155,143 +182,156 @@ const MapScreen = ({
           userLocationUpdateInterval={1000}
           onMapReady={onMapReady}
           onUserLocationChange={(event) => {
-            if (followUser) {
-              const { coordinate } = event.nativeEvent;
-              const newRegion = {
-                ...region,
-                latitude: coordinate.latitude,
-                longitude: coordinate.longitude,
-              };
-              setRegion(newRegion);
-              fetchNearbyEvents(coordinate.latitude, coordinate.longitude);
+            const { coordinate } = event.nativeEvent;
 
-              if (mapRef.current) {
-                mapRef.current.animateCamera({
-                  center: {
-                    latitude: coordinate.latitude,
-                    longitude: coordinate.longitude,
-                  },
-                  heading: userHeading || 0,
-                  pitch: followUser ? 45 : 0,
-                  zoom: 17,
-                  duration: 1000,
-                });
-              }
+            const newRegion = {
+              ...region,
+              latitude: coordinate.latitude,
+              longitude: coordinate.longitude,
+            };
+
+            setRegion(newRegion);
+            fetchNearbyEvents(coordinate.latitude, coordinate.longitude);
+            filterNearbyZones(coordinate.latitude, coordinate.longitude);
+
+            if (followUser && mapRef.current) {
+              mapRef.current.animateCamera({
+                center: {
+                  latitude: coordinate.latitude,
+                  longitude: coordinate.longitude,
+                },
+                heading: userHeading || 0,
+                pitch: 45,
+                zoom: 17,
+                duration: 1000,
+              });
             }
           }}
+
         >
-          {destination && (
-            <MapViewDirections
-              origin={region}
-              destination={destination}
-              apikey={GOOGLE_MAPS_API_KEY}
-              strokeWidth={4}
-              strokeColor="blue"
-              onReady={(result) => {
-                const steps = result.legs[0].steps;
-                setRouteSteps(steps);
-                setCurrentStepIndex(0);
-              }}
-            />
-          )}
-
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              coordinate={{
-                latitude: marker.latitude,
-                longitude: marker.longitude,
-              }}
-              image={selectedMarkerId === marker.id ? greenMarker : redMarker}
-              tracksViewChanges={false}
-              ref={(ref) => {
-                if (ref) markerRefs.current[marker.id] = ref;
-              }}
-              onPress={() => {
-                setSelectedMarker(marker);
-                setSelectedMarkerId(marker.id);
-              }}
-            />
-          ))}
-
-          {nearbyEvents.map((event) => (
-            <Marker
-              key={`event-${event._id}`}
-              coordinate={{
-                latitude: event.location.coordinates[1],
-                longitude: event.location.coordinates[0],
-              }}
-              image={eventMarker} // 👈 this makes it a custom icon
-              title={`Event: ${event.eventType}`}
-              description={`Status: ${event.status}`}
-            />
-          ))}
-
-        </MapView>
-      ) : (
-        <ActivityIndicator size="large" color="teal" />
+      {destination && (
+        <MapViewDirections
+          origin={region}
+          destination={destination}
+          apikey={GOOGLE_MAPS_API_KEY}
+          strokeWidth={4}
+          strokeColor="blue"
+          onReady={(result) => {
+            const steps = result.legs[0].steps;
+            setRouteSteps(steps);
+            setCurrentStepIndex(0);
+          }}
+        />
       )}
 
-      {selectedMarker && (
-        <View style={styles.actionBar}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => {
-              const { latitude, longitude } = selectedMarker;
-              Linking.openURL(`google.navigation:q=${latitude},${longitude}`);
-            }}
-          >
-            <Text style={styles.actionText}>🧭</Text>
-          </TouchableOpacity>
+      {markers.map((marker) => (
+        <Marker
+          key={marker.id}
+          coordinate={{
+            latitude: marker.latitude,
+            longitude: marker.longitude,
+          }}
+          image={selectedMarkerId === marker.id ? greenMarker : redMarker}
+          tracksViewChanges={false}
+          ref={(ref) => {
+            if (ref) markerRefs.current[marker.id] = ref;
+          }}
+          onPress={() => {
+            setSelectedMarker(marker);
+            setSelectedMarkerId(marker.id);
+          }}
+        />
+      ))}
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => {
-              const { latitude, longitude } = selectedMarker;
-              Linking.openURL(
-                `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
-              );
-            }}
-          >
-            <Text style={styles.actionText}>📍</Text>
-          </TouchableOpacity>
+      {nearbyEvents.map((event) => (
+        <Marker
+          key={`event-${event._id}`}
+          coordinate={{
+            latitude: event.location.coordinates[1],
+            longitude: event.location.coordinates[0],
+          }}
+          image={eventMarker} // 👈 this makes it a custom icon
+          title={`Event: ${event.eventType}`}
+          description={`Status: ${event.status}`}
+        />
+      ))}
+      {nearbyZones.map((zone, index) => (
+        <Polygon
+          key={`zone-${index}`}
+          coordinates={zone.coordinates}
+          strokeColor="rgba(255,0,0,0.8)"
+          fillColor="rgba(255,0,0,0.2)"
+          strokeWidth={2}
+        />
+      ))}
+    </MapView>
+  ) : (
+    <ActivityIndicator size="large" color="teal" />
+  )
+}
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => handleRemoveMarker(selectedMarker.id)}
-          >
-            <Text style={styles.actionText}>🗑️</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => setShowInfoModal(true)}
-          >
-            <Text style={styles.actionText}>ℹ️</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      <Modal
-        visible={showInfoModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowInfoModal(false)}
+{
+  selectedMarker && (
+    <View style={styles.actionBar}>
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => {
+          const { latitude, longitude } = selectedMarker;
+          Linking.openURL(`google.navigation:q=${latitude},${longitude}`);
+        }}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {selectedMarker?.name || "Marker Info"}
-            </Text>
-            <Text>Description: {selectedMarker?.description || "N/A"}</Text>
-            <Text>Address: {selectedMarker?.address || "Unknown"}</Text>
-            <Text>Lat: {selectedMarker?.latitude.toFixed(6)}</Text>
-            <Text>Lng: {selectedMarker?.longitude.toFixed(6)}</Text>
-            <Button title="Close" onPress={() => setShowInfoModal(false)} />
-          </View>
-        </View>
-      </Modal>
+        <Text style={styles.actionText}>🧭</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => {
+          const { latitude, longitude } = selectedMarker;
+          Linking.openURL(
+            `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+          );
+        }}
+      >
+        <Text style={styles.actionText}>📍</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => handleRemoveMarker(selectedMarker.id)}
+      >
+        <Text style={styles.actionText}>🗑️</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => setShowInfoModal(true)}
+      >
+        <Text style={styles.actionText}>ℹ️</Text>
+      </TouchableOpacity>
     </View>
+  )
+}
+
+<Modal
+  visible={showInfoModal}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={() => setShowInfoModal(false)}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>
+        {selectedMarker?.name || "Marker Info"}
+      </Text>
+      <Text>Description: {selectedMarker?.description || "N/A"}</Text>
+      <Text>Address: {selectedMarker?.address || "Unknown"}</Text>
+      <Text>Lat: {selectedMarker?.latitude.toFixed(6)}</Text>
+      <Text>Lng: {selectedMarker?.longitude.toFixed(6)}</Text>
+      <Button title="Close" onPress={() => setShowInfoModal(false)} />
+    </View>
+  </View>
+</Modal>
+    </View >
   );
 };
 
