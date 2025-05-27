@@ -89,10 +89,21 @@ const MapScreen = () => {
     }
   }, []);
 
+  const fetchEvents = async () => {
+    const response = await fetch(`${serverUrl}/api/events`);
+    const data = await response.json();
+    setEvents(data);
+  };
+
   useEffect(() => {
     try {
       socket.on("user_list_update", (userList) => {
         setUserLocations(userList);
+      });
+
+      // Listen for new event notifications
+      socket.on("new_event_reported", async () => {
+        fetchEvents();
       });
     } catch (error) {
       console.error("Socket connection error:", error);
@@ -100,19 +111,19 @@ const MapScreen = () => {
 
     return () => {
       socket.off("user_list_update");
+      socket.off("new_event_reported");
     };
   }, []);
 
   useEffect(() => {
     // Get all events
-    const fetchEvents = async () => {
-      const response = await fetch(`${serverUrl}/api/events`);
-      const data = await response.json();
-
-      console.log(data);
-      setEvents(data);
-    };
     fetchEvents();
+
+    // Set up periodic fetch every minute
+    const intervalId = setInterval(fetchEvents, 60000); // 60000ms = 1 minute
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
