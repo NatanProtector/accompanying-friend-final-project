@@ -130,7 +130,9 @@ export default function DriveScreen({
     setRouteSteps([]);
     setCurrentStepIndex(0);
     setDestination(null);
-    setMarkers([]); // ✅ Clear all markers
+      setMarkers((prev) =>
+    prev.filter((marker) => marker.id !== selectedMarker?.id)
+  );
     setShowDirections(false);
     setFollowUser(false);
   };
@@ -469,6 +471,7 @@ export default function DriveScreen({
           region={region}
           setRegion={setRegion}
           routeSteps={routeSteps}
+          setDestination={setDestination}
           setRouteSteps={setRouteSteps}
           currentStepIndex={currentStepIndex}
           setCurrentStepIndex={setCurrentStepIndex}
