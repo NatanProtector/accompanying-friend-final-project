@@ -135,7 +135,7 @@ const MapScreen = ({
         { latitude: lat, longitude: lng },
         { latitude: center.latitude, longitude: center.longitude }
       );
-      return dist <= 10000; // 10 km
+      return dist <= 1000000; // 10 km
     });
 
     setNearbyZones(filtered);
@@ -145,10 +145,9 @@ const MapScreen = ({
 
   const getZoneColor = (type) => {
     return type === 'A'
-      ? 'rgba(255, 0, 0, 0.3)'    // red
-      : 'rgba(0, 0, 255, 0.3)';   // Yellow
+      ? 'rgba(255, 0, 0, 0.78)'       // Red
+      : 'rgba(55, 0, 255, 0.88)';    // Yellow
   };
-
 
   return (
     <View style={styles.container}>
@@ -259,8 +258,8 @@ const MapScreen = ({
         <Polygon
           key={`zone-${index}`}
           coordinates={zone.coordinates}
-          strokeColor="rgba(255,0,0,0.8)"
-          fillColor="rgba(255,0,0,0.2)"
+          strokeColor= "black"
+          fillColor={getZoneColor(zone.zone)}
           strokeWidth={2}
         />
       ))}
