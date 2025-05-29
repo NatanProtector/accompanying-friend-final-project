@@ -264,10 +264,10 @@ const MAX_EVENT_AGE_HOURS = 8;
     let israelDate;
     try {
       israelDate = utcToZonedTime(utcDate, "Asia/Jerusalem");
-      console.log("✅ utcToZonedTime worked:", israelDate);
+      // console.log("✅ utcToZonedTime worked:", israelDate);
     } catch (err) {
-      console.error("❌ utcToZonedTime failed:", err);
-      console.log("↩️ Raw UTC Date:", utcDate);
+      // console.error("❌ utcToZonedTime failed:", err);
+      // console.log("↩️ Raw UTC Date:", utcDate);
       israelDate = utcDate;
     }
     // DEBUG END
