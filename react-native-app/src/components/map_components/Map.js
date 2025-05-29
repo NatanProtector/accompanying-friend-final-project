@@ -223,7 +223,13 @@ const MapScreen = ({
         />
       )}
 
-      {markers.map((marker) => (
+      
+      {markers
+  .filter(
+    (marker) =>
+      typeof marker.latitude === "number" &&
+      typeof marker.longitude === "number"
+  ).map((marker) => (
         <Marker
           key={marker.id}
           coordinate={{
@@ -296,7 +302,7 @@ const MapScreen = ({
 
       <TouchableOpacity
         style={styles.actionButton}
-        onPress={() => handleRemoveMarker(selectedMarker.id)}
+        onPress={() => handleRemoveMarker(selectedMarker?.id)}
       >
         <Text style={styles.actionText}>🗑️</Text>
       </TouchableOpacity>

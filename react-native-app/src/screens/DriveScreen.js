@@ -37,7 +37,7 @@ export default function DriveScreen({
 
   const socketRef = useRef(null);
   const markerRefs = useRef({});
-  const [marker, setMarker] = useState(null);
+  const [markers, setMarkers] = useState([]);
   const [destination, setDestination] = useState(null);
   const [region, setRegion] = useState(null);
   const [routeSteps, setRouteSteps] = useState([]);
@@ -62,37 +62,63 @@ export default function DriveScreen({
 
   const getAddressFromCoords = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({
-        latitude: lat,
-        longitude: lng,
-      });
-      return `${place.street || ""} ${place.name || ""}, ${place.city || ""}`;
+      const results = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+
+      if (!results || results.length === 0) throw new Error("No geocode result");
+
+      const place = results[0];
+
+      const city = place.city || place.region || "";
+      const name = place.name || "";
+      const street = place.street || "";
+
+      return `${name} ${street}, ${city}, Israel`.trim(); // 🇮🇱 Force country to "Israel"
     } catch (error) {
-      console.error("Error:", error);
-      return "Unknown location";
+      console.error("Reverse geocode failed:", error);
+      return "Unknown location in Israel";
     }
   };
 
+
+
+
   const handleMapPress = async (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
+
+    if (
+      typeof latitude !== "number" ||
+      typeof longitude !== "number" ||
+      isNaN(latitude) ||
+      isNaN(longitude)
+    ) {
+      console.warn("Invalid coordinates from map press");
+      return;
+    }
+
     const addr = await getAddressFromCoords(latitude, longitude);
+
     const newMarker = {
-      id: "1",
+      id: Date.now().toString(),
       latitude,
       longitude,
       address: addr,
       name: `(${latitude.toFixed(2)}, ${longitude.toFixed(2)})`,
-      description: "Your selected destination",
+      description: "Tapped location",
     };
-    setMarker(newMarker);
-    startDrive({ latitude, longitude });
+
+    setMarkers((prev) => [...prev, newMarker]);
+    setSelectedMarker(newMarker);
+    setSelectedMarkerId(newMarker.id);
+    // startDrive({ latitude, longitude }); // optional
   };
 
-  const handleRemoveMarker = () => {
-    setMarker(null);
+
+  const handleRemoveMarker = (idToRemove) => {
+    setMarkers((prev) => prev.filter((marker) => marker.id !== idToRemove));
+    setSelectedMarker(null);
+    setSelectedMarkerId(null);
     setRouteSteps([]);
     setCurrentStepIndex(0);
-    setSelectedMarker(null);
   };
 
   const startDrive = (destination) => {
@@ -104,7 +130,7 @@ export default function DriveScreen({
     setRouteSteps([]);
     setCurrentStepIndex(0);
     setDestination(null);
-    setMarker(null);
+    setMarkers([]); // ✅ Clear all markers
     setShowDirections(false);
     setFollowUser(false);
   };
@@ -127,7 +153,10 @@ export default function DriveScreen({
           address: result.address,
         };
         setModalVisible(false);
-        setMarker(newMarker);
+        setMarkers((prev) => [...prev, newMarker]);
+        setSelectedMarker(newMarker);
+        setSelectedMarkerId(newMarker.id);
+
         setSearchResults([]);
         setSearchText("");
         startDrive({ latitude: lat, longitude: lng });
@@ -366,12 +395,13 @@ export default function DriveScreen({
 
   // Update destination text when route steps change
   useEffect(() => {
-    if (routeSteps.length > 0 && marker) {
-      setDestinationText(marker.name);
-    } else {
+    if (routeSteps.length > 0 && selectedMarker) {
+      setDestinationText(selectedMarker.name);
+    }
+    else {
       setDestinationText("");
     }
-  }, [routeSteps, marker]);
+  }, [routeSteps, selectedMarker]);
 
   return (
     <BasicScreenTemplate
@@ -385,13 +415,12 @@ export default function DriveScreen({
                 </Text> */}
                 <Text style={styles.streetText}>
                   {routeSteps[currentStepIndex + 1]?.maneuver &&
-                  routeSteps[currentStepIndex]?.distance?.text
-                    ? `In ${
-                        routeSteps[currentStepIndex].distance.text
-                      }, ${routeSteps[currentStepIndex + 1].maneuver.replace(
-                        /-/g,
-                        " "
-                      )}`
+                    routeSteps[currentStepIndex]?.distance?.text
+                    ? `In ${routeSteps[currentStepIndex].distance.text
+                    }, ${routeSteps[currentStepIndex + 1].maneuver.replace(
+                      /-/g,
+                      " "
+                    )}`
                     : ""}
                 </Text>
                 <View style={styles.buttonsRow}>
@@ -434,8 +463,8 @@ export default function DriveScreen({
     >
       <View style={styles.container}>
         <Map
-          markers={marker ? [marker] : []}
-          setMarkers={(newMarkers) => setMarker(newMarkers[0] || null)}
+          markers={markers}
+          setMarkers={setMarkers}
           destination={destination}
           region={region}
           setRegion={setRegion}
