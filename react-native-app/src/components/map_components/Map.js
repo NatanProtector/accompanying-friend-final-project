@@ -153,6 +153,15 @@ const MapScreen = ({
       : 'rgba(55, 0, 255, 0.88)';    // Yellow
   };
 
+const getZoneExplanation = (type) => {
+  return type === "A"
+    ? "No Israeli civil or security jurisdiction."
+    : type === "B"
+    ? "No Israeli civil jurisdiction. Security responsibility remains with Israel."
+    : "Unknown zone type.";
+};
+
+
   return (
     <View style={styles.container}>
       {showDirections && routeSteps.length > 0 && (
@@ -290,6 +299,14 @@ const MapScreen = ({
               strokeColor="black"
               fillColor={getZoneColor(zone.zone)}
               strokeWidth={2}
+              tappable={true}
+              onPress={() => {
+                Alert.alert(
+                  `Zone ${zone.zone}`,
+                  getZoneExplanation(zone.zone),
+                  [{ text: "OK" }]
+                );
+              }}
             />
           ))}
 
