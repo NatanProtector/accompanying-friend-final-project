@@ -50,8 +50,8 @@ const MapScreen = ({
   const mapRef = useRef(null);
   const [nearbyEvents, setNearbyEvents] = useState([]);
   const [nearbyZones, setNearbyZones] = useState([]);
-const israelTimeZone = "Asia/Jerusalem";
-const MAX_EVENT_AGE_HOURS = 8;
+  const israelTimeZone = "Asia/Jerusalem";
+  const MAX_EVENT_AGE_HOURS = 8;
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -139,7 +139,7 @@ const MAX_EVENT_AGE_HOURS = 8;
         { latitude: lat, longitude: lng },
         { latitude: center.latitude, longitude: center.longitude }
       );
-      return dist <= 1000000; // 10 km
+      return dist <= 10000; // 10 km
     });
 
     setNearbyZones(filtered);
@@ -252,41 +252,46 @@ const MAX_EVENT_AGE_HOURS = 8;
               />
             ))}
 
-{nearbyEvents
-  .filter(event => {
-    const eventTime = new Date(event.timestamp);
-    return differenceInHours(new Date(), eventTime) <= 8;
-  })
-  .map((event) => {
-    const utcDate = new Date(event.timestamp);
+          {nearbyEvents
+            .filter(event => {
+              const eventTime = new Date(event.timestamp);
+              return differenceInHours(new Date(), eventTime) <= 8;
+            })
+            .map((event) => {
+              const utcDate = new Date(event.timestamp);
 
-    // DEBUG START
-    let israelDate;
-    try {
-      israelDate = utcToZonedTime(utcDate, "Asia/Jerusalem");
-      // console.log("✅ utcToZonedTime worked:", israelDate);
-    } catch (err) {
-      // console.error("❌ utcToZonedTime failed:", err);
-      // console.log("↩️ Raw UTC Date:", utcDate);
-      israelDate = utcDate;
-    }
-    // DEBUG END
+              let israelDate;
+              try {
+                israelDate = utcToZonedTime(utcDate, "Asia/Jerusalem");
+              } catch (err) {
+                israelDate = utcDate;
+              }
 
-    const formattedTime = format(israelDate, "dd/MM/yyyy HH:mm");
+              const formattedTime = format(israelDate, "dd/MM/yyyy HH:mm");
 
-    return (
-      <Marker
-        key={`event-${event._id}`}
-        coordinate={{
-          latitude: event.location.coordinates[1],
-          longitude: event.location.coordinates[0],
-        }}
-        image={eventMarker}
-        title={`Event: ${event.eventType}`}
-        description={`Reported at: ${formattedTime}`}
-      />
-    );
-  })}
+              return (
+                <Marker
+                  key={`event-${event._id}`}
+                  coordinate={{
+                    latitude: event.location.coordinates[1],
+                    longitude: event.location.coordinates[0],
+                  }}
+                  image={eventMarker}
+                  title={`Event: ${event.eventType}`}
+                  description={`Reported at: ${formattedTime}`}
+                />
+              );
+            })}
+
+          {nearbyZones.map((zone, index) => (
+            <Polygon
+              key={`zone-${index}`}
+              coordinates={zone.coordinates}
+              strokeColor="black"
+              fillColor={getZoneColor(zone.zone)}
+              strokeWidth={2}
+            />
+          ))}
 
         </MapView>
       ) : (
