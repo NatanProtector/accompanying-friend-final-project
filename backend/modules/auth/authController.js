@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const crypto = require("crypto");
 
+const Admin_limit = 2;
+
 router.post("/register", async (req, res) => {
   console.log("🔵 Register route activated");
   const {
@@ -93,6 +95,153 @@ router.put("/update-status", async (req, res) => {
   } catch (error) {
     console.error("Error updating user statuses:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Admin Register Route
+router.post("/admin-register", async (req, res) => {
+  console.log("🔵 Admin register route activated");
+  const { firstName, lastName, phone, password, idNumber, email, adminSecret } =
+    req.body;
+
+  const multiRole = ["admin"];
+  const fullName = `${firstName} ${lastName}`;
+
+  // Create validation object without computed fields
+  const validationBody = {
+    firstName,
+    lastName,
+    phone,
+    idNumber,
+    email,
+    password,
+    multiRole,
+  };
+
+  // Validate admin secret
+  if (adminSecret !== process.env.ADMIN_SECRET) {
+    return res.status(403).json({ error: "Invalid admin secret" });
+  }
+
+  // Check admin limit
+  try {
+    const currentAdminCount = await User.countDocuments({ isAdmin: true });
+    if (currentAdminCount >= Admin_limit) {
+      return res.status(403).json({
+        error: `Cannot create more than ${Admin_limit} admin accounts`,
+      });
+    }
+  } catch (err) {
+    console.error("Error checking admin count:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+
+  const { error } = registrationSchema.validate(validationBody);
+  if (error) {
+    console.log("Validation Error:", error.details);
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  try {
+    const newUser = new User({
+      firstName,
+      lastName,
+      fullName,
+      phone,
+      idNumber,
+      email,
+      password,
+      multiRole,
+      registrationStatus: "approved",
+      isAdmin: true,
+    });
+
+    await newUser.save();
+    res.status(201).json({
+      message: "Admin registration successful",
+      userId: newUser._id,
+      verificationToken: newUser.verificationToken,
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: "An error occurred while saving the admin user" });
+  }
+});
+
+// Admin Login Route
+router.post("/admin-login", async (req, res) => {
+  console.log("🔵 Admin login route activated");
+  const { idNumber, password, adminSecret } = req.body;
+
+  // Validate admin secret
+  if (adminSecret !== process.env.ADMIN_SECRET) {
+    return res.status(403).json({ message: "Invalid admin secret" });
+  }
+
+  try {
+    const user = await User.findOne({ idNumber });
+
+    if (!user) {
+      return res.status(401).json({ message: "ID number is incorrect." });
+    }
+
+    // Check if user is admin
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Admin privileges required." });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    user.isOnline = true;
+    await user.save();
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Password is incorrect." });
+    }
+
+    if (user.emailVerified === false) {
+      return res.status(403).json({ message: "Email not verified." });
+    }
+
+    if (user.registrationStatus !== "approved") {
+      return res
+        .status(403)
+        .json({ message: "Your registration is still pending approval." });
+    }
+
+    // ✅ Create the JWT token
+    const payload = {
+      _id: user._id,
+      idNumber: user.idNumber,
+      email: user.email,
+      multiRole: user.multiRole,
+      registrationStatus: user.registrationStatus,
+      isAdmin: user.isAdmin,
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      message: "Admin login successful",
+      token,
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        idNumber: user.idNumber,
+        multiRole: user.multiRole,
+        isAdmin: user.isAdmin,
+      },
+    });
+  } catch (error) {
+    console.error("Admin login error:", error);
+    res.status(500).json({ message: "Server error during admin login", error });
   }
 });
 
