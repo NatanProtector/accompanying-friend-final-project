@@ -39,18 +39,22 @@ const MapScreen = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const formData = {
-      type: eventType,
-      description: formDescription,
-    };
-    console.log(formData);
 
-    await ReportEmergency(eventType, clickedPosition);
+    try {
+      const result = await ReportEmergency(eventType, clickedPosition);
+      console.log("Event reported successfully:", result);
 
-    handleCloseModal();
+      // Show success feedback (you can replace this with a proper notification)
+      alert("Event reported successfully!");
+
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error reporting event:", error);
+
+      // Show error feedback
+      alert(`Failed to report event: ${error.message}`);
+    }
   };
-
-
 
   const handleCloseModal = () => {
     setClickedPosition(null);
@@ -75,7 +79,7 @@ const MapScreen = () => {
     try {
       socket.on("user_list_update", (userList) => {
         console.log(userList);
-        
+
         setUserLocations(userList);
       });
     } catch (error) {
@@ -89,7 +93,6 @@ const MapScreen = () => {
 
   return (
     <APIProvider apiKey={key}>
-
       <MapComponent
         style={{ width: "80%", height: "100%" }}
         userLocations={userLocations}
@@ -120,9 +123,7 @@ const MapScreen = () => {
               required
             /> */}
             <div>
-              <button type="submit">
-                Submit
-                </button>
+              <button type="submit">Submit</button>
               <button type="button" onClick={handleCloseModal}>
                 Cancel
               </button>
@@ -130,7 +131,6 @@ const MapScreen = () => {
           </form>
         </div>
       )}
-
     </APIProvider>
   );
 };
