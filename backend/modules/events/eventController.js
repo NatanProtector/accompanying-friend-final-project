@@ -76,3 +76,28 @@ exports.getAllEvents = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch events" });
   }
 };
+
+exports.getNearbyActiveEvents = async (req, res) => {
+  const { lat, lng } = req.query;
+  if (!lat || !lng) {
+    return res.status(400).json({ message: "Missing lat/lng" });
+  }
+
+  try {
+    const events = await Event.find({
+      status: { $in: ["pending", "ongoing"] },
+      location: {
+        $near: {
+          $geometry: { type: "Point", coordinates: [parseFloat(lng), parseFloat(lat)] },
+          $maxDistance: 5000 // 5km radius, adjust as needed
+        }
+      }
+    });
+
+    res.status(200).json(events);
+  } catch (err) {
+    console.error("Failed to get nearby events:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
