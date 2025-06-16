@@ -37,12 +37,7 @@ export default function AccountRecoveryScreen({ navigation }) {
       <LoadModal />
       <Formik
         initialValues={
-          // { id: "", phone: "", email: "" }
-          {
-            id: "123456789",
-            phone: "0501234567",
-            email: "natanprotector50@gmail.com",
-          }
+          { id: "", phone: "", email: "" }
         }
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
