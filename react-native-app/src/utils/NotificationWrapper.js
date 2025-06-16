@@ -9,7 +9,7 @@ import io from "socket.io-client";
 
 export default function NotificationWrapper({ children }) {
   const navigation = useNavigation();
-
+const [userId, setUserId] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -17,6 +17,26 @@ export default function NotificationWrapper({ children }) {
 
   // 🚨 New state for active real-time notification popup
   const [activePopupNotification, setActivePopupNotification] = useState(null);
+
+  useEffect(() => {
+  const fetchUserId = async () => {
+    const stored = await AsyncStorage.getItem("userData");
+    if (!stored) return;
+    const { _id } = JSON.parse(stored);
+    setUserId(_id);
+  };
+
+  fetchUserId();
+
+  const focusListener = navigation.addListener("focus", fetchUserId);
+  return () => focusListener(); // cleanup
+}, []);
+
+
+useEffect(() => {
+  console.log("[POPUP STATE] Updated to:", activePopupNotification?.notificationId);
+}, [activePopupNotification]);
+
 
   // 🔴 Get unread count when mounted
   useEffect(() => {
@@ -34,38 +54,53 @@ export default function NotificationWrapper({ children }) {
   }, []);
 
   // 📡 Socket IO connection
-  useEffect(() => {
-    const connectSocket = async () => {
-      const newSocket = io(SERVER_URL);
-      setSocket(newSocket);
-  
-      const stored = await AsyncStorage.getItem("userData");
-      if (stored) {
-        const { _id, multiRole, idNumber } = JSON.parse(stored);
-        console.log("[SOCKET] Registering user", _id, "with role", multiRole);
-  
-        newSocket.emit("register", {
-          role: multiRole.includes("security") ? "security" : "citizen",
-          userId: _id,
-          idNumber: idNumber,
-          location: { type: "Point", coordinates: [0, 0] },
-        });
-      }
-  
-      newSocket.on("new_notification", (notification) => {
-        console.log("Received real-time notification:", notification);
-        setNotifications((prev) => [notification, ...prev]);
-        setUnreadCount((prev) => prev + 1);
-  
-        // 🚨 Show popup modal for the new notification
-        setActivePopupNotification(notification);
-      });
-  
-      return () => newSocket.disconnect();
-    };
-  
-    connectSocket();
-  }, []);
+useEffect(() => {
+  if (!userId) return;
+
+  let socketInstance = null;
+
+  const setup = async () => {
+    const stored = await AsyncStorage.getItem("userData");
+    if (!stored) return;
+    const parsed = JSON.parse(stored);
+
+    socketInstance = io(SERVER_URL);
+
+    const { _id, multiRole, idNumber } = parsed;
+    console.log("[SOCKET] Registering:", _id);
+
+    socketInstance.emit("register", {
+      role: multiRole.includes("security") ? "security" : "citizen",
+      userId: _id,
+      idNumber,
+      location: { type: "Point", coordinates: [0, 0] },
+    });
+
+    socketInstance.on("new_notification", (notification) => {
+      console.log("[SOCKET] Received:", notification);
+      setNotifications((prev) => [notification, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+
+      setActivePopupNotification(null);
+      setTimeout(() => {
+        setActivePopupNotification({ ...notification });
+      }, 50);
+    });
+  };
+
+  setup();
+
+  return () => {
+    if (socketInstance) {
+      socketInstance.disconnect();
+      console.log("[SOCKET] Disconnected on cleanup");
+    }
+  };
+}, [userId]);
+
+
+
+
   
 
   // 📩 On bell click: fetch & show modal
@@ -183,7 +218,13 @@ export default function NotificationWrapper({ children }) {
 
       {/* 🚨 Real-Time Popup Modal for new incoming event */}
       {activePopupNotification && (
-        <Modal visible={true} transparent animationType="fade">
+        <Modal
+  key={activePopupNotification?.notificationId || "modal-default"}
+  visible={true}
+  transparent
+  animationType="fade"
+>
+
           <View style={styles.popupOverlay}>
             <View style={styles.popupBox}>
               <Text style={styles.popupTitle}>🚨 New Event Reported!</Text>

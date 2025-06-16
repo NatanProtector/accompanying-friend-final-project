@@ -2,19 +2,23 @@ import { View, Text, Settings } from 'react-native';
 import { useContext } from 'react';
 
 import getDayPeriod from '../../utils/getDayPeriod'
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import MyLanguageContext from '../../utils/MyLanguageContext';
 // import { Button } from 'react-native-elements';
 import BasicScreen from './BasicScreen';
 import NavButton from '../general_components/NavButton';
 
 const logout = (navigation) => {
-    return () => {
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }], // Change 'Home' to your actual first screen name
-        });
-    };
+  return async () => {
+    await AsyncStorage.removeItem("userData");
+setTimeout(() => {
+  navigation.reset({
+    index: 0,
+    routes: [{ name: "Home" }],
+  });
+}, 100); // Slight delay to allow `AsyncStorage.removeItem` to flush
+
+  };
 };
 
 

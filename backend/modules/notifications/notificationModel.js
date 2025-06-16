@@ -5,7 +5,7 @@ const notificationSchema = new mongoose.Schema({
   targetUserId: { type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true },
   message: { type: String, required: true },
   eventRef: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
-  sentAt: { type: Date, default: Date.now },
+  sentAt: { type: Date, default: Date.now, index: { expires: 43200 } }, // 12 hours expiration
   readStatus: { type: Boolean, default: false }
 });
 

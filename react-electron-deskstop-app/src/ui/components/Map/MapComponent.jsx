@@ -10,6 +10,8 @@ const MapComponent = ({
   mapZoom,
   defaultPosition,
   defaultZoom,
+  events,
+  onEventClick,
 }) => {
   return (
     <Map
@@ -24,6 +26,33 @@ const MapComponent = ({
       {centerCoords && mapZoom && (
         <MapController clickedPosition={centerCoords} zoomLevel={mapZoom} />
       )}
+
+      {/* Event markers */}
+      {events &&
+        events.length > 0 &&
+        events.map((event, index) => {
+          if (event.location?.coordinates) {
+            return (
+              <Marker
+                key={`event-${index}`}
+                position={{
+                  lat: event.location.coordinates[1],
+                  lng: event.location.coordinates[0],
+                }}
+                title={`Event: ${event.eventType}`}
+                onClick={() => onEventClick(event)}
+                icon={{
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  scale: 8,
+                  fillColor: "red",
+                  fillOpacity: 1,
+                  strokeWeight: 2,
+                  strokeColor: "white",
+                }}
+              />
+            );
+          }
+        })}
 
       {/* Users now have red circle markers */}
       {userLocations &&
@@ -85,6 +114,19 @@ MapComponent.propTypes = {
     lng: PropTypes.number,
   }),
   defaultZoom: PropTypes.number,
+  events: PropTypes.arrayOf(
+    PropTypes.shape({
+      eventType: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+      reportedBy: PropTypes.string.isRequired,
+      instructions: PropTypes.string.isRequired,
+      timestamp: PropTypes.string.isRequired,
+      location: PropTypes.shape({
+        coordinates: PropTypes.arrayOf(PropTypes.number).isRequired,
+      }).isRequired,
+    })
+  ),
+  onEventClick: PropTypes.func.isRequired,
 };
 
 export default MapComponent;
