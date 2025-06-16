@@ -45,9 +45,20 @@ const MapScreen = () => {
       description: formDescription,
     };
 
-    await ReportEmergency(eventType, clickedPosition);
+    try {
+      const result = await ReportEmergency(eventType, clickedPosition);
+      console.log("Event reported successfully:", result);
 
-    handleCloseModal();
+      // Show success feedback (you can replace this with a proper notification)
+      alert("Event reported successfully!");
+
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error reporting event:", error);
+
+      // Show error feedback
+      alert(`Failed to report event: ${error.message}`);
+    }
   };
 
   const handleCloseModal = () => {
@@ -98,6 +109,7 @@ const MapScreen = () => {
   useEffect(() => {
     try {
       socket.on("user_list_update", (userList) => {
+
         setUserLocations(userList);
       });
 

@@ -110,8 +110,43 @@ export const ReportEmergency = async (eventType, clickedPosition) => {
   const payload = {
     eventType: eventType || "Unknown",
     location: { type: "Point", coordinates: [lng, lat] },
+    instructions: "",
+    voiceCommands: "",
+    relatedUsers: [],
   };
 
   console.log("[ReportEmergency] Payload:", payload);
-  
-}
+
+  try {
+    // Get admin token from localStorage
+    const adminToken = localStorage.getItem("adminToken");
+
+    if (!adminToken) {
+      console.error("[ReportEmergency] No admin token found");
+      throw new Error("Admin authentication required");
+    }
+
+    const response = await fetch(`${SERVER_URL}/api/events/report`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+    console.log("[ReportEmergency] Event reported successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("[ReportEmergency] Error reporting event:", error);
+    throw error;
+  }
+};

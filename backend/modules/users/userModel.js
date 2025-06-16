@@ -23,6 +23,8 @@ const userSchema = new mongoose.Schema({
     type: { type: String, enum: ["Point"], default: "Point" }, // Required for GeoJSON
     coordinates: { type: [Number], default: [0, 0] }, // [longitude, latitude]
   },
+
+  isAdmin: { type: Boolean, default: false, required: false },
 });
 
 // Hash password before saving
