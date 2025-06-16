@@ -71,17 +71,14 @@ const handleDisconnection = (socket) => {
 
       // HOT FIX FOR DUPLICATE USER REGISTRATION FROM NOTIFICATION WRAPPER
       // Find and remove any other user with the same idNumber
-        for (const [otherSocketId, otherUser] of users.entries()) {
-        if (
-          otherUser.idNumber === idNumber &&
-          otherSocketId !== socket.id
-        ) {
+      for (const [otherSocketId, otherUser] of users.entries()) {
+        if (otherUser.idNumber === idNumber && otherSocketId !== socket.id) {
           console.log(
             `Removing duplicate user with idNumber: ${otherUser.idNumber}`
           );
           users.delete(otherSocketId);
         }
-        }
+      }
 
       users.delete(socket.id);
     }
@@ -121,8 +118,18 @@ const sendNotificationToUser = (userId, notification) => {
   }
 };
 
+// Add new function to notify admins about new events
+const notifyAdminsAboutNewEvent = () => {
+  admins.forEach((adminSocketId) => {
+    const adminSocket = io.sockets.sockets.get(adminSocketId);
+    if (adminSocket) {
+      adminSocket.emit("new_event_reported", { message: "New event reported" });
+    }
+  });
+};
 
 module.exports = {
   addSocketsToServer,
   sendNotificationToUser,
+  notifyAdminsAboutNewEvent,
 };
