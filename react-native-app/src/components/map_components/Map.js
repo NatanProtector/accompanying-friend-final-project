@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Button,
@@ -10,18 +10,23 @@ import {
   Linking,
   Modal,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Polygon } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
 import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
 import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
+import eventMarker from "../../../assets/markers/warning-svgrepo-com.png";
+import { abcZones } from '../../../assets/A_B Zones';
 import * as Location from "expo-location";
-import { GOOGLE_MAPS_API_KEY } from "@env";
+import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 import DriverDirections from "../general_components/DriverDirections";
-
+import { format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
+import { differenceInHours } from "date-fns";
 const MapScreen = ({
   markers,
   destination,
+  setDestination,
   region,
   setRegion,
   routeSteps,
@@ -43,9 +48,10 @@ const MapScreen = ({
   onMapReady,
 }) => {
   const mapRef = useRef(null);
-
-  // if (GOOGLE_MAPS_API_KEY == "")
-  //   throw new Error ("Missing Google Maps API key");
+  const [nearbyEvents, setNearbyEvents] = useState([]);
+  const [nearbyZones, setNearbyZones] = useState([]);
+  const israelTimeZone = "Asia/Jerusalem";
+  const MAX_EVENT_AGE_HOURS = 8;
 
   useEffect(() => {
     const getLocationPermission = async () => {
@@ -64,6 +70,7 @@ const MapScreen = ({
       };
 
       setRegion(newRegion);
+      fetchNearbyEvents(newRegion.latitude, newRegion.longitude);
     };
 
     getLocationPermission();
@@ -78,7 +85,7 @@ const MapScreen = ({
         timeInterval: 1000,
         distanceInterval: 3,
         enableHighAccuracy: true,
-        heading: true, // Enable heading tracking
+        heading: true,
       },
       (location) => {
         const { latitude, longitude, heading } = location.coords;
@@ -111,29 +118,49 @@ const MapScreen = ({
     }
   }, [followUser]);
 
-  // const updateUserLocation = async (latitude, longitude) => {
-  //   try {
-  //     const response = await axios.put(
-  //       `${SERVER_URL}/api/auth/update-location/${idNumber}`,
-  //       { latitude, longitude }
-  //     );
-  //     console.log("Location updated:", response.data);
-  //   } catch (error) {
-  //     console.error("Error updating location:", error);
-  //   }
-  // };
-
-  const getAddressFromCoords = async (lat, lng) => {
+  const fetchNearbyEvents = async (lat, lng) => {
     try {
-      const [place] = await Location.reverseGeocodeAsync({
-        latitude: lat,
-        longitude: lng,
-      });
-      return `${place.street || ""} ${place.name || ""} , ${place.city || ""}`;
-    } catch (error) {
-      return "Unknown location";
+      const res = await fetch(
+        `${SERVER_URL}/api/events/nearby?lat=${lat}&lng=${lng}`
+      );
+      const data = await res.json();
+      setNearbyEvents(data);
+    } catch (err) {
+      console.error("Failed to fetch nearby events", err);
     }
   };
+
+  const filterNearbyZones = (lat, lng) => {
+    const filtered = abcZones.filter((zone) => {
+      if (!zone.coordinates || zone.coordinates.length === 0) return false;
+
+      const center = zone.coordinates[Math.floor(zone.coordinates.length / 2)];
+      const dist = getDistance(
+        { latitude: lat, longitude: lng },
+        { latitude: center.latitude, longitude: center.longitude }
+      );
+      return dist <= 10000; // 10 km
+    });
+
+    setNearbyZones(filtered);
+  };
+
+
+
+  const getZoneColor = (type) => {
+    return type === 'A'
+      ? 'rgba(255, 0, 0, 0.78)'       // Red
+      : 'rgba(55, 0, 255, 0.88)';    // Yellow
+  };
+
+const getZoneExplanation = (type) => {
+  return type === "A"
+    ? "No Israeli civil or security jurisdiction."
+    : type === "B"
+    ? "No Israeli civil jurisdiction. Security responsibility remains with Israel."
+    : "Unknown zone type.";
+};
+
 
   return (
     <View style={styles.container}>
@@ -167,30 +194,32 @@ const MapScreen = ({
           userLocationUpdateInterval={1000}
           onMapReady={onMapReady}
           onUserLocationChange={(event) => {
-            if (followUser) {
-              const { coordinate } = event.nativeEvent;
-              const newRegion = {
-                ...region,
-                latitude: coordinate.latitude,
-                longitude: coordinate.longitude,
-              };
-              setRegion(newRegion);
+            const { coordinate } = event.nativeEvent;
 
-              // Animate camera to new location with heading
-              if (mapRef.current) {
-                mapRef.current.animateCamera({
-                  center: {
-                    latitude: coordinate.latitude,
-                    longitude: coordinate.longitude,
-                  },
-                  heading: userHeading || 0,
-                  pitch: followUser ? 45 : 0,
-                  zoom: 17,
-                  duration: 1000,
-                });
-              }
+            const newRegion = {
+              ...region,
+              latitude: coordinate.latitude,
+              longitude: coordinate.longitude,
+            };
+
+            setRegion(newRegion);
+            fetchNearbyEvents(coordinate.latitude, coordinate.longitude);
+            filterNearbyZones(coordinate.latitude, coordinate.longitude);
+
+            if (followUser && mapRef.current) {
+              mapRef.current.animateCamera({
+                center: {
+                  latitude: coordinate.latitude,
+                  longitude: coordinate.longitude,
+                },
+                heading: userHeading || 0,
+                pitch: 45,
+                zoom: 17,
+                duration: 1000,
+              });
             }
           }}
+
         >
           {destination && (
             <MapViewDirections
@@ -199,105 +228,134 @@ const MapScreen = ({
               apikey={GOOGLE_MAPS_API_KEY}
               strokeWidth={4}
               strokeColor="blue"
-              language="en"
-              mode="DRIVING"
-              region="il"
-              units="metric"
               onReady={(result) => {
                 const steps = result.legs[0].steps;
                 setRouteSteps(steps);
                 setCurrentStepIndex(0);
               }}
-              optimizeWaypoints={true}
-              resetOnChange={false}
-              precision="high"
-              waypoints={[]}
-              splitWaypoints={false}
-              timePrecision="now"
-              directionsServiceBaseUrl="https://maps.googleapis.com/maps/api/directions/json"
-              directionsServiceOptions={{
-                alternatives: false,
-                avoid: [],
-                language: "en",
-                region: "il",
-                units: "metric",
-                mode: "driving",
-                traffic_model: "best_guess",
-                departure_time: "now",
-                arrival_time: null,
-                waypoints: [],
-                optimize: false,
-                avoid_ferries: false,
-                avoid_highways: false,
-                avoid_tolls: false,
-                transit_mode: [],
-                transit_routing_preference: null,
-              }}
             />
           )}
 
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              coordinate={{
-                latitude: marker.latitude,
-                longitude: marker.longitude,
-              }}
-              image={selectedMarkerId === marker.id ? greenMarker : redMarker}
-              tracksViewChanges={false}
-              ref={(ref) => {
-                if (ref) markerRefs.current[marker.id] = ref;
-              }}
+
+          {markers
+            .filter(
+              (marker) =>
+                typeof marker.latitude === "number" &&
+                typeof marker.longitude === "number"
+            ).map((marker) => (
+              <Marker
+                key={marker.id}
+                coordinate={{
+                  latitude: marker.latitude,
+                  longitude: marker.longitude,
+                }}
+                image={selectedMarkerId === marker.id ? greenMarker : redMarker}
+                tracksViewChanges={false}
+                ref={(ref) => {
+                  if (ref) markerRefs.current[marker.id] = ref;
+                }}
+                onPress={() => {
+                  setSelectedMarker(marker);
+                  setSelectedMarkerId(marker.id);
+                }}
+              />
+            ))}
+
+          {nearbyEvents
+            .filter(event => {
+              const eventTime = new Date(event.timestamp);
+              return differenceInHours(new Date(), eventTime) <= 8;
+            })
+            .map((event) => {
+              const utcDate = new Date(event.timestamp);
+
+              let israelDate;
+              try {
+                israelDate = utcToZonedTime(utcDate, "Asia/Jerusalem");
+              } catch (err) {
+                israelDate = utcDate;
+              }
+
+              const formattedTime = format(israelDate, "dd/MM/yyyy HH:mm");
+
+              return (
+                <Marker
+                  key={`event-${event._id}`}
+                  coordinate={{
+                    latitude: event.location.coordinates[1],
+                    longitude: event.location.coordinates[0],
+                  }}
+                  image={eventMarker}
+                  title={`Event: ${event.eventType}`}
+                  description={`Reported at: ${formattedTime}`}
+                />
+              );
+            })}
+
+          {nearbyZones.map((zone, index) => (
+            <Polygon
+              key={`zone-${index}`}
+              coordinates={zone.coordinates}
+              strokeColor="black"
+              fillColor={getZoneColor(zone.zone)}
+              strokeWidth={2}
+              tappable={true}
               onPress={() => {
-                setSelectedMarker(marker);
-                setSelectedMarkerId(marker.id);
+                Alert.alert(
+                  `Zone ${zone.zone}`,
+                  getZoneExplanation(zone.zone),
+                  [{ text: "OK" }]
+                );
               }}
             />
           ))}
+
         </MapView>
       ) : (
         <ActivityIndicator size="large" color="teal" />
-      )}
+      )
+      }
 
-      {selectedMarker && (
-        <View style={styles.actionBar}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => {
-              const { latitude, longitude } = selectedMarker;
-              Linking.openURL(`google.navigation:q=${latitude},${longitude}`);
-            }}
-          >
-            <Text style={styles.actionText}>🧭</Text>
-          </TouchableOpacity>
+      {
+        selectedMarker && (
+          <View style={styles.actionBar}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                const { latitude, longitude } = selectedMarker;
+                Linking.openURL(`google.navigation:q=${latitude},${longitude}`);
+              }}
+            >
+              <Text style={styles.actionText}>🧭</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => {
-              const { latitude, longitude } = selectedMarker;
-              Linking.openURL(
-                `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
-              );
-            }}
-          >
-            <Text style={styles.actionText}>📍</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                const { latitude, longitude } = selectedMarker;
+                setDestination({ latitude, longitude }); // Starts in-app driving
+              }}
+            >
+              <Text style={styles.actionText}>▶️</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => handleRemoveMarker(selectedMarker.id)}
-          >
-            <Text style={styles.actionText}>🗑️</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => setShowInfoModal(true)}
-          >
-            <Text style={styles.actionText}>ℹ️</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => handleRemoveMarker(selectedMarker?.id)}
+            >
+              <Text style={styles.actionText}>🗑️</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => setShowInfoModal(true)}
+            >
+              <Text style={styles.actionText}>ℹ️</Text>
+            </TouchableOpacity>
+          </View>
+        )
+      }
 
       <Modal
         visible={showInfoModal}
@@ -318,61 +376,29 @@ const MapScreen = ({
           </View>
         </View>
       </Modal>
-    </View>
+    </View >
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, width: "100%", height: 630 },
   map: { flex: 1, width: "100%", height: "100%" },
-  searchToggleContainer: {
-    position: "absolute",
-    top: 60,
-    right: 10,
-    zIndex: 1000,
-    backgroundColor: "white",
-    padding: 8,
-    borderRadius: 50,
-    elevation: 4,
-  },
-  magnifyIcon: { fontSize: 22 },
-  inputContainer: {
-    position: "absolute",
-    top: 120,
-    left: 0,
-    right: 10,
-    flexDirection: "row",
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    elevation: 5,
-    zIndex: 999,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginRight: 10,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-
   actionBar: {
     position: "absolute",
     bottom: 10,
     right: 10,
-    height: 65,
+    height: 63.2,
     flexDirection: "row",
-    backgroundColor: "white",
-    borderRadius: 12,
+    backgroundColor: "rgb(255, 255, 255)",
+    borderRadius: 200,
     padding: 6,
-    elevation: 6,
+    marginBottom: 20,
+    elevation: 10,
     zIndex: 1000,
+
   },
   actionButton: {
-    padding: 10,
+    padding: 5,
     alignItems: "center",
   },
   actionText: {

@@ -102,16 +102,25 @@ const startBroadcastingUserList = () => {
 
 // --- ✨ NEW FUNCTION ✨ ---
 const sendNotificationToUser = (userId, notification) => {
+  console.log(`[SOCKET] Trying to send to: ${userId}`);
+  let sent = false;
   for (const [socketId, user] of users.entries()) {
+    console.log(`-> user: ${user.id}, socket: ${socketId}`);
     if (user.id.toString() === userId.toString()) {
       const socket = io.sockets.sockets.get(socketId);
       if (socket) {
         socket.emit("new_notification", notification);
+        console.log(`[SOCKET] ✅ Sent to socket ${socketId}`);
+        sent = true;
       }
       break;
     }
   }
+  if (!sent) {
+    console.warn(`[SOCKET] ❌ No active socket found for ${userId}`);
+  }
 };
+
 
 module.exports = {
   addSocketsToServer,
