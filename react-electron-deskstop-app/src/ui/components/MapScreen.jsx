@@ -278,10 +278,11 @@ const style = {
     outline: "none",
   },
   buttonContainer: {
+    width: "100%",
     display: "flex",
     justifyContent: "center",
     gap: "12px",
-    marginTop: "24px",
+    marginTop: "auto",
   },
   submitButton: {
     padding: "10px 24px",
@@ -316,13 +317,6 @@ const style = {
     textAlign: "left",
     marginBottom: "20px",
     color: "#333",
-  },
-  buttonContainer: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    gap: "12px",
-    marginTop: "auto",
   },
   button: {
     padding: "8px 20px",

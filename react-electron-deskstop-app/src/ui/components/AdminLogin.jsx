@@ -94,8 +94,13 @@ const AdminLogin = ({ onLoginSuccess }) => {
           </button>
         </form>
       </div>
+      <h1 style={titleStyle}>Accompanying Friend</h1>
     </div>
   );
 };
 
 export default AdminLogin;
+
+const titleStyle = {
+  margin: "20px",
+}
