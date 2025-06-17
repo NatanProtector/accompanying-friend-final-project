@@ -18,17 +18,17 @@ The Accompanying Friend **cross-platform mobile app**, built with **React Native
 Here are some screenshots of the mobile app's user interface:
 
 #### Login And Registration
-* ![Mobile App Captcha](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0019.jpg?raw=true)
-* ![Mobile App Login Screen](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0020.jpg?raw=true)
-* ![Mobile App Role Select Register Screen](https://github.gcom/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0016.jpg?raw=true)
-* ![Mobile App Register Screen](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0018.jpg?raw=true)
-* ![Mobile App User Dashboard](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0017.jpg?raw=true)
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0019.jpg?raw=true" alt="Mobile App Captcha" width="300">
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0020.jpg?raw=true" alt="Mobile App Login Screen" width="300">
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0016.jpg?raw=true" alt="Mobile App Role Select Register Screen" width="300">
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0018.jpg?raw=true" alt="Mobile App Register Screen" width="300">
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0017.jpg?raw=true" alt="Mobile App User Dashboard" width="300">
 
 #### Navigation Screen
-* ![Mobile App Navigation](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0011.jpg?raw=true)
-* ![Mobile App Navigation Search](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0014.jpg?raw=true)
-* ![Mobile App Drive](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0013.jpg?raw=true)
-* ![Mobile App Report Event](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0012.jpg?raw=true)
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0011.jpg?raw=true" alt="Mobile App Navigation" width="300">
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0014.jpg?raw=true" alt="Mobile App Navigation Search" width="300">
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0013.jpg?raw=true" alt="Mobile App Drive" width="300">
+<img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0012.jpg?raw=true" alt="Mobile App Report Event" width="300">
 
 -----
 
