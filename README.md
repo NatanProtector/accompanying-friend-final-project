@@ -18,7 +18,7 @@ The Accompanying Friend **cross-platform mobile app**, built with **React Native
 Here are some screenshots of the mobile app's user interface:
 
 #### Login And Registration
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin: 10px;">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0019.jpg?raw=true" alt="Mobile App Captcha" width="300">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0020.jpg?raw=true" alt="Mobile App Login Screen" width="300">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0016.jpg?raw=true" alt="Mobile App Role Select Register Screen" width="300">
@@ -27,7 +27,7 @@ Here are some screenshots of the mobile app's user interface:
 </div>
 
 #### Navigation Screen
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin: 10px;">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0011.jpg?raw=true" alt="Mobile App Navigation" width="300">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0014.jpg?raw=true" alt="Mobile App Navigation Search" width="300">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0013.jpg?raw=true" alt="Mobile App Drive" width="300">
@@ -49,7 +49,7 @@ Here are some screenshots of the desktop admin application's user interface:
 
 
 ### Desktop App
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin: 10px;">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20162011.png?raw=true" alt="Desktop App Login" width="800">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-16%20171059.png?raw=true" alt="Desktop App Users and Events Display" width="800">
   <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20161048.png?raw=true" alt="Desktop App Create Event" width="800">
