@@ -78,7 +78,10 @@ const App = () => {
         header={<Header adminUser={adminUser} onLogout={handleLogout} />}
         content={
           <Routes>
-            <Route path="/" element={<Home adminUser={adminUser} />} />
+            <Route
+              path="/"
+              element={<Home adminUser={adminUser} onLogout={handleLogout} />}
+            />
             <Route
               path="/Manage/Users"
               element={<ManageUsers adminToken={adminToken} />}

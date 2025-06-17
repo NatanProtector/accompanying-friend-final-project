@@ -5,7 +5,7 @@ import MyLanguageContext from "../../utils/MyLanguageContext";
 import { ReportEmergency } from "../../utils/Communication";
 import ReportButton from "../general_components/ReportButton";
 
-export default function NavigationHeader({DisplayComponent}) {
+export default function NavigationHeader({ DisplayComponent }) {
   const { language } = useContext(MyLanguageContext);
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState("option1");
@@ -83,11 +83,15 @@ export default function NavigationHeader({DisplayComponent}) {
 
               {/* Radio Buttons as Buttons */}
               <View style={styles.radioGroup}>
-                {renderRadioButton(labels_text[language].option1, "option1")}
-                {renderRadioButton(labels_text[language].option2, "option2")}
-                {renderRadioButton(labels_text[language].option3, "option3")}
-                {renderRadioButton(labels_text[language].option4, "option4")}
-                {renderRadioButton(labels_text[language].option5, "option5")}
+                <View style={styles.radioRow}>
+                  {renderRadioButton(labels_text[language].option1, "option1")}
+                  {renderRadioButton(labels_text[language].option2, "option2")}
+                  {renderRadioButton(labels_text[language].option3, "option3")}
+                </View>
+                <View style={styles.radioRow}>
+                  {renderRadioButton(labels_text[language].option4, "option4")}
+                  {renderRadioButton(labels_text[language].option5, "option5")}
+                </View>
               </View>
 
               <View style={styles.buttonRow}>
@@ -147,11 +151,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   radioGroup: {
+    width: "100%",
+    marginBottom: 30,
+  },
+  radioRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 450,
-    height: 100,
-    marginBottom: 30,
+    marginBottom: 10,
   },
   radioButton: {
     paddingVertical: 10,
@@ -163,6 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
     alignItems: "center",
+    minWidth: 120,
   },
   radioButtonSelected: {
     backgroundColor: "#000",

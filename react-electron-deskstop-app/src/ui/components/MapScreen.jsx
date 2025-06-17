@@ -109,7 +109,6 @@ const MapScreen = () => {
   useEffect(() => {
     try {
       socket.on("user_list_update", (userList) => {
-
         setUserLocations(userList);
       });
 
@@ -156,24 +155,32 @@ const MapScreen = () => {
       {showModal && (
         <div style={style.modal}>
           <form style={style.modalContent} onSubmit={handleFormSubmit}>
-            <h3>Create Event</h3>
-            <label>Type:</label>
-            <select name="type" onChange={handleTypeChange} required>
-              <option value="Shooting">Shooting</option>
-              <option value="Riot">Riot</option>
-              <option value="Rock throwing">Rock throwing</option>
-              <option value="Vehicle theft">Vehicle theft</option>
-              <option value="Molotov">Molotov</option>
-            </select>
-            {/* <label>Description:</label>
-            <textarea
-              name="description"
-              onChange={handleInputChange}
-              required
-            /> */}
-            <div>
-              <button type="submit">Submit</button>
-              <button type="button" onClick={handleCloseModal}>
+            <h3 style={style.modalTitle}>Create Event</h3>
+            <div style={style.formGroup}>
+              <label style={style.label}>Event Type:</label>
+              <select
+                name="type"
+                onChange={handleTypeChange}
+                required
+                style={style.select}
+              >
+                <option value="">Select event type...</option>
+                <option value="Shooting">Shooting</option>
+                <option value="Riot">Riot</option>
+                <option value="Rock throwing">Rock throwing</option>
+                <option value="Vehicle theft">Vehicle theft</option>
+                <option value="Molotov">Molotov</option>
+              </select>
+            </div>
+            <div style={style.buttonContainer}>
+              <button type="submit" style={style.submitButton}>
+                Submit
+              </button>
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                style={style.cancelButton}
+              >
                 Cancel
               </button>
             </div>
@@ -224,43 +231,92 @@ const style = {
     left: "15%",
     transform: "translate(-50%, -50%)",
     color: "black",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
+    borderRadius: "12px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
     zIndex: 1000,
-    padding: "5px",
     width: "25%",
-    height: "auto",
-    minHeight: "32%",
+    minWidth: "300px",
     backgroundColor: "black",
+    padding: "2px",
   },
   modalContent: {
-    borderRadius: "8px",
+    borderRadius: "10px",
     backgroundColor: "#FFD700",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
     width: "100%",
-    height: "100%",
-    padding: "20px",
+    padding: "24px",
     boxSizing: "border-box",
   },
   modalTitle: {
-    margin: "0 0 20px 0",
+    margin: "0 0 24px 0",
     color: "#333",
-    fontSize: "1.5em",
+    fontSize: "1.75em",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  formGroup: {
+    marginBottom: "20px",
+    width: "100%",
+  },
+  label: {
+    display: "block",
+    marginBottom: "8px",
+    fontSize: "1em",
+    fontWeight: "500",
+    color: "#333",
+  },
+  select: {
+    width: "100%",
+    padding: "10px 12px",
+    fontSize: "1em",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    backgroundColor: "white",
+    color: "#333",
+    cursor: "pointer",
+    outline: "none",
+  },
+  buttonContainer: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    gap: "12px",
+    marginTop: "auto",
+  },
+  submitButton: {
+    padding: "10px 24px",
+    backgroundColor: "#000000",
+    color: "#FFD700",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "1em",
+    fontWeight: "500",
+    transition: "transform 0.2s",
+    "&:hover": {
+      transform: "scale(1.02)",
+    },
+  },
+  cancelButton: {
+    padding: "10px 24px",
+    backgroundColor: "#333333",
+    color: "#FFD700",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "1em",
+    fontWeight: "500",
+    transition: "transform 0.2s",
+    "&:hover": {
+      transform: "scale(1.02)",
+    },
   },
   eventDetails: {
     width: "100%",
     textAlign: "left",
     marginBottom: "20px",
     color: "#333",
-  },
-  buttonContainer: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "auto",
   },
   button: {
     padding: "8px 20px",
