@@ -17,17 +17,19 @@ The Accompanying Friend **cross-platform mobile app**, built with **React Native
 
 Here are some screenshots of the mobile app's user interface:
 
-  ## Login And Registration
-  * *(Mobile App Captcha)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0019.jpg?raw=true]*
-  * *(Mobile App Login Screen)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0020.jpg?raw=true]*
-  * *(Mobile App Role Select Register Screen)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0016.jpg?raw=true]*
-  * *(Mobile App Register Screen)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0018.jpg?raw=true]*
-  * *(Mobile App User Dashboard)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0017.jpg?raw=true]*
-  ## Navigation Screen
-  * *(Mobile App Navigation)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0011.jpg?raw=true]*
-  * *(Mobile App Navigation Search)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0014.jpg?raw=true]*
-  * *(Mobile App Drive)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0013.jpg?raw=true]*
-  * *(Mobile App Report Event)[https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0012.jpg?raw=true]*
+#### Login And Registration
+* ![Mobile App Captcha](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0019.jpg?raw=true)
+* ![Mobile App Login Screen](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0020.jpg?raw=true)
+* ![Mobile App Role Select Register Screen](https://github.gcom/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0016.jpg?raw=true)
+* ![Mobile App Register Screen](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0018.jpg?raw=true)
+* ![Mobile App User Dashboard](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0017.jpg?raw=true)
+
+#### Navigation Screen
+* ![Mobile App Navigation](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0011.jpg?raw=true)
+* ![Mobile App Navigation Search](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0014.jpg?raw=true)
+* ![Mobile App Drive](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0013.jpg?raw=true)
+* ![Mobile App Report Event](https://github.com/NatanProtector/accompanying-friend-final-project/blob/small-visual-changes/screenshots/IMG-20250616-WA0012.jpg?raw=true)
+
 -----
 
 ## 💻 Desktop Admin App
