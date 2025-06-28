@@ -50,12 +50,12 @@ export default function DriveScreen({
   const [userHeading, setUserHeading] = useState(null);
 
   const onMapReady = () => {
-    console.log("[DRIVE] Map is ready");
+    // console.log("[DRIVE] Map is ready");
     if (initialDestination) {
-      console.log(
-        "[DRIVE] New initialDestination received:",
-        initialDestination
-      );
+      // console.log(
+      //   "[DRIVE] New initialDestination received:",
+      //   initialDestination
+      // );
       startDrive(initialDestination);
     }
   };
@@ -251,17 +251,17 @@ export default function DriveScreen({
           );
 
           const responseText = await response.text();
-          console.log(
-            "[DRIVE] Server response:",
-            response.status,
-            responseText
-          );
+          // console.log(
+          //   "[DRIVE] Server response:",
+          //   response.status,
+          //   responseText
+          // );
 
-          if (!response.ok) {
-            console.warn("[DRIVE] Location update failed");
-          } else {
-            console.log("[DRIVE] Location sent to server");
-          }
+          // if (!response.ok) {
+          //   console.warn("[DRIVE] Location update failed");
+          // } else {
+          //   console.log("[DRIVE] Location sent to server");
+          // }
         } catch (error) {
           console.error("[DRIVE] Error sending location to server:", error);
         }
