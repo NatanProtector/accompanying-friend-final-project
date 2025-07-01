@@ -10,7 +10,7 @@ import {
   Linking,
   Modal,
 } from "react-native";
-import MapView, { Marker, Polygon } from "react-native-maps";
+import MapView, {PROVIDER_GOOGLE ,Marker, Polygon } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
 import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
@@ -174,7 +174,8 @@ const getZoneExplanation = (type) => {
       )}
 
       {region ? (
-        <MapView
+        <MapView  
+          provider={PROVIDER_GOOGLE}
           initialRegion={region}
           ref={mapRef}
           style={styles.map}
