@@ -3,12 +3,10 @@
 account creation process, add an error like "Account registered but verification email could not be sent,
  contact support"
 - link support email somewhere.
-- `DriveScreen.js`: Getting location by clicking the map is handled completely differently than getting location by searching for and clicking an address, or by clicking the search button. Standardize this.
 - `DriveScreen.js`: Right now it will only center on the user. Make a center and drag listener to center on the camera without preventing the user from dragging the map.
 
 ## Desktop App
 - Search through users by email,name, etc, not implemented in desktop app
-- implement event reporting in the desktop app
 
 # BUGS
 - `DriveScreen.js`: When the title is too long, it overlaps with the search button.
