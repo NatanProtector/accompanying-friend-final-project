@@ -51,15 +51,15 @@ export default function HomeScreen({ navigation }) {
     startLoad();
     try {
       // Bypass login for testing when fields are empty
-      if (username === "" && password === "") {
-        console.log(
-          "Bypassing login for testing (empty fields) - Multi-role simulation."
-        );
-        // Simulate multi-role login by navigating to the role selection screen
-        // Assuming 'Login' screen handles role selection based on existing logic
-        navigation.navigate("Login", { multiRole: ["citizen", "security"] });
-        return;
-      }
+      // if (username === "" && password === "") {
+      //   console.log(
+      //     "Bypassing login for testing (empty fields) - Multi-role simulation."
+      //   );
+      //   // Simulate multi-role login by navigating to the role selection screen
+      //   // Assuming 'Login' screen handles role selection based on existing logic
+      //   navigation.navigate("Login", { multiRole: ["citizen", "security"] });
+      //   return;
+      // }
 
       const response = await SubmitLoginForm({
         idNumber: username,
