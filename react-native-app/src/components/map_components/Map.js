@@ -243,22 +243,22 @@ const getZoneExplanation = (type) => {
                 typeof marker.latitude === "number" &&
                 typeof marker.longitude === "number"
             ).map((marker) => (
-              <Marker
-                key={marker.id}
-                coordinate={{
-                  latitude: marker.latitude,
-                  longitude: marker.longitude,
-                }}
-                image={selectedMarkerId === marker.id ? greenMarker : redMarker}
-                tracksViewChanges={false}
-                ref={(ref) => {
-                  if (ref) markerRefs.current[marker.id] = ref;
-                }}
-                onPress={() => {
-                  setSelectedMarker(marker);
-                  setSelectedMarkerId(marker.id);
-                }}
-              />
+<Marker
+  key={marker.id}
+  coordinate={{
+    latitude: marker.latitude,
+    longitude: marker.longitude,
+  }}
+  tracksViewChanges={false}
+  ref={(ref) => {
+    if (ref) markerRefs.current[marker.id] = ref;
+  }}
+  onPress={() => {
+    setSelectedMarker(marker);
+    setSelectedMarkerId(marker.id);
+  }}
+/>
+
             ))}
 
           {nearbyEvents
@@ -316,6 +316,22 @@ const getZoneExplanation = (type) => {
       )
       }
 
+{selectedMarker && region && (
+  <View style={styles.bottomDistanceContainer}>
+    <Text style={styles.bottomDistanceText}>
+      Distance to marker:{" "}
+      {(() => {
+        const d = getDistance(
+          { latitude: region.latitude, longitude: region.longitude },
+          { latitude: selectedMarker.latitude, longitude: selectedMarker.longitude }
+        );
+        return d < 1000 ? `${d} meters` : `${(d / 1000).toFixed(2)} km`;
+      })()}
+    </Text>
+  </View>
+)}
+
+
       {
         selectedMarker && (
           <View style={styles.actionBar}>
@@ -372,6 +388,19 @@ const getZoneExplanation = (type) => {
             <Text>Address: {selectedMarker?.address || "Unknown"}</Text>
             <Text>Lat: {selectedMarker?.latitude.toFixed(6)}</Text>
             <Text>Lng: {selectedMarker?.longitude.toFixed(6)}</Text>
+            {region && selectedMarker && (
+  <Text>
+    Distance:{" "}
+    {(() => {
+      const d = getDistance(
+        { latitude: region.latitude, longitude: region.longitude },
+        { latitude: selectedMarker.latitude, longitude: selectedMarker.longitude }
+      );
+      return d < 1000 ? `${d} meters` : `${(d / 1000).toFixed(2)} km`;
+    })()}
+  </Text>
+)}
+
             <Button title="Close" onPress={() => setShowInfoModal(false)} />
           </View>
         </View>
@@ -381,6 +410,28 @@ const getZoneExplanation = (type) => {
 };
 
 const styles = StyleSheet.create({
+bottomDistanceContainer: {
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  alignItems: 'center',        // center horizontally
+  justifyContent: 'center',    // center vertically (in case of taller bars)
+  paddingVertical: 6,
+  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+  borderTopWidth: 0.5,
+  borderColor: 'gray',
+  zIndex: 1000,
+  elevation: 5,
+},
+
+bottomDistanceText: {
+  fontSize: 20,
+  fontWeight: 'bold',
+  color: 'black',
+  textAlign: 'center',
+},
+
   container: { flex: 1, width: "100%", height: 630 },
   map: { flex: 1, width: "100%", height: "100%" },
   actionBar: {
