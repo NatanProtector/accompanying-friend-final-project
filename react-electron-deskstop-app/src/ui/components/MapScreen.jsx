@@ -16,7 +16,7 @@ const MapScreen = () => {
   const [userLocations, setUserLocations] = useState([]);
   const [clickedPosition, setClickedPosition] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  // const [formDescription, setFormDescription] = useState("");
+  const [formDescription, setFormDescription] = useState("");
   const [eventType, setEventType] = useState("");
   const [mapZoom, setMapZoom] = useState(defaultZoom);
   const [centerCoords, setCenterCoords] = useState(defaultPosition);
