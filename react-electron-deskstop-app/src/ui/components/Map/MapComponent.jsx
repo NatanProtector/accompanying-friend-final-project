@@ -13,6 +13,9 @@ const MapComponent = ({
   events,
   onEventClick,
 }) => {
+  // Check if Google Maps API is available
+  const isGoogleMapsLoaded =
+    window.google && window.google.maps && window.google.maps.SymbolPath;
   return (
     <Map
       style={{ width: "100%", height: "100%" }}
@@ -31,7 +34,7 @@ const MapComponent = ({
       {events &&
         events.length > 0 &&
         events.map((event, index) => {
-          if (event.location?.coordinates) {
+          if (event.location?.coordinates && isGoogleMapsLoaded) {
             return (
               <Marker
                 key={`event-${index}`}
@@ -59,7 +62,11 @@ const MapComponent = ({
         userLocations.length > 0 &&
         userLocations.map((user, index) => {
           // Check if location data exists
-          if (user.location?.latitude && user.location?.longitude) {
+          if (
+            user.location?.latitude &&
+            user.location?.longitude &&
+            isGoogleMapsLoaded
+          ) {
             return (
               <Marker
                 key={`user-${index}`}
