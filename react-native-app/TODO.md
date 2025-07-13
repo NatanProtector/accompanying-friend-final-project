@@ -10,6 +10,8 @@ account creation process, add an error like "Account registered but verification
 
 # BUGS
 - `DriveScreen.js`: When the title is too long, it overlaps with the search button.
+- Ride buttons (Cancel drive, View Directions) are going under the map
+- Add contact information in case of issues
 
 # Notes:
 - `app.json` add Maps API to build sections when building the app

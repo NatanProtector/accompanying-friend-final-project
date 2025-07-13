@@ -35,6 +35,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 40,
     alignItems: "center",
+    // Padding to prevent the language button from overlapping with the OS bottom navigation buttons
+    marginBottom: 40,
   },
   buttonText: {
     color: "white",
