@@ -144,6 +144,11 @@ export default function RegistrationForm({ route, navigation }) {
 
           await sendVerificationEmail(values.email, values.fullName, token);
         } catch (error) {
+          Alert.alert(
+            RegistrationText[language].failureTitleEmail,
+            RegistrationText[language].failureMessageEmail,
+            [{ text: RegistrationText[language].okButtonEmail }]
+          );
           console.log("Error sending verification email:", `Status: ${error.status}`, `${error.text}`);
         }
       }
@@ -399,6 +404,9 @@ const RegistrationText = {
     failureTitle: "Error",
     failureMessage: "Registration failed. Please try again.",
     failureButtonEmail: "OK",
+    failureTitleEmail: "Error",
+    failureMessageEmail: "Error sending verification email, contact support at natanprotector@gmail.com",
+    okButtonEmail: "OK",
   },
   he: {
     IDInfo: "מספר תעודת זהות ישמש כשם המשתמש",
@@ -421,6 +429,9 @@ const RegistrationText = {
     failureTitle: "שגיאה",
     failureMessage: "ההרשמה נכשלה. אנא נסה שוב.",
     failureButtonEmail: "אישור",
+    failureTitleEmail: "שגיאה",
+    failureMessageEmail: "שגיאה בשליחת מייל בדיקה, צרו קשר עם תמיכה טכנית: natanprotector@gmail.com",
+    okButtonEmail: "אישור",
   },
 };
 
