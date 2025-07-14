@@ -9,7 +9,7 @@ export default function TitleContainer({ children }) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1.8,  
+        flex: 2,  
         justifyContent: "flex-end", 
         width: '100%',
         padding: 10,

@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     overflow: 'hidden',
-    // Padding to prevent the footers from overlapping with the OS bottom navigation buttons
+    // Padding to prevent the footer from overlapping with the OS bottom navigation buttons
     paddingBottom: 40,
   },
   scrollContainer: {

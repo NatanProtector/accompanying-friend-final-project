@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
   },
   streetText: {
     fontWeight: "bold",
-    fontSize: 26,
+    fontSize: 28,
     margin: 5,
     color: "white",
   },

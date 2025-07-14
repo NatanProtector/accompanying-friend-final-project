@@ -7,13 +7,14 @@ export default function BasicScreenTemplate({ children, HeaderComponent, FooterC
     return (
         <BasicBlueScreen>
             <View style={{ flex: 1, width: "100%",}}>
-                <TitleContainer >
-        
+                <TitleContainer>
+
                     {HeaderComponent}
 
                 </TitleContainer>
 
-                <WhiteRoundedContainer FooterComponent={FooterComponent}>
+                <WhiteRoundedContainer
+                    FooterComponent={FooterComponent}>
 
                     {children}
 
