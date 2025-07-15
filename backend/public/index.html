@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accompanying Friend - Security Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #667eea;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #fff;
+            color: #667eea;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content */
+        main {
+            background: white;
+            margin: 2rem auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section {
+            padding: 3rem 2rem;
+        }
+
+        .section:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        /* Downloads Section */
+        .downloads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .download-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .download-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .download-button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .download-button:hover {
+            background: #5a6fd8;
+        }
+
+        .file-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* Screenshots */
+        .screenshots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .screenshot {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .screenshot img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🛡️ Accompanying Friend</div>
+                <nav>
+                    <ul>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#downloads">Downloads</a></li>
+                        <li><a href="#screenshots">Screenshots</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Accompanying Friend</h1>
+            <p>A comprehensive security tool designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain.</p>
+            <a href="#downloads" class="cta-button">Get Started</a>
+        </div>
+    </section>
+
+    <main class="container">
+        <section id="about" class="section">
+            <h2>About the Project</h2>
+            <p>Accompanying Friend is a comprehensive <strong>security tool</strong> designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas.</p>
+            
+            <div style="background: #f8f9fa; padding: 2rem; border-radius: 15px; margin: 2rem 0;">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">🎯 Project Mission</h3>
+                <p>Our mission is to create a reliable security ecosystem that connects citizens with security personnel in real-time, enabling rapid response to emergencies and providing continuous protection during navigation through potentially dangerous areas.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
+                <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="color: #667eea;">🏗️ Architecture</h4>
+                    <p>The system is built with a modern, scalable architecture featuring:</p>
+                    <ul style="margin-left: 1rem;">
+                        <li>Cross-platform mobile application (React Native)</li>
+                        <li>Desktop administration tool (Electron + React)</li>
+                        <li>Robust Node.js backend with Socket.IO</li>
+                        <li>MongoDB Atlas for secure data storage</li>
+                    </ul>
+                </div>
+                
+                <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="color: #667eea;">🔐 Security Features</h4>
+                    <p>Comprehensive security measures including:</p>
+                    <ul style="margin-left: 1rem;">
+                        <li>Multi-factor authentication (Email + Admin approval)</li>
+                        <li>Google reCAPTCHA bot protection</li>
+                        <li>JWT session management</li>
+                        <li>Role-based access control</li>
+                        <li>Real-time location encryption</li>
+                    </ul>
+                </div>
+                
+                <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="color: #667eea;">📱 User Experience</h4>
+                    <p>Intuitive interfaces designed for:</p>
+                    <ul style="margin-left: 1rem;">
+                        <li>Citizen Users: Easy event reporting and navigation</li>
+                        <li>Security Users: Rapid emergency response coordination</li>
+                        <li>Administrators: Comprehensive system management</li>
+                        <li>Real-time communication and notifications</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 2rem 0;">
+                <p style="font-size: 1.1rem; color: #666;">For detailed technical documentation, architecture diagrams, and development instructions, visit our comprehensive GitHub repository:</p>
+                <a href="https://github.com/NatanProtector/accompanying-friend-final-project" target="_blank" style="display: inline-block; background: #667eea; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 25px; font-weight: bold; margin-top: 1rem; transition: transform 0.3s ease;">
+                    📁 View on GitHub
+                </a>
+            </div>
+        </section>
+
+        <section id="features" class="section">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Secure Authentication</h3>
+                    <p>Multi-layered security with email verification, admin approval, and JWT session management.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Bot Protection</h3>
+                    <p>Google reCAPTCHA integration prevents automated attacks during registration.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📍</div>
+                    <h3>Real-time Navigation</h3>
+                    <p>Live mapping with dangerous event reporting and emergency response coordination.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Role-based Access</h3>
+                    <p>Separate interfaces for Citizen Users and Security Users with appropriate permissions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Admin Dashboard</h3>
+                    <p>Comprehensive desktop application for user management and event monitoring.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-time Communication</h3>
+                    <p>Instant notifications and live location tracking using Socket.IO technology.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="downloads" class="section">
+            <h2>Downloads</h2>
+            <p>Download the latest versions of our applications.</p>
+            
+            <div class="downloads-grid">
+                <div class="download-card">
+                    <h3>📱 Mobile App (APK)</h3>
+                    <p>React Native cross-platform mobile application for Android devices</p>
+                    <a href="/downloads/accompanying-friend.apk" class="download-button" download>
+                        Download APK
+                    </a>
+                    <div class="file-info">Version 1.0.0 | 25.4 MB</div>
+                </div>
+
+                <div class="download-card">
+                    <h3>💻 Desktop Admin App</h3>
+                    <p>Electron-based desktop administration tool for Windows</p>
+                    <a href="/downloads/admin-app-windows.exe" class="download-button" download>
+                        Download for Windows
+                    </a>
+                    <div class="file-info">Version 1.0.0 | 45.2 MB</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 15px;">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">📚 Documentation & Instructions</h3>
+                <p style="margin-bottom: 1rem;">For comprehensive documentation, user manuals, API references, and development instructions, visit our GitHub repository:</p>
+                <a href="https://github.com/NatanProtector/accompanying-friend-final-project" target="_blank" style="display: inline-block; background: #667eea; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 20px; font-weight: bold; transition: transform 0.3s ease;">
+                    📖 View Documentation on GitHub
+                </a>
+            </div>
+        </section>
+
+        <section id="screenshots" class="section">
+            <h2>Screenshots & Architecture</h2>
+            <p>Explore the user interface and system architecture of our applications.</p>
+            
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">📱 Mobile Application</h3>
+            <div class="screenshots">
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0019.jpg?raw=true" alt="Mobile App Captcha">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0020.jpg?raw=true" alt="Mobile App Login Screen">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0016.jpg?raw=true" alt="Mobile App Role Select Register Screen">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0018.jpg?raw=true" alt="Mobile App Register Screen">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0017.jpg?raw=true" alt="Mobile App User Dashboard">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0011.jpg?raw=true" alt="Mobile App Navigation">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0014.jpg?raw=true" alt="Mobile App Navigation Search">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0013.jpg?raw=true" alt="Mobile App Drive">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0012.jpg?raw=true" alt="Mobile App Report Event">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-16%20171406.png?raw=true" alt="Mobile App Event Display">
+                </div>
+            </div>
+
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">💻 Desktop Admin Application</h3>
+            <div class="screenshots">
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20162011.png?raw=true" alt="Desktop App Login">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-16%20171059.png?raw=true" alt="Desktop App Users and Events Display">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20161048.png?raw=true" alt="Desktop App Create Event">
+                </div>
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20160726.png?raw=true" alt="Desktop App View Event">
+                </div>
+            </div>
+
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">🏗️ System Architecture & Design</h3>
+            <div class="screenshots">
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Use_Case_Diagram.png?raw=true" alt="Use Case Diagram">
+                </div>
+            </div>
+            <div class="screenshots">
+                <div class="screenshot">
+                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Accompanying_Friend_Prototype_Architecture.png?raw=true" alt="System Architecture Diagram">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <p>&copy; 2024 Accompanying Friend. All rights reserved.</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://github.com/NatanProtector/accompanying-friend-final-project" target="_blank">📁 GitHub</a>
+                    <a href="https://github.com/NatanProtector/accompanying-friend-final-project/wiki" target="_blank">📖 Wiki</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/downloads.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

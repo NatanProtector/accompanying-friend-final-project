@@ -5,6 +5,7 @@ const eventController = require("../modules/events/eventController");
 const authMiddleware = require("../middleware/authMiddleware");
 const notificationRoutes = require("../modules/notifications/notificationController");
 const captchaRoutes = require("../modules/captcha/captchaController");
+const downloadRoutes = require("./downloads");
 
 router.post("/events/report", authMiddleware, eventController.reportEvent);
 
@@ -22,5 +23,6 @@ router.put(
 router.use("/auth", authRoutes);
 router.use("/auth", notificationRoutes);
 router.use("/recaptcha", captchaRoutes);
+router.use("/downloads", downloadRoutes);
 
 module.exports = router;
