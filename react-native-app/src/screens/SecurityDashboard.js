@@ -100,11 +100,15 @@ export default function SecurityDashboard({ navigation }) {
       <NavButton
         title={text[language].startRide}
         onPress={() => navigation.navigate("StartRide/Security")}
+        icon="directions-car"
+        language={language}
       />
 
       <NavButton
         title={text[language].putInBackground}
         onPress={handleBackgroundPress}
+        icon="minimize"
+        language={language}
       />
     </DashboardScreen>
   );
@@ -117,6 +121,6 @@ const text = {
   },
   he: {
     startRide: "התחלת נסיעה",
-    putInBackground: "מצער אפליקציה",
+    putInBackground: "מזער אפליקציה",
   },
 };
