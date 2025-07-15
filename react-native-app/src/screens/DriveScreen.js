@@ -80,6 +80,13 @@ export default function DriveScreen({
   };
 
 
+  useEffect(() => {
+  if (initialDestination) {
+    console.log("[DriveScreen] Received new destination:", initialDestination);
+    startDrive(initialDestination);
+  }
+}, [initialDestination]);
+
 
 
   const handleMapPress = async (event) => {
