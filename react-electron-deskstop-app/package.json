@@ -10,13 +10,43 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start": "npm run build && npm run dev:electron"
+    "start": "npm run build && npm run dev:electron",
+    "build:electron": "npm run build && electron-builder",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.accompanyingfriend.admin",
+    "productName": "Accompanying Friend Admin",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist-react/**/*",
+      "src/electron/**/*",
+      "src/constants/**/*",
+      "src/utils/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "src/assets/icon.png"
+    }
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@vis.gl/react-google-maps": "^1.5.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.0",
     "socket.io-client": "^4.8.1"
   },
@@ -25,6 +55,7 @@
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
     "electron": "^35.1.2",
+    "electron-builder": "^25.1.4",
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
