@@ -55,6 +55,12 @@ _A React Native mobile application for college final project._
 
 ---
 
+### **To create an internal distribution build**
+   Log in to expo using the cli tool and then:
+   ```bash
+   eas build -p android --profile preview
+   ```
+
 ## **Development Status**
 The app is **currently under development** and includes:
 - Static screens.

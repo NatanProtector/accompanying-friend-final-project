@@ -50,6 +50,8 @@ const styles = StyleSheet.create({
     width: 65,
     height: 40,
     alignItems: "center",
+    // Padding to prevent the back button from overlapping with the OS bottom navigation buttons
+    marginBottom: 20,
   },
   buttonText: {
     color: "white",
