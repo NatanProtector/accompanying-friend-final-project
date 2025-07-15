@@ -9,13 +9,15 @@ import {
   TouchableOpacity,
   Linking,
   Modal,
+  Image,
 } from "react-native";
 import MapView, {PROVIDER_GOOGLE ,Marker, Polygon } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
-import redMarker from "../../../assets/markers/map-marker-svgrepo-com (1).png";
-import greenMarker from "../../../assets/markers/map-marker-svgrepo-com.png";
-import eventMarker from "../../../assets/markers/warning-svgrepo-com.png";
+import redMarker from "../../../assets/markers/red-marker.png";
+import greenMarker from "../../../assets/markers/green-marker.png";
+
+import eventMarker from "../../../assets/markers/warning1-svgrepo-com.png";
 import { abcZones } from '../../../assets/A_B Zones';
 import * as Location from "expo-location";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
@@ -250,7 +252,8 @@ const getZoneExplanation = (type) => {
     latitude: marker.latitude,
     longitude: marker.longitude,
   }}
-  tracksViewChanges={false}
+  // ✅ ENABLE view updates to ensure rendering
+  tracksViewChanges={true} // <--- IMPORTANT for <Image> markers
   ref={(ref) => {
     if (ref) markerRefs.current[marker.id] = ref;
   }}
@@ -258,7 +261,16 @@ const getZoneExplanation = (type) => {
     setSelectedMarker(marker);
     setSelectedMarkerId(marker.id);
   }}
-/>
+>
+  <Image
+    source={selectedMarkerId === marker.id ? greenMarker : redMarker}
+    style={{ width: 32, height: 32 }}
+    resizeMode="contain"
+  />
+</Marker>
+
+
+
 
             ))}
 
