@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   I18nManager,
+  Modal,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import BasicScreen from "../components/screen_components/BasicScreen";
@@ -22,7 +23,6 @@ import { sendVerificationEmail } from "../utils/emailJS";
 import LoadModalController from "../utils/LoadModalController";
 import * as FileSystem from "expo-file-system";
 
-
 export default function RegistrationForm({ route, navigation }) {
   const { language } = useContext(MyLanguageContext);
   const { registerAs } = route.params || {};
@@ -34,6 +34,7 @@ export default function RegistrationForm({ route, navigation }) {
 
   const [showPasswordInfo, setShowPasswordInfo] = useState(true);
   const [showIDInfo, setShowIDInfo] = useState(true);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   // Load Modal Controllers
   const { startLoad, endLoad, LoadModal } = LoadModalController();
@@ -80,17 +81,21 @@ export default function RegistrationForm({ route, navigation }) {
     securityCertificatePhoto:
       registerAs === "security" || registerAs === "both"
         ? Yup.string().required(
-          validationMessages[language].requiredCertificate
-        )
+            validationMessages[language].requiredCertificate
+          )
         : Yup.string().nullable(),
   });
 
   // Image picker logic
   const pickImage = async (setPhoto, setFieldValue, fieldName) => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
-      Alert.alert("Permission required", "Permission to access media library is required!");
+      Alert.alert(
+        "Permission required",
+        "Permission to access media library is required!"
+      );
       return;
     }
 
@@ -124,7 +129,6 @@ export default function RegistrationForm({ route, navigation }) {
     }
   };
 
-
   const handleFormSubmit = async (values) => {
     startLoad();
     try {
@@ -149,7 +153,11 @@ export default function RegistrationForm({ route, navigation }) {
             RegistrationText[language].failureMessageEmail,
             [{ text: RegistrationText[language].okButtonEmail }]
           );
-          console.log("Error sending verification email:", `Status: ${error.status}`, `${error.text}`);
+          console.log(
+            "Error sending verification email:",
+            `Status: ${error.status}`,
+            `${error.text}`
+          );
         }
       }
 
@@ -284,7 +292,6 @@ export default function RegistrationForm({ route, navigation }) {
               onPress={async () => {
                 await pickImage(setIdPhoto, setFieldValue, "idPhoto");
               }}
-
             >
               <Text style={styles.uploadButtonText}>
                 {idPhoto
@@ -335,9 +342,86 @@ export default function RegistrationForm({ route, navigation }) {
               title={RegistrationText[language].submit}
               onPress={handleSubmit}
             />
+
+            <TouchableOpacity
+              style={styles.contactSupportLink}
+              onPress={() => setShowContactModal(true)}
+            >
+              <Text
+                style={[
+                  styles.contactSupportText,
+                  { textAlign: language === "he" ? "right" : "center" },
+                ]}
+              >
+                {RegistrationText[language].havingIssues}
+              </Text>
+              <Text
+                style={[
+                  styles.contactSupportLinkText,
+                  { textAlign: language === "he" ? "right" : "center" },
+                ]}
+              >
+                {RegistrationText[language].contactSupport}
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       </Formik>
+
+      <Modal
+        visible={showContactModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowContactModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.contactModalContainer,
+              { alignItems: language === "he" ? "flex-end" : "center" },
+            ]}
+          >
+            <Text
+              style={[
+                styles.contactModalTitle,
+                { textAlign: language === "he" ? "right" : "center" },
+              ]}
+            >
+              {RegistrationText[language].contactTitle}
+            </Text>
+
+            <View style={styles.contactInfoContainer}>
+    
+              <Text
+                style={[
+                  styles.contactInfoValue,
+                  { textAlign: language === "he" ? "right" : "center" },
+                ]}
+              >
+                natanprotector@gmail.com
+              </Text>
+
+              <Text
+                style={[
+                  styles.contactInfoValue,
+                  { textAlign: language === "he" ? "right" : "center" },
+                ]}
+              >
+                evyevy12@gmail.com
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowContactModal(false)}
+            >
+              <Text style={styles.closeButtonText}>
+                {RegistrationText[language].close}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </BasicScreen>
   );
 }
@@ -380,6 +464,71 @@ const styles = StyleSheet.create({
     textAlign: "left",
     width: "90%",
   },
+  contactSupportLink: {
+    marginTop: 20,
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  contactSupportText: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  contactSupportLinkText: {
+    fontSize: 16,
+    color: "#4958FF",
+    textDecorationLine: "underline",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  contactModalContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  contactModalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  contactInfoContainer: {
+    width: "100%",
+    marginBottom: 15,
+    alignItems: "center",
+  },
+  contactInfoLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  contactInfoValue: {
+    fontSize: 16,
+    color: "#4958FF",
+    textAlign: "center",
+    fontWeight: "500",
+  },
+  closeButton: {
+    backgroundColor: "#4958FF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
 const RegistrationText = {
@@ -405,8 +554,16 @@ const RegistrationText = {
     failureMessage: "Registration failed. Please try again.",
     failureButtonEmail: "OK",
     failureTitleEmail: "Error",
-    failureMessageEmail: "Error sending verification email, contact support at natanprotector@gmail.com",
+    failureMessageEmail:
+      "Error sending verification email, contact support at natanprotector@gmail.com or evyevy12@gmail.com",
     okButtonEmail: "OK",
+    havingIssues: "Having issues?",
+    contactSupport: "Contact Support",
+    contactTitle: "Contact The Developers",
+    emailLabel: "Email:",
+    supportHoursLabel: "Support Hours:",
+    supportHours: "24/7",
+    close: "Close",
   },
   he: {
     IDInfo: "מספר תעודת זהות ישמש כשם המשתמש",
@@ -430,8 +587,14 @@ const RegistrationText = {
     failureMessage: "ההרשמה נכשלה. אנא נסה שוב.",
     failureButtonEmail: "אישור",
     failureTitleEmail: "שגיאה",
-    failureMessageEmail: "שגיאה בשליחת מייל בדיקה, צרו קשר עם תמיכה טכנית: natanprotector@gmail.com",
+    failureMessageEmail:
+      "שגיאה בשליחת מייל בדיקה, צרו קשר עם תמיכה טכנית: natanprotector@gmail.com או evyevy12@gmail.com",
     okButtonEmail: "אישור",
+    havingIssues: "יש בעיה?",
+    contactSupport: "צור קשר",
+    contactTitle: "צור קשר עם המפתחים",
+    emailLabel: "אימייל",
+    close: "סגור",
   },
 };
 

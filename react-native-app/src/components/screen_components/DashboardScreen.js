@@ -66,10 +66,14 @@ export default function DashboardScreen({ children, navigation }) {
       <NavButton
         title={DashboardText[language].Settings}
         onPress={navigateToSettings(navigation)}
+        icon="settings"
+        language={language}
       />
       <NavButton
         title={DashboardText[language].logout}
         onPress={logout(navigation)}
+        icon="logout"
+        language={language}
       />
     </BasicScreen>
   );
