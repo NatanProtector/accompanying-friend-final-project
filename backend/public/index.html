@@ -147,16 +147,18 @@
         }
 
         .section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
+            font-size: 2.8rem;
+            margin-bottom: 1.8rem;
             color: #333;
             text-align: center;
+            font-weight: 600;
         }
 
         .section p {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            color: #555;
+            line-height: 1.7;
         }
 
         /* Features Grid */
@@ -310,7 +312,6 @@
                         <li><a href="#about" data-en="About" data-he="אודות">About</a></li>
                         <li><a href="#features" data-en="Features" data-he="תכונות">Features</a></li>
                         <li><a href="#downloads" data-en="Downloads" data-he="הורדות">Downloads</a></li>
-                        <li><a href="#screenshots" data-en="Screenshots" data-he="צילומי מסך">Screenshots</a></li>
                         <li>
                             <button class="language-switcher" onclick="toggleLanguage()">
                                 <span class="flag" id="current-flag">🇺🇸</span>
@@ -334,11 +335,24 @@
     <main class="container">
         <section id="about" class="section">
             <h2 data-en="About the Project" data-he="אודות הפרויקט">About the Project</h2>
-            <p data-en="Accompanying Friend is a comprehensive security tool designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas." data-he="חבר מלווה הוא כלי אבטחה מקיף שנועד לשפר את הבטיחות ולספק שקט נפשי בעת ניווט בשטחים מסוכנים. פרויקט זה, שפותח כפרויקט גמר לתואר ראשון בהנדסת תוכנה, מתייחס לאתגרי אבטחה בעולם האמיתי באזורים בסיכון גבוה.">Accompanying Friend is a comprehensive <strong>security tool</strong> designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas.</p>
+            <p data-en="Accompanying Friend is a comprehensive security platform designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This innovative project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas with cutting-edge technology." data-he="חבר מלווה הוא פלטפורמת אבטחה מקיפה שנועדה לשפר את הבטיחות ולספק שקט נפשי בעת ניווט בשטחים מסוכנים. פרויקט חדשני זה, שפותח כפרויקט גמר לתואר ראשון בהנדסת תוכנה, מתייחס לאתגרי אבטחה בעולם האמיתי באזורים בסיכון גבוה עם טכנולוגיה מתקדמת.">Accompanying Friend is a comprehensive security platform designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This innovative project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas with cutting-edge technology.</p>
             
             <div style="background: #f8f9fa; padding: 2rem; border-radius: 15px; margin: 2rem 0;">
                 <h3 style="color: #667eea;" data-en="🎯 Project Mission" data-he="🎯 משימת הפרויקט">🎯 Project Mission</h3>
                 <p data-en="Our mission is to create a reliable security ecosystem that connects citizens with security personnel in real-time, enabling rapid response to emergencies and providing continuous protection during navigation through potentially dangerous areas." data-he="המשימה שלנו היא ליצור מערכת אבטחה אמינה המחברת אזרחים עם כוח אדם אבטחה בזמן אמת, המאפשרת תגובה מהירה למצבי חירום ומספקת הגנה מתמשכת במהלך ניווט באזורים מסוכנים.">Our mission is to create a reliable security ecosystem that connects citizens with security personnel in real-time, enabling rapid response to emergencies and providing continuous protection during navigation through potentially dangerous areas.</p>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 2rem; border-radius: 15px; margin: 2rem 0;">
+                <h3 style="color: #667eea;" data-en="👨‍💻 Project Creators" data-he="👨‍💻 יוצרי הפרויקט">👨‍💻 Project Creators</h3>
+                <p data-en="This project was developed by talented software engineering students as their final capstone project:" data-he="פרויקט זה פותח על ידי סטודנטים מוכשרים להנדסת תוכנה כפרויקט הגמר שלהם:">This project was developed by talented software engineering students as their final capstone project:</p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <a href="https://github.com/NatanProtector" target="_blank" style="display: inline-block; background: #667eea; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 20px; font-weight: bold; transition: background 0.3s ease;">
+                        👨‍💻 Natan Protector
+                    </a>
+                    <a href="https://github.com/Evyatarbe" target="_blank" style="display: inline-block; background: #667eea; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 20px; font-weight: bold; transition: background 0.3s ease;">
+                        👨‍💻 Evyatar Ben chayun
+                    </a>
+                </div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
@@ -432,7 +446,7 @@
                     <a href="/downloads/accompanying-friend.apk" class="download-button" download>
                         <span data-en="Download APK" data-he="הורד APK">Download APK</span>
                     </a>
-                    <div class="file-info" data-en="Version 1.0.0 | 77.3 MB" data-he="גרסה 1.0.0 | 77.3 MB">Version 1.0.0 | 77.3 MB</div>
+                    <div class="file-info" data-en="Version 0.1.0 | 77.3 MB" data-he="גרסה 1.0.0 | 77.3 MB">Version 1.0.0 | 77.3 MB</div>
                 </div>
 
                 <div class="download-card">
@@ -441,7 +455,7 @@
                     <a href="/downloads/admin-app-windows.exe" class="download-button" download>
                         <span data-en="Download for Windows" data-he="הורד עבור Windows">Download for Windows</span>
                     </a>
-                    <div class="file-info" data-en="Version 1.0.0 | 82.4 MB" data-he="גרסה 1.0.0 | 82.4 MB">Version 1.0.0 | 82.4 MB</div>
+                    <div class="file-info" data-en="Version 0.1.0 | 82.4 MB" data-he="גרסה 1.0.0 | 82.4 MB">Version 1.0.0 | 82.4 MB</div>
                 </div>
             </div>
 
@@ -454,72 +468,7 @@
             </div>
         </section>
 
-        <section id="screenshots" class="section">
-            <h2 data-en="Screenshots & Architecture" data-he="צילומי מסך וארכיטקטורה">Screenshots & Architecture</h2>
-            <p data-en="Explore the user interface and system architecture of our applications." data-he="חקור את ממשק המשתמש וארכיטקטורת המערכת של האפליקציות שלנו.">Explore the user interface and system architecture of our applications.</p>
-            
-            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;" data-en="📱 Mobile Application" data-he="📱 אפליקציה ניידת">📱 Mobile Application</h3>
-            <div class="screenshots">
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0019.jpg?raw=true" alt="Mobile App Captcha">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0020.jpg?raw=true" alt="Mobile App Login Screen">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0016.jpg?raw=true" alt="Mobile App Role Select Register Screen">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0018.jpg?raw=true" alt="Mobile App Register Screen">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0017.jpg?raw=true" alt="Mobile App User Dashboard">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0011.jpg?raw=true" alt="Mobile App Navigation">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0014.jpg?raw=true" alt="Mobile App Navigation Search">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0013.jpg?raw=true" alt="Mobile App Drive">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0012.jpg?raw=true" alt="Mobile App Report Event">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-16%20171406.png?raw=true" alt="Mobile App Event Display">
-                </div>
-            </div>
 
-            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;" data-en="💻 Desktop Admin Application" data-he="💻 אפליקציית מנהל שולחנית">💻 Desktop Admin Application</h3>
-            <div class="screenshots">
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20162011.png?raw=true" alt="Desktop App Login">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-16%20171059.png?raw=true" alt="Desktop App Users and Events Display">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20161048.png?raw=true" alt="Desktop App Create Event">
-                </div>
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20160726.png?raw=true" alt="Desktop App View Event">
-                </div>
-            </div>
-
-            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;" data-en="🏗️ System Architecture & Design" data-he="🏗️ ארכיטקטורת מערכת ועיצוב">🏗️ System Architecture & Design</h3>
-            <div class="screenshots">
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Use_Case_Diagram.png?raw=true" alt="Use Case Diagram">
-                </div>
-            </div>
-            <div class="screenshots">
-                <div class="screenshot">
-                    <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Accompanying_Friend_Prototype_Architecture.png?raw=true" alt="System Architecture Diagram">
-                </div>
-            </div>
-        </section>
     </main>
 
     <footer>
