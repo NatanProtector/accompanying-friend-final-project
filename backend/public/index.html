@@ -19,6 +19,10 @@
             min-height: 100vh;
         }
 
+        body[dir="rtl"] {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -52,6 +56,7 @@
             display: flex;
             list-style: none;
             gap: 2rem;
+            align-items: center;
         }
 
         nav a {
@@ -63,6 +68,28 @@
 
         nav a:hover {
             color: #667eea;
+        }
+
+        .language-switcher {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .language-switcher:hover {
+            background: #5a6fd8;
+        }
+
+        .language-switcher .flag {
+            font-size: 1.2rem;
         }
 
         /* Hero Section */
@@ -263,6 +290,8 @@
 
             nav ul {
                 gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             .footer-content {
@@ -275,13 +304,19 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">🛡️ Accompanying Friend</div>
+                <div class="logo" data-en="🛡️ Accompanying Friend" data-he="🛡️ חבר מלווה">🛡️ Accompanying Friend</div>
                 <nav>
                     <ul>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#downloads">Downloads</a></li>
-                        <li><a href="#screenshots">Screenshots</a></li>
+                        <li><a href="#about" data-en="About" data-he="אודות">About</a></li>
+                        <li><a href="#features" data-en="Features" data-he="תכונות">Features</a></li>
+                        <li><a href="#downloads" data-en="Downloads" data-he="הורדות">Downloads</a></li>
+                        <li><a href="#screenshots" data-en="Screenshots" data-he="צילומי מסך">Screenshots</a></li>
+                        <li>
+                            <button class="language-switcher" onclick="toggleLanguage()">
+                                <span class="flag" id="current-flag">🇺🇸</span>
+                                <span id="current-lang">EN</span>
+                            </button>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -290,140 +325,140 @@
 
     <section class="hero">
         <div class="container">
-            <h1>Accompanying Friend</h1>
-            <p>A comprehensive security tool designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain.</p>
-            <a href="#downloads" class="cta-button">Get Started</a>
+            <h1 data-en="Accompanying Friend" data-he="חבר מלווה">Accompanying Friend</h1>
+            <p data-en="A comprehensive security tool designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain." data-he="כלי אבטחה מקיף שנועד לשפר את הבטיחות ולספק שקט נפשי בעת ניווט בשטחים מסוכנים.">A comprehensive security tool designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain.</p>
+            <a href="#downloads" class="cta-button" data-en="Get Started" data-he="התחל עכשיו">Get Started</a>
         </div>
     </section>
 
     <main class="container">
         <section id="about" class="section">
-            <h2>About the Project</h2>
-            <p>Accompanying Friend is a comprehensive <strong>security tool</strong> designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas.</p>
+            <h2 data-en="About the Project" data-he="אודות הפרויקט">About the Project</h2>
+            <p data-en="Accompanying Friend is a comprehensive security tool designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas." data-he="חבר מלווה הוא כלי אבטחה מקיף שנועד לשפר את הבטיחות ולספק שקט נפשי בעת ניווט בשטחים מסוכנים. פרויקט זה, שפותח כפרויקט גמר לתואר ראשון בהנדסת תוכנה, מתייחס לאתגרי אבטחה בעולם האמיתי באזורים בסיכון גבוה.">Accompanying Friend is a comprehensive <strong>security tool</strong> designed to enhance safety and provide peace of mind when navigating potentially dangerous terrain. This project, developed as a final capstone for our software engineering bachelor's degree, addresses real-world security challenges in high-risk areas.</p>
             
             <div style="background: #f8f9fa; padding: 2rem; border-radius: 15px; margin: 2rem 0;">
-                <h3 style="color: #667eea; margin-bottom: 1rem;">🎯 Project Mission</h3>
-                <p>Our mission is to create a reliable security ecosystem that connects citizens with security personnel in real-time, enabling rapid response to emergencies and providing continuous protection during navigation through potentially dangerous areas.</p>
+                <h3 style="color: #667eea;" data-en="🎯 Project Mission" data-he="🎯 משימת הפרויקט">🎯 Project Mission</h3>
+                <p data-en="Our mission is to create a reliable security ecosystem that connects citizens with security personnel in real-time, enabling rapid response to emergencies and providing continuous protection during navigation through potentially dangerous areas." data-he="המשימה שלנו היא ליצור מערכת אבטחה אמינה המחברת אזרחים עם כוח אדם אבטחה בזמן אמת, המאפשרת תגובה מהירה למצבי חירום ומספקת הגנה מתמשכת במהלך ניווט באזורים מסוכנים.">Our mission is to create a reliable security ecosystem that connects citizens with security personnel in real-time, enabling rapid response to emergencies and providing continuous protection during navigation through potentially dangerous areas.</p>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
                 <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h4 style="color: #667eea;">🏗️ Architecture</h4>
-                    <p>The system is built with a modern, scalable architecture featuring:</p>
+                    <h4 style="color: #667eea;" data-en="🏗️ Architecture" data-he="🏗️ ארכיטקטורה">🏗️ Architecture</h4>
+                    <p data-en="The system is built with a modern, scalable architecture featuring:" data-he="המערכת נבנתה עם ארכיטקטורה מודרנית וניתנת להרחבה הכוללת:">The system is built with a modern, scalable architecture featuring:</p>
                     <ul style="margin-left: 1rem;">
-                        <li>Cross-platform mobile application (React Native)</li>
-                        <li>Desktop administration tool (Electron + React)</li>
-                        <li>Robust Node.js backend with Socket.IO</li>
-                        <li>MongoDB Atlas for secure data storage</li>
+                        <li data-en="Cross-platform mobile application (React Native)" data-he="אפליקציה ניידת חוצת פלטפורמות (React Native)">Cross-platform mobile application (React Native)</li>
+                        <li data-en="Desktop administration tool (Electron + React)" data-he="כלי ניהול שולחני (Electron + React)">Desktop administration tool (Electron + React)</li>
+                        <li data-en="Robust Node.js backend with Socket.IO" data-he="Backend חזק של Node.js עם Socket.IO">Robust Node.js backend with Socket.IO</li>
+                        <li data-en="MongoDB Atlas for secure data storage" data-he="MongoDB Atlas לאחסון נתונים מאובטח">MongoDB Atlas for secure data storage</li>
                     </ul>
                 </div>
                 
                 <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h4 style="color: #667eea;">🔐 Security Features</h4>
-                    <p>Comprehensive security measures including:</p>
+                    <h4 style="color: #667eea;" data-en="🔐 Security Features" data-he="🔐 תכונות אבטחה">🔐 Security Features</h4>
+                    <p data-en="Comprehensive security measures including:" data-he="אמצעי אבטחה מקיפים הכוללים:">Comprehensive security measures including:</p>
                     <ul style="margin-left: 1rem;">
-                        <li>Multi-factor authentication (Email + Admin approval)</li>
-                        <li>Google reCAPTCHA bot protection</li>
-                        <li>JWT session management</li>
-                        <li>Role-based access control</li>
-                        <li>Real-time location encryption</li>
+                        <li data-en="Multi-factor authentication (Email + Admin approval)" data-he="אימות רב-שלבי (אימייל + אישור מנהל)">Multi-factor authentication (Email + Admin approval)</li>
+                        <li data-en="Google reCAPTCHA bot protection" data-he="הגנה מפני בוטים של Google reCAPTCHA">Google reCAPTCHA bot protection</li>
+                        <li data-en="JWT session management" data-he="ניהול סשן JWT">JWT session management</li>
+                        <li data-en="Role-based access control" data-he="בקרת גישה מבוססת תפקידים">Role-based access control</li>
+                        <li data-en="Real-time location encryption" data-he="הצפנת מיקום בזמן אמת">Real-time location encryption</li>
                     </ul>
                 </div>
                 
                 <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h4 style="color: #667eea;">📱 User Experience</h4>
-                    <p>Intuitive interfaces designed for:</p>
+                    <h4 style="color: #667eea;" data-en="📱 User Experience" data-he="📱 חוויית משתמש">📱 User Experience</h4>
+                    <p data-en="Intuitive interfaces designed for:" data-he="ממשקים אינטואיטיביים שנועדו עבור:">Intuitive interfaces designed for:</p>
                     <ul style="margin-left: 1rem;">
-                        <li>Citizen Users: Easy event reporting and navigation</li>
-                        <li>Security Users: Rapid emergency response coordination</li>
-                        <li>Administrators: Comprehensive system management</li>
-                        <li>Real-time communication and notifications</li>
+                        <li data-en="Citizen Users: Easy event reporting and navigation" data-he="משתמשים אזרחים: דיווח אירועים וניווט קלים">Citizen Users: Easy event reporting and navigation</li>
+                        <li data-en="Security Users: Rapid emergency response coordination" data-he="משתמשי אבטחה: תיאום תגובה מהירה למצבי חירום">Security Users: Rapid emergency response coordination</li>
+                        <li data-en="Administrators: Comprehensive system management" data-he="מנהלים: ניהול מערכת מקיף">Administrators: Comprehensive system management</li>
+                        <li data-en="Real-time communication and notifications" data-he="תקשורת והתראות בזמן אמת">Real-time communication and notifications</li>
                     </ul>
                 </div>
             </div>
 
             <div style="text-align: center; margin: 2rem 0;">
-                <p style="font-size: 1.1rem; color: #666;">For detailed technical documentation, architecture diagrams, and development instructions, visit our comprehensive GitHub repository:</p>
+                <p style="font-size: 1.1rem; color: #666;" data-en="For detailed technical documentation, architecture diagrams, and development instructions, visit our comprehensive GitHub repository:" data-he="לתיעוד טכני מפורט, דיאגרמות ארכיטקטורה והוראות פיתוח, בקר במאגר GitHub המקיף שלנו:">For detailed technical documentation, architecture diagrams, and development instructions, visit our comprehensive GitHub repository:</p>
                 <a href="https://github.com/NatanProtector/accompanying-friend-final-project" target="_blank" style="display: inline-block; background: #667eea; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 25px; font-weight: bold; margin-top: 1rem; transition: transform 0.3s ease;">
-                    📁 View on GitHub
+                    📁 <span data-en="View on GitHub" data-he="צפה ב-GitHub">View on GitHub</span>
                 </a>
             </div>
         </section>
 
         <section id="features" class="section">
-            <h2>Key Features</h2>
+            <h2 data-en="Key Features" data-he="תכונות עיקריות">Key Features</h2>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🔐</div>
-                    <h3>Secure Authentication</h3>
-                    <p>Multi-layered security with email verification, admin approval, and JWT session management.</p>
+                    <h3 data-en="Secure Authentication" data-he="אימות מאובטח">Secure Authentication</h3>
+                    <p data-en="Multi-layered security with email verification, admin approval, and JWT session management." data-he="אבטחה רב-שכבתית עם אימות אימייל, אישור מנהל וניהול סשן JWT.">Multi-layered security with email verification, admin approval, and JWT session management.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
-                    <h3>Bot Protection</h3>
-                    <p>Google reCAPTCHA integration prevents automated attacks during registration.</p>
+                    <h3 data-en="Bot Protection" data-he="הגנה מפני בוטים">Bot Protection</h3>
+                    <p data-en="Google reCAPTCHA integration prevents automated attacks during registration." data-he="שילוב Google reCAPTCHA מונע התקפות אוטומטיות במהלך ההרשמה.">Google reCAPTCHA integration prevents automated attacks during registration.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📍</div>
-                    <h3>Real-time Navigation</h3>
-                    <p>Live mapping with dangerous event reporting and emergency response coordination.</p>
+                    <h3 data-en="Real-time Navigation" data-he="ניווט בזמן אמת">Real-time Navigation</h3>
+                    <p data-en="Live mapping with dangerous event reporting and emergency response coordination." data-he="מיפוי חי עם דיווח אירועים מסוכנים ותיאום תגובת חירום.">Live mapping with dangerous event reporting and emergency response coordination.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">👥</div>
-                    <h3>Role-based Access</h3>
-                    <p>Separate interfaces for Citizen Users and Security Users with appropriate permissions.</p>
+                    <h3 data-en="Role-based Access" data-he="גישה מבוססת תפקידים">Role-based Access</h3>
+                    <p data-en="Separate interfaces for Citizen Users and Security Users with appropriate permissions." data-he="ממשקים נפרדים למשתמשים אזרחים ומשתמשי אבטחה עם הרשאות מתאימות.">Separate interfaces for Citizen Users and Security Users with appropriate permissions.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
-                    <h3>Admin Dashboard</h3>
-                    <p>Comprehensive desktop application for user management and event monitoring.</p>
+                    <h3 data-en="Admin Dashboard" data-he="לוח בקרה למנהלים">Admin Dashboard</h3>
+                    <p data-en="Comprehensive desktop application for user management and event monitoring." data-he="אפליקציה שולחנית מקיפה לניהול משתמשים וניטור אירועים.">Comprehensive desktop application for user management and event monitoring.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
-                    <h3>Real-time Communication</h3>
-                    <p>Instant notifications and live location tracking using Socket.IO technology.</p>
+                    <h3 data-en="Real-time Communication" data-he="תקשורת בזמן אמת">Real-time Communication</h3>
+                    <p data-en="Instant notifications and live location tracking using Socket.IO technology." data-he="התראות מיידיות ומעקב מיקום חי באמצעות טכנולוגיית Socket.IO.">Instant notifications and live location tracking using Socket.IO technology.</p>
                 </div>
             </div>
         </section>
 
         <section id="downloads" class="section">
-            <h2>Downloads</h2>
-            <p>Download the latest versions of our applications.</p>
+            <h2 data-en="Downloads" data-he="הורדות">Downloads</h2>
+            <p data-en="Download the latest versions of our applications." data-he="הורד את הגרסאות העדכניות ביותר של האפליקציות שלנו.">Download the latest versions of our applications.</p>
             
             <div class="downloads-grid">
                 <div class="download-card">
-                    <h3>📱 Mobile App (APK)</h3>
-                    <p>React Native cross-platform mobile application for Android devices</p>
+                    <h3 data-en="📱 Mobile App (APK)" data-he="📱 אפליקציה ניידת (APK)">📱 Mobile App (APK)</h3>
+                    <p data-en="React Native cross-platform mobile application for Android devices" data-he="אפליקציה ניידת חוצת פלטפורמות React Native למכשירי Android">React Native cross-platform mobile application for Android devices</p>
                     <a href="/downloads/accompanying-friend.apk" class="download-button" download>
-                        Download APK
+                        <span data-en="Download APK" data-he="הורד APK">Download APK</span>
                     </a>
-                    <div class="file-info">Version 1.0.0 | 25.4 MB</div>
+                    <div class="file-info" data-en="Version 1.0.0 | 77.3 MB" data-he="גרסה 1.0.0 | 77.3 MB">Version 1.0.0 | 77.3 MB</div>
                 </div>
 
                 <div class="download-card">
-                    <h3>💻 Desktop Admin App</h3>
-                    <p>Electron-based desktop administration tool for Windows</p>
+                    <h3 data-en="💻 Desktop Admin App" data-he="💻 אפליקציית מנהל">💻 Desktop Admin App</h3>
+                    <p data-en="Electron-based desktop administration tool for Windows" data-he="כלי ניהול שולחני מבוסס Electron עבור Windows">Electron-based desktop administration tool for Windows</p>
                     <a href="/downloads/admin-app-windows.exe" class="download-button" download>
-                        Download for Windows
+                        <span data-en="Download for Windows" data-he="הורד עבור Windows">Download for Windows</span>
                     </a>
-                    <div class="file-info">Version 1.0.0 | 82.4 MB</div>
+                    <div class="file-info" data-en="Version 1.0.0 | 82.4 MB" data-he="גרסה 1.0.0 | 82.4 MB">Version 1.0.0 | 82.4 MB</div>
                 </div>
             </div>
 
             <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 15px;">
-                <h3 style="color: #667eea; margin-bottom: 1rem;">📚 Documentation & Instructions</h3>
-                <p style="margin-bottom: 1rem;">For comprehensive documentation, user manuals, API references, and development instructions, visit our GitHub repository:</p>
+                <h3 style="color: #667eea;" data-en="📚 Documentation & Instructions" data-he="📚 תיעוד והוראות">📚 Documentation & Instructions</h3>
+                <p style="margin-bottom: 1rem;" data-en="For comprehensive documentation, user manuals, API references, and development instructions, visit our GitHub repository:" data-he="לתיעוד מקיף, מדריכי משתמש, הפניות API והוראות פיתוח, בקר במאגר GitHub שלנו:">For comprehensive documentation, user manuals, API references, and development instructions, visit our GitHub repository:</p>
                 <a href="https://github.com/NatanProtector/accompanying-friend-final-project" target="_blank" style="display: inline-block; background: #667eea; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 20px; font-weight: bold; transition: transform 0.3s ease;">
-                    📖 View Documentation on GitHub
+                    📖 <span data-en="View Documentation on GitHub" data-he="צפה בתיעוד ב-GitHub">View Documentation on GitHub</span>
                 </a>
             </div>
         </section>
 
         <section id="screenshots" class="section">
-            <h2>Screenshots & Architecture</h2>
-            <p>Explore the user interface and system architecture of our applications.</p>
+            <h2 data-en="Screenshots & Architecture" data-he="צילומי מסך וארכיטקטורה">Screenshots & Architecture</h2>
+            <p data-en="Explore the user interface and system architecture of our applications." data-he="חקור את ממשק המשתמש וארכיטקטורת המערכת של האפליקציות שלנו.">Explore the user interface and system architecture of our applications.</p>
             
-            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">📱 Mobile Application</h3>
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;" data-en="📱 Mobile Application" data-he="📱 אפליקציה ניידת">📱 Mobile Application</h3>
             <div class="screenshots">
                 <div class="screenshot">
                     <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/IMG-20250616-WA0019.jpg?raw=true" alt="Mobile App Captcha">
@@ -457,7 +492,7 @@
                 </div>
             </div>
 
-            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">💻 Desktop Admin Application</h3>
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;" data-en="💻 Desktop Admin Application" data-he="💻 אפליקציית מנהל שולחנית">💻 Desktop Admin Application</h3>
             <div class="screenshots">
                 <div class="screenshot">
                     <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Screenshot%202025-06-17%20162011.png?raw=true" alt="Desktop App Login">
@@ -473,7 +508,7 @@
                 </div>
             </div>
 
-            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">🏗️ System Architecture & Design</h3>
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;" data-en="🏗️ System Architecture & Design" data-he="🏗️ ארכיטקטורת מערכת ועיצוב">🏗️ System Architecture & Design</h3>
             <div class="screenshots">
                 <div class="screenshot">
                     <img src="https://github.com/NatanProtector/accompanying-friend-final-project/blob/main/screenshots/Use_Case_Diagram.png?raw=true" alt="Use Case Diagram">
@@ -491,7 +526,7 @@
         <div class="container">
             <div class="footer-content">
                 <div>
-                    <p>&copy; 2024 Accompanying Friend. All rights reserved.</p>
+                    <p data-en="&copy; 2024 Accompanying Friend. All rights reserved." data-he="&copy; 2024 חבר מלווה. כל הזכויות שמורות.">&copy; 2024 Accompanying Friend. All rights reserved.</p>
                 </div>
                 <div class="social-links">
                     <a href="https://github.com/NatanProtector/accompanying-friend-final-project" target="_blank">📁 GitHub</a>
@@ -503,6 +538,51 @@
 
     <script src="/js/downloads.js"></script>
     <script>
+        // Language switching functionality
+        let currentLanguage = 'en';
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'he' : 'en';
+            updateLanguage();
+            updateDirection();
+            updateLanguageButton();
+        }
+
+        function updateLanguage() {
+            const elements = document.querySelectorAll('[data-en][data-he]');
+            elements.forEach(element => {
+                if (currentLanguage === 'he') {
+                    element.textContent = element.getAttribute('data-he');
+                } else {
+                    element.textContent = element.getAttribute('data-en');
+                }
+            });
+        }
+
+        function updateDirection() {
+            const body = document.body;
+            if (currentLanguage === 'he') {
+                body.setAttribute('dir', 'rtl');
+                body.style.textAlign = 'right';
+            } else {
+                body.removeAttribute('dir');
+                body.style.textAlign = 'left';
+            }
+        }
+
+        function updateLanguageButton() {
+            const flagElement = document.getElementById('current-flag');
+            const langElement = document.getElementById('current-lang');
+            
+            if (currentLanguage === 'he') {
+                flagElement.textContent = '🇮🇱';
+                langElement.textContent = 'HE';
+            } else {
+                flagElement.textContent = '🇺🇸';
+                langElement.textContent = 'EN';
+            }
+        }
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -515,6 +595,13 @@
                     });
                 }
             });
+        });
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLanguage();
+            updateDirection();
+            updateLanguageButton();
         });
     </script>
 </body>

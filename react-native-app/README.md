@@ -6,7 +6,14 @@ _A React Native mobile application for college final project._
 
 ## **Getting Started**
 
+### **📱 Download the App**
+
+Ready to use the app? Download the latest versions from our official website:
+
+[Download from Website](https://accompanying-friend-final-project.onrender.com/)
+
 ### **Prerequisites**
+
 1. **Install Node.js**  
    Ensure you have [Node.js](https://nodejs.org/) installed on your computer.
 
@@ -21,6 +28,7 @@ _A React Native mobile application for college final project._
 ### **Setup**
 
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/your-username/accompanying-friend.git
    cd accompanying-friend
@@ -36,6 +44,7 @@ _A React Native mobile application for college final project._
 ### **Run the App**
 
 1. Start the Expo development server using either of these commands:
+
    - Using npm:
      ```bash
      npm start
@@ -56,13 +65,17 @@ _A React Native mobile application for college final project._
 ---
 
 ### **To create an internal distribution build**
-   Log in to expo using the cli tool and then:
-   ```bash
-   eas build -p android --profile preview
-   ```
+
+Log in to expo using the cli tool and then:
+
+```bash
+eas build -p android --profile preview
+```
 
 ## **Development Status**
+
 The app is **currently under development** and includes:
+
 - Static screens.
 - Basic navigation for demonstration purposes.
 
@@ -71,6 +84,7 @@ Future updates will focus on adding dynamic content and enhancing features.
 ---
 
 ## **Scripts**
+
 - `npm start`: Starts the Expo development server.
 - `npx expo start`: An alternative way to start the Expo development server.
 
