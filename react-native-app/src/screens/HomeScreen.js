@@ -64,7 +64,9 @@ export default function HomeScreen({ navigation }) {
       // check if username is only digits
       const isOnlyDigits = /^[0-9]+$/.test(username);
 
-      if (username === "" || password === "" || !isOnlyDigits) {
+      const isLengthValid = username.length === 9;
+
+      if (username === "" || password === "" || !isOnlyDigits || !isLengthValid) {
         displayMessage(HomeText[language].wrongCredentials);
         return;
       }
