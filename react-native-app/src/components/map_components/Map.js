@@ -445,7 +445,7 @@ bottomDistanceText: {
   textAlign: 'center',
 },
 
-  container: { flex: 1, width: "100%", height: 630 },
+  container: { flex: 1, width: "100%", height: 585 },
   map: { flex: 1, width: "100%", height: "100%" },
   actionBar: {
     position: "absolute",
