@@ -11,8 +11,6 @@ const Header = () => {
         return "Manage User Registration and Permissions";
       case "/map":
         return "View Real-time User Locations";
-      case "/Manage/AreaMap":
-        return "Configure Map Settings and Areas";
       default:
         return "";
     }

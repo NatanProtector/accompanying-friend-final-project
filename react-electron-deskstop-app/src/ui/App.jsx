@@ -5,7 +5,6 @@ import Home from "./components/Home";
 import BasicScreen from "./components/BasicScreen";
 import Header from "./components/Header";
 import ManageUsers from "./components/ManageUsers";
-import ManageAreaMap from "./components/ManageAreaMap";
 import AdminLogin from "./components/AdminLogin";
 
 const App = () => {
@@ -86,11 +85,10 @@ const App = () => {
               path="/Manage/Users"
               element={<ManageUsers adminToken={adminToken} />}
             />
-            <Route path="/map" element={<MyMap adminToken={adminToken} />} />
-            <Route
-              path="/Manage/AreaMap"
-              element={<ManageAreaMap adminToken={adminToken} />}
-            />
+            <Route 
+              path="/map" 
+              element={<MyMap adminToken={adminToken} />} />
+
           </Routes>
         }
       />
