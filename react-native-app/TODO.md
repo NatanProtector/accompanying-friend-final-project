@@ -10,7 +10,6 @@ account creation process, add an error like "Account registered but verification
 
 # BUGS
 - `DriveScreen.js`: When the title is too long, it overlaps with the search button.
-- Add contact information in case of issues
 
 # Notes before building:
 - `app.json` add Maps API to build sections when building the app

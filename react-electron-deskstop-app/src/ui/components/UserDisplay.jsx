@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 const UserDisplay = ({ user, onSelect, onUnselect }) => {
   // State to manage the checkbox
@@ -7,10 +7,8 @@ const UserDisplay = ({ user, onSelect, onUnselect }) => {
 
   // Function to handle checkbox change
   const handleCheckboxChange = () => {
-    if (isChecked)
-      onUnselect && onUnselect();
-    else
-      onSelect && onSelect();
+    if (isChecked) onUnselect && onUnselect();
+    else onSelect && onSelect();
 
     setIsChecked(!isChecked);
   };
@@ -41,12 +39,24 @@ const UserDisplay = ({ user, onSelect, onUnselect }) => {
       </div>
 
       <h2>User Details</h2>
-      <p><strong>First Name:</strong> {firstName}</p>
-      <p><strong>Last Name:</strong> {lastName}</p>
-      <p><strong>Full Name:</strong> {fullName}</p>
-      <p><strong>Phone:</strong> {phone}</p>
-      <p><strong>ID Number:</strong> {idNumber}</p>
-      <p><strong>Email:</strong> {email}</p>
+      <p>
+        <strong>First Name:</strong> {firstName}
+      </p>
+      <p>
+        <strong>Last Name:</strong> {lastName}
+      </p>
+      <p>
+        <strong>Full Name:</strong> {fullName}
+      </p>
+      <p>
+        <strong>Phone:</strong> {phone}
+      </p>
+      <p>
+        <strong>ID Number:</strong> {idNumber}
+      </p>
+      <p>
+        <strong>Email:</strong> {email}
+      </p>
       {idPhoto && (
         <div>
           <strong>ID Photo:</strong>
@@ -54,9 +64,9 @@ const UserDisplay = ({ user, onSelect, onUnselect }) => {
           <img src={idPhoto} alt="ID Photo" style={styles.image} />
         </div>
       )}
-      <p><strong>Registration Status:</strong> {registrationStatus}</p>
-      <p><strong>Location Coordinates:</strong> [{coordinates[0]}, {coordinates[1]}]</p>
-
+      <p>
+        <strong>Registration Status:</strong> {registrationStatus}
+      </p>
     </div>
   );
 };
@@ -81,38 +91,38 @@ UserDisplay.propTypes = {
 // Basic styling for the component
 const styles = {
   container: {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '16px',
-    margin: '16px auto',
-    position: 'relative', // To position the checkbox in the top-right corner
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    padding: "16px",
+    margin: "16px auto",
+    position: "relative", // To position the checkbox in the top-right corner
   },
   image: {
-    maxWidth: '100%',
-    height: 'auto',
-    marginTop: '8px',
+    maxWidth: "100%",
+    height: "auto",
+    marginTop: "8px",
   },
   checkboxContainer: {
-    position: 'absolute',
-    top: '8px',
-    right: '8px',
+    position: "absolute",
+    top: "8px",
+    right: "8px",
   },
   checkbox: {
-    cursor: 'pointer',
-    width: '24px', 
-    height: '24px', 
-    borderRadius: '4px',
-    border: '2px solid #007BFF',
-    backgroundColor: '#fff',
-    outline: 'none',
-    position: 'relative',
+    cursor: "pointer",
+    width: "24px",
+    height: "24px",
+    borderRadius: "4px",
+    border: "2px solid #007BFF",
+    backgroundColor: "#fff",
+    outline: "none",
+    position: "relative",
   },
   checkboxChecked: {
-    backgroundColor: '#007BFF',
+    backgroundColor: "#007BFF",
   },
   checkboxLabel: {
-    marginLeft: '8px',
-    fontSize: '16px',
+    marginLeft: "8px",
+    fontSize: "16px",
   },
 };
 

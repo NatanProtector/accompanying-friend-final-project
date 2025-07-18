@@ -13,6 +13,7 @@ import ReCaptcha from "./src/screens/ReCaptcha";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { useState } from "react";
 
@@ -85,83 +86,84 @@ export default function App() {
 
   return (
     <MyLanguageContext.Provider value={{ language }}>
-      <NavigationContainer>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="ReCaptcha">
+            <Stack.Screen
+              name="ReCaptcha"
+              component={wrapScreenLanguageButton(ReCaptcha)}
+              options={options}
+            />
+            <Stack.Screen
+              name="Home"
+              component={wrapScreenLanguageButton(HomeScreen)}
+              options={options}
+            />
+            <Stack.Screen
+              name="Recovery"
+              component={wrapScreenWithBoth(AccountRecoveryScreen)}
+              options={options}
+            />
+            <Stack.Screen
+              name="Login"
+              component={wrapScreenWithBoth(LoginScreen)}
+              options={options}
+            />
+            <Stack.Screen
+              name="Register"
+              component={wrapScreenWithBoth(Register)}
+              options={options}
+            />
+            <Stack.Screen
+              name="RegisterForm"
+              component={wrapScreenWithBoth(RegistrationForm)}
+              options={options}
+            />
+            <Stack.Screen
+              name="Dashboard/Security"
+              component={wrapScreenWithNotification(
+                wrapScreenLanguageButton(SecurityDashboard)
+              )}
+              options={options}
+            />
+            <Stack.Screen
+              name="Dashboard/Citizen"
+              component={CitizenDashboard}
+              options={options}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={wrapScreenWithBoth(SettingsDisplay)}
+              options={options}
+            />
+            <Stack.Screen
+              name="StartRide/Citizen"
+              component={wrapScreenWithBackButton(CitizenDriveScreen)}
+              options={options}
+            />
+            <Stack.Screen
+              name="StartRide/Security"
+              component={wrapScreenWithNotification(
+                wrapScreenWithBackButton(SecurityDriveScreen)
+              )}
+              options={options}
+            />
+            <Stack.Screen
+              name="SafeLocations"
+              component={wrapScreenWithBackButton(SafeLocationScreen)}
+              options={options}
+            />
 
-        <Stack.Navigator initialRouteName="ReCaptcha">
-          <Stack.Screen
-            name="ReCaptcha"
-            component={wrapScreenLanguageButton(ReCaptcha)}
-            options={options}
-          />
-          <Stack.Screen
-            name="Home"
-            component={wrapScreenLanguageButton(HomeScreen)}
-            options={options}
-          />
-          <Stack.Screen
-            name="Recovery"
-            component={wrapScreenWithBoth(AccountRecoveryScreen)}
-            options={options}
-          />
-          <Stack.Screen
-            name="Login"
-            component={wrapScreenWithBoth(LoginScreen)}
-            options={options}
-          />
-          <Stack.Screen
-            name="Register"
-            component={wrapScreenWithBoth(Register)}
-            options={options}
-          />
-          <Stack.Screen
-            name="RegisterForm"
-            component={wrapScreenWithBoth(RegistrationForm)}
-            options={options}
-          />
-          <Stack.Screen
-            name="Dashboard/Security"
-            component={wrapScreenWithNotification(
-              wrapScreenLanguageButton(SecurityDashboard)
-            )}
-            options={options}
-          />
-          <Stack.Screen
-            name="Dashboard/Citizen"
-            component={CitizenDashboard}
-            options={options}
-          />
-          <Stack.Screen
-            name="Settings"
-            component={wrapScreenWithBoth(SettingsDisplay)}
-            options={options}
-          />
-          <Stack.Screen
-            name="StartRide/Citizen"
-            component={wrapScreenWithBackButton(CitizenDriveScreen)}
-            options={options}
-          />
-          <Stack.Screen
-            name="StartRide/Security"
-            component={wrapScreenWithNotification(
-              wrapScreenWithBackButton(SecurityDriveScreen)
-            )}
-            options={options}
-          />
-          <Stack.Screen
-            name="SafeLocations"
-            component={wrapScreenWithBackButton(SafeLocationScreen)}
-            options={options}
-          />
-
-          <Stack.Screen
-            name="TestRoutes"
-            component={wrapScreenWithBackButton(
-              wrapScreenLanguageButton(TestRoutesScreen)
-            )}
-            options={options}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+            <Stack.Screen
+              name="TestRoutes"
+              component={wrapScreenWithBackButton(
+                wrapScreenLanguageButton(TestRoutesScreen)
+              )}
+              options={options}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </GestureHandlerRootView>
     </MyLanguageContext.Provider>
   );
 }

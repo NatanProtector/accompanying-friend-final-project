@@ -74,7 +74,7 @@ export default function DriveScreen({
 
       return `${name} ${street}, ${city}, Israel`.trim(); // 🇮🇱 Force country to "Israel"
     } catch (error) {
-      console.error("Reverse geocode failed:", error);
+      console.log("[DRIVE] Reverse geocode failed:", error);
       return "Unknown location in Israel";
     }
   };
@@ -121,11 +121,8 @@ export default function DriveScreen({
 
 
   const handleRemoveMarker = (idToRemove) => {
+    cancelDrive();
     setMarkers((prev) => prev.filter((marker) => marker.id !== idToRemove));
-    setSelectedMarker(null);
-    setSelectedMarkerId(null);
-    setRouteSteps([]);
-    setCurrentStepIndex(0);
   };
 
   const startDrive = (destination) => {
@@ -134,12 +131,14 @@ export default function DriveScreen({
   };
 
   const cancelDrive = () => {
+    setMarkers((prev) =>
+      prev.filter((marker) => marker.id !== selectedMarker?.id)
+    );
     setRouteSteps([]);
     setCurrentStepIndex(0);
     setDestination(null);
-      setMarkers((prev) =>
-    prev.filter((marker) => marker.id !== selectedMarker?.id)
-  );
+    setSelectedMarker(null);
+    setSelectedMarkerId(null);
     setShowDirections(false);
     setFollowUser(false);
   };
@@ -478,7 +477,7 @@ export default function DriveScreen({
           region={region}
           setRegion={setRegion}
           routeSteps={routeSteps}
-          setDestination={setDestination}
+          startDrive={startDrive}
           setRouteSteps={setRouteSteps}
           currentStepIndex={currentStepIndex}
           setCurrentStepIndex={setCurrentStepIndex}

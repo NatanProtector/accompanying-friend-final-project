@@ -12,8 +12,8 @@ app.on("ready", () => {
     frame: true, // Keep the window frame (optional)
   });
 
-  // Disable the default menu (optional)
-  // Menu.setApplicationMenu(null);
+  // Disable the default menu (removes the action bar)
+  Menu.setApplicationMenu(null);
 
   mainWindow.loadFile(path.join(app.getAppPath(), "dist-react", "index.html"));
 });
