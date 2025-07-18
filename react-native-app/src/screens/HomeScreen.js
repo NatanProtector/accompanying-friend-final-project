@@ -61,6 +61,14 @@ export default function HomeScreen({ navigation }) {
       //   return;
       // }
 
+      // check if username is only digits
+      const isOnlyDigits = /^[0-9]+$/.test(username);
+
+      if (username === "" || password === "" || !isOnlyDigits) {
+        displayMessage(HomeText[language].wrongCredentials);
+        return;
+      }
+
       const response = await SubmitLoginForm({
         idNumber: username,
         password: password,
