@@ -74,7 +74,7 @@ export default function DriveScreen({
 
       return `${name} ${street}, ${city}, Israel`.trim(); // 🇮🇱 Force country to "Israel"
     } catch (error) {
-      console.error("Reverse geocode failed:", error);
+      console.log("[DRIVE] Reverse geocode failed:", error);
       return "Unknown location in Israel";
     }
   };
@@ -478,7 +478,7 @@ export default function DriveScreen({
           region={region}
           setRegion={setRegion}
           routeSteps={routeSteps}
-          setDestination={setDestination}
+          startDrive={startDrive}
           setRouteSteps={setRouteSteps}
           currentStepIndex={currentStepIndex}
           setCurrentStepIndex={setCurrentStepIndex}

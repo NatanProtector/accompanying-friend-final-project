@@ -28,7 +28,7 @@ import { differenceInHours } from "date-fns";
 const MapScreen = ({
   markers,
   destination,
-  setDestination,
+  startDrive,
   region,
   setRegion,
   routeSteps,
@@ -362,7 +362,7 @@ const getZoneExplanation = (type) => {
               style={styles.actionButton}
               onPress={() => {
                 const { latitude, longitude } = selectedMarker;
-                setDestination({ latitude, longitude }); // Starts in-app driving
+                startDrive({ latitude, longitude }); // Starts in-app driving
               }}
             >
               <Text style={styles.actionText}>▶️</Text>
