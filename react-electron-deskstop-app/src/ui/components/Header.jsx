@@ -28,9 +28,6 @@ const Header = () => {
         <li>
           <Link to="/map">Map</Link>
         </li>
-        <li>
-          <Link to="/Manage/AreaMap">Manage Area Map</Link>
-        </li>
       </ul>
 
       <div style={style.titleContainer}>

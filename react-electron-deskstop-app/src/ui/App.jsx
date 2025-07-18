@@ -85,10 +85,10 @@ const App = () => {
               path="/Manage/Users"
               element={<ManageUsers adminToken={adminToken} />}
             />
-            <Route 
-              path="/map" 
-              element={<MyMap adminToken={adminToken} />} />
-
+            <Route
+              path="/map"
+              element={<MyMap adminToken={adminToken} />}
+            />
           </Routes>
         }
       />
