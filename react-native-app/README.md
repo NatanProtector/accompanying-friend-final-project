@@ -87,11 +87,3 @@ Future updates will focus on adding dynamic content and enhancing features.
 
 - `npm start`: Starts the Expo development server.
 - `npx expo start`: An alternative way to start the Expo development server.
-
----
-
-## **Deployment**
-
-- `npx expo export --platform web`: Export production website to a folder named dist.
-
----

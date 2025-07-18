@@ -11,14 +11,14 @@ import {
   Modal,
   Image,
 } from "react-native";
-import MapView, {PROVIDER_GOOGLE ,Marker, Polygon } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Polygon } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
 import redMarker from "../../../assets/markers/red-marker.png";
 import greenMarker from "../../../assets/markers/green-marker.png";
 
 import eventMarker from "../../../assets/markers/warning1-svgrepo-com.png";
-import { abcZones } from '../../../assets/A_B Zones';
+import { abcZones } from "../../../assets/A_B Zones";
 import * as Location from "expo-location";
 import { GOOGLE_MAPS_API_KEY, SERVER_URL } from "@env";
 import DriverDirections from "../general_components/DriverDirections";
@@ -147,22 +147,19 @@ const MapScreen = ({
     setNearbyZones(filtered);
   };
 
-
-
   const getZoneColor = (type) => {
-    return type === 'A'
-      ? 'rgba(255, 0, 0, 0.78)'       // Red
-      : 'rgba(55, 0, 255, 0.88)';    // Yellow
+    return type === "A"
+      ? "rgba(255, 0, 0, 0.78)" // Red
+      : "rgba(55, 0, 255, 0.88)"; // Yellow
   };
 
-const getZoneExplanation = (type) => {
-  return type === "A"
-    ? "No Israeli civil or security jurisdiction."
-    : type === "B"
-    ? "No Israeli civil jurisdiction. Security responsibility remains with Israel."
-    : "Unknown zone type.";
-};
-
+  const getZoneExplanation = (type) => {
+    return type === "A"
+      ? "No Israeli civil or security jurisdiction."
+      : type === "B"
+      ? "No Israeli civil jurisdiction. Security responsibility remains with Israel."
+      : "Unknown zone type.";
+  };
 
   return (
     <View style={styles.container}>
@@ -176,7 +173,7 @@ const getZoneExplanation = (type) => {
       )}
 
       {region ? (
-        <MapView  
+        <MapView
           provider={PROVIDER_GOOGLE}
           initialRegion={region}
           ref={mapRef}
@@ -222,7 +219,6 @@ const getZoneExplanation = (type) => {
               });
             }
           }}
-
         >
           {destination && (
             <MapViewDirections
@@ -239,43 +235,43 @@ const getZoneExplanation = (type) => {
             />
           )}
 
-
+          {/* User markers - render FIRST (on top) */}
           {markers
             .filter(
               (marker) =>
                 typeof marker.latitude === "number" &&
                 typeof marker.longitude === "number"
-            ).map((marker) => (
-<Marker
-  key={marker.id}
-  coordinate={{
-    latitude: marker.latitude,
-    longitude: marker.longitude,
-  }}
-  // ✅ ENABLE view updates to ensure rendering
-  tracksViewChanges={true} // <--- IMPORTANT for <Image> markers
-  ref={(ref) => {
-    if (ref) markerRefs.current[marker.id] = ref;
-  }}
-  onPress={() => {
-    setSelectedMarker(marker);
-    setSelectedMarkerId(marker.id);
-  }}
->
-  <Image
-    source={selectedMarkerId === marker.id ? greenMarker : redMarker}
-    style={{ width: 32, height: 32 }}
-    resizeMode="contain"
-  />
-</Marker>
-
-
-
-
+            )
+            .map((marker) => (
+              <Marker
+                key={marker.id}
+                coordinate={{
+                  latitude: marker.latitude,
+                  longitude: marker.longitude,
+                }}
+                // ✅ ENABLE view updates to ensure rendering
+                tracksViewChanges={true} // <--- IMPORTANT for <Image> markers
+                ref={(ref) => {
+                  if (ref) markerRefs.current[marker.id] = ref;
+                }}
+                onPress={() => {
+                  setSelectedMarker(marker);
+                  setSelectedMarkerId(marker.id);
+                }}
+              >
+                <Image
+                  source={
+                    selectedMarkerId === marker.id ? greenMarker : redMarker
+                  }
+                  style={{ width: 45, height: 45 }}
+                  resizeMode="contain"
+                />
+              </Marker>
             ))}
 
+          {/* Event markers - render LAST (below) */}
           {nearbyEvents
-            .filter(event => {
+            .filter((event) => {
               const eventTime = new Date(event.timestamp);
               return differenceInHours(new Date(), eventTime) <= 8;
             })
@@ -305,6 +301,7 @@ const getZoneExplanation = (type) => {
               );
             })}
 
+          {/* Zone polygons - render LAST */}
           {nearbyZones.map((zone, index) => (
             <Polygon
               key={`zone-${index}`}
@@ -322,69 +319,66 @@ const getZoneExplanation = (type) => {
               }}
             />
           ))}
-
         </MapView>
       ) : (
         <ActivityIndicator size="large" color="teal" />
-      )
-      }
+      )}
 
-{selectedMarker && region && (
-  <View style={styles.bottomDistanceContainer}>
-    <Text style={styles.bottomDistanceText}>
-      Distance to marker:{" "}
-      {(() => {
-        const d = getDistance(
-          { latitude: region.latitude, longitude: region.longitude },
-          { latitude: selectedMarker.latitude, longitude: selectedMarker.longitude }
-        );
-        return d < 1000 ? `${d} meters` : `${(d / 1000).toFixed(2)} km`;
-      })()}
-    </Text>
-  </View>
-)}
+      {selectedMarker && region && (
+        <View style={styles.bottomDistanceContainer}>
+          <Text style={styles.bottomDistanceText}>
+            Distance to marker:{" "}
+            {(() => {
+              const d = getDistance(
+                { latitude: region.latitude, longitude: region.longitude },
+                {
+                  latitude: selectedMarker.latitude,
+                  longitude: selectedMarker.longitude,
+                }
+              );
+              return d < 1000 ? `${d} meters` : `${(d / 1000).toFixed(2)} km`;
+            })()}
+          </Text>
+        </View>
+      )}
 
+      {selectedMarker && (
+        <View style={styles.actionBar}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              const { latitude, longitude } = selectedMarker;
+              Linking.openURL(`google.navigation:q=${latitude},${longitude}`);
+            }}
+          >
+            <Text style={styles.actionText}>🧭</Text>
+          </TouchableOpacity>
 
-      {
-        selectedMarker && (
-          <View style={styles.actionBar}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => {
-                const { latitude, longitude } = selectedMarker;
-                Linking.openURL(`google.navigation:q=${latitude},${longitude}`);
-              }}
-            >
-              <Text style={styles.actionText}>🧭</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              const { latitude, longitude } = selectedMarker;
+              startDrive({ latitude, longitude }); // Starts in-app driving
+            }}
+          >
+            <Text style={styles.actionText}>▶️</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => {
-                const { latitude, longitude } = selectedMarker;
-                startDrive({ latitude, longitude }); // Starts in-app driving
-              }}
-            >
-              <Text style={styles.actionText}>▶️</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => handleRemoveMarker(selectedMarker?.id)}
+          >
+            <Text style={styles.actionText}>🗑️</Text>
+          </TouchableOpacity>
 
-
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleRemoveMarker(selectedMarker?.id)}
-            >
-              <Text style={styles.actionText}>🗑️</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => setShowInfoModal(true)}
-            >
-              <Text style={styles.actionText}>ℹ️</Text>
-            </TouchableOpacity>
-          </View>
-        )
-      }
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setShowInfoModal(true)}
+          >
+            <Text style={styles.actionText}>ℹ️</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <Modal
         visible={showInfoModal}
@@ -402,48 +396,53 @@ const getZoneExplanation = (type) => {
             <Text>Lat: {selectedMarker?.latitude.toFixed(6)}</Text>
             <Text>Lng: {selectedMarker?.longitude.toFixed(6)}</Text>
             {region && selectedMarker && (
-  <Text>
-    Distance:{" "}
-    {(() => {
-      const d = getDistance(
-        { latitude: region.latitude, longitude: region.longitude },
-        { latitude: selectedMarker.latitude, longitude: selectedMarker.longitude }
-      );
-      return d < 1000 ? `${d} meters` : `${(d / 1000).toFixed(2)} km`;
-    })()}
-  </Text>
-)}
+              <Text>
+                Distance:{" "}
+                {(() => {
+                  const d = getDistance(
+                    { latitude: region.latitude, longitude: region.longitude },
+                    {
+                      latitude: selectedMarker.latitude,
+                      longitude: selectedMarker.longitude,
+                    }
+                  );
+                  return d < 1000
+                    ? `${d} meters`
+                    : `${(d / 1000).toFixed(2)} km`;
+                })()}
+              </Text>
+            )}
 
             <Button title="Close" onPress={() => setShowInfoModal(false)} />
           </View>
         </View>
       </Modal>
-    </View >
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-bottomDistanceContainer: {
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  alignItems: 'center',        // center horizontally
-  justifyContent: 'center',    // center vertically (in case of taller bars)
-  paddingVertical: 6,
-  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-  borderTopWidth: 0.5,
-  borderColor: 'gray',
-  zIndex: 1000,
-  elevation: 5,
-},
+  bottomDistanceContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: "center", // center horizontally
+    justifyContent: "center", // center vertically (in case of taller bars)
+    paddingVertical: 6,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderTopWidth: 0.5,
+    borderColor: "gray",
+    zIndex: 1000,
+    elevation: 5,
+  },
 
-bottomDistanceText: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  color: 'black',
-  textAlign: 'center',
-},
+  bottomDistanceText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "black",
+    textAlign: "center",
+  },
 
   container: { flex: 1, width: "100%", height: 585 },
   map: { flex: 1, width: "100%", height: "100%" },
@@ -459,7 +458,6 @@ bottomDistanceText: {
     marginBottom: 20,
     elevation: 10,
     zIndex: 1000,
-
   },
   actionButton: {
     padding: 5,

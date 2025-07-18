@@ -30,34 +30,7 @@ const MapComponent = ({
         <MapController clickedPosition={centerCoords} zoomLevel={mapZoom} />
       )}
 
-      {/* Event markers */}
-      {events &&
-        events.length > 0 &&
-        events.map((event, index) => {
-          if (event.location?.coordinates && isGoogleMapsLoaded) {
-            return (
-              <Marker
-                key={`event-${index}`}
-                position={{
-                  lat: event.location.coordinates[1],
-                  lng: event.location.coordinates[0],
-                }}
-                title={`Event: ${event.eventType}`}
-                onClick={() => onEventClick(event)}
-                icon={{
-                  path: window.google.maps.SymbolPath.CIRCLE,
-                  scale: 8,
-                  fillColor: "red",
-                  fillOpacity: 1,
-                  strokeWeight: 2,
-                  strokeColor: "white",
-                }}
-              />
-            );
-          }
-        })}
-
-      {/* Users now have red circle markers */}
+      {/* Users now have red circle markers - render FIRST (on top) */}
       {userLocations &&
         userLocations.length > 0 &&
         userLocations.map((user, index) => {
@@ -79,6 +52,33 @@ const MapComponent = ({
                   path: window.google.maps.SymbolPath.CIRCLE,
                   scale: 8,
                   fillColor: user.role === "citizen" ? "green" : "blue",
+                  fillOpacity: 1,
+                  strokeWeight: 2,
+                  strokeColor: "white",
+                }}
+              />
+            );
+          }
+        })}
+
+      {/* Event markers - render LAST (below) */}
+      {events &&
+        events.length > 0 &&
+        events.map((event, index) => {
+          if (event.location?.coordinates && isGoogleMapsLoaded) {
+            return (
+              <Marker
+                key={`event-${index}`}
+                position={{
+                  lat: event.location.coordinates[1],
+                  lng: event.location.coordinates[0],
+                }}
+                title={`Event: ${event.eventType}`}
+                onClick={() => onEventClick(event)}
+                icon={{
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  scale: 11.2,
+                  fillColor: "red",
                   fillOpacity: 1,
                   strokeWeight: 2,
                   strokeColor: "white",
