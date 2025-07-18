@@ -128,7 +128,7 @@ const MapScreen = ({
       const data = await res.json();
       setNearbyEvents(data);
     } catch (err) {
-      console.error("Failed to fetch nearby events", err);
+      console.log("Failed to fetch nearby events", err);
     }
   };
 

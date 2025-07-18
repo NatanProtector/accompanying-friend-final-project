@@ -121,11 +121,8 @@ export default function DriveScreen({
 
 
   const handleRemoveMarker = (idToRemove) => {
+    cancelDrive();
     setMarkers((prev) => prev.filter((marker) => marker.id !== idToRemove));
-    setSelectedMarker(null);
-    setSelectedMarkerId(null);
-    setRouteSteps([]);
-    setCurrentStepIndex(0);
   };
 
   const startDrive = (destination) => {
@@ -134,12 +131,14 @@ export default function DriveScreen({
   };
 
   const cancelDrive = () => {
+    setMarkers((prev) =>
+      prev.filter((marker) => marker.id !== selectedMarker?.id)
+    );
     setRouteSteps([]);
     setCurrentStepIndex(0);
     setDestination(null);
-      setMarkers((prev) =>
-    prev.filter((marker) => marker.id !== selectedMarker?.id)
-  );
+    setSelectedMarker(null);
+    setSelectedMarkerId(null);
     setShowDirections(false);
     setFollowUser(false);
   };
